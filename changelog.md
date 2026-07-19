@@ -15,6 +15,142 @@ Format: neueste Einträge oben. Aufbau eines Eintrags siehe Vorlage am Ende.
 
 ---
 
+## [2026-07-19] Kundenwunsch: Footer lesbarer, Info-Box weiß, kleine Schrift größer, Menüleiste durchgängig weiß, Nav verschlankt + Sprachumschalter
+
+**Bearbeiter:** Claude (Claude Code, Opus 4.7) · beauftragt durch Kunde
+**Grund:** Fünf inhaltliche/gestalterische Änderungswünsche aus der ersten
+Kundenrückmeldung (siehe unten). Umgesetzt in einer Sitzung, damit der Ordner
+möglichst schnell wieder als ZIP an die Projektleitung geht.
+
+Cache-Version: `?v=20260717` → `?v=20260719` (in `index.html`).
+`node --check assets/js/app.js` nach jedem Zwischenschritt: fehlerfrei.
+
+### Geändert
+
+**1. Footer – Schrift größer, deutlich mehr Kontrast** (`assets/js/app.js`, Zeilen 292–357)
+Die Struktur des Footers ist unverändert. Angepasst wurden nur die Schriftgrößen
+und die Textfarben, damit sich der Text vom fast-schwarzen Hintergrund
+(`#1A1917`) besser abhebt.
+
+* Labels (BERLIN / KÖLN): 10px → 12px, Opazität .3 → .7
+* Fließtext (Adresse, Tagline): 12px → 14px, Opazität .5 → .82–.85
+* Links (Telefon, E-Mail, FAQ, Impressum, Datenschutz): 12px → 13–14px,
+  Opazität .38–.5 → .75–.85
+* Copyright: 11px → 13px
+* Trennlinien: rgba(255,255,255,.08) → .12 (leicht sichtbarer, aber weiterhin
+  zurückhaltend)
+* Kontakt-Button (Footer): 11px → 13px, Rahmenkontrast erhöht
+
+**2. Internationales Steuerrecht – schwarze Info-Box → weiß**
+(`assets/js/app.js`, Zeilen 883–898)
+Die Info-Box direkt unter dem Hero (Berlin & Köln / TGS Global / 58 Länder /
+Unternehmer & Privatpersonen) hatte einen schwarzen Hintergrund. Umgestellt auf
+weiß mit dunklem Akzentgrün für die Werte und `--muted` für die Labels, plus
+dezenter unterer Trennlinie (`#ECEAE6`) für die visuelle Abgrenzung zur
+folgenden Sektion.
+
+**3. Unternehmen-Kacheln – kleine Unterpunkte vergrößert** (`assets/js/app.js`)
+* Zeile 668 (Kacheln „Steuerberatung für Unternehmen" und „Branchenlösungen"
+  auf der Übersichtsseite `LeistungenUnternehmenPage`): Bullet-Items
+  `text-xs` → `text-sm` (12px → 14px). Damit lesen sich „Laufende
+  Steuerberatung / Gestaltungsberatung / Betriebswirtschaftliche Beratung"
+  bzw. „E-Commerce & Onlinehandel / Bauunternehmen / …" wie der übrige
+  Fließtext auf der Seite.
+* Zeilen 704, 707 (Kacheln „Drei Bereiche" auf
+  `LeistungenUnternehmenLeistungenPage`): analog `text-xs` → `text-sm`,
+  Bullet-Punkte 5px → 6px angeglichen.
+
+Die restlichen `text-xs`-Vorkommen im Code sind bewusst klein gehaltene
+Sonderformen (Pill-Badges, Statistik-Untertitel, Overline-Labels wie „NETZWERK"
+oder „WELTWEIT VERNETZT") – ein Vergrößern würde die Hierarchie zerreißen. Sie
+bleiben deshalb wie sie sind. Sollte an einer konkreten Stelle davon eine
+Textzeile trotzdem zu klein wirken, bitte gezielt melden.
+
+**4a. Menüleiste bleibt immer voll weiß** (`assets/js/app.js`, Zeilen 195–206;
+`assets/css/style.css`, Zeile 12)
+Ursache des grauen Eindrucks: Der Header war halbtransparent
+(`rgba(255,255,255,0.92–0.97)` + `backdrop-filter: blur(12px)`). Über dunklen
+Sektionen (z. B. „Für die richtigen Mandanten" auf Leistungen/Unternehmen mit
+schwarzem Hintergrund, oder der alte dunkle Hero auf Impressum/Datenschutz)
+schimmerte der dunkle Untergrund durch → grauer Anschein. Umgestellt auf voll
+deckendes `#ffffff`, `backdrop-filter` entfernt. Ergebnis: keine Farbmischung
+mehr, die Menüleiste ist unabhängig vom Untergrund immer weiß.
+(Betrifft die gesamte Website, nicht nur einzelne Seiten.)
+
+**4b. Impressum + Datenschutz – Hero analog zu allen anderen Seiten**
+(`assets/js/app.js`, Zeilen 3592ff und 3710ff)
+Beide Seiten hatten einen eigenen dunklen Hero (`#1A1917`, Höhe 80/56 px, weiße
+Überschrift). Ersetzt durch die bestehende `PageHero`-Komponente mit Label
+„RECHTLICHES" / „LEGAL". Dadurch identische Höhe, Innenabstände, Typografie und
+Hintergrundfarbe (`--offwhite`) wie „Über uns", „Leistungen", „Karriere" usw. –
+die Seiten fügen sich jetzt in die Reihe ein.
+
+**5. Nav-Umbau** (`assets/js/app.js`, Zeilen 158–281 und Übersetzungen 4541 /
+4812)
+* Menüpunkt **„Startseite" / „Home"** entfernt – Klick aufs Logo führt bereits
+  zur Startseite.
+* Menüpunkt **„Kontakt" / „Contact"** entfernt – rechts steht bereits der
+  grüne CTA-Button.
+* Der grüne CTA-Button heißt jetzt **„Kontakt" / „Contact"** statt „Kontakt
+  aufnehmen" / „Contact us" (`t.navBook` in beiden Sprach-Blöcken).
+* **Sprachumschalter neu:** DE und EN werden untereinander angezeigt, jeweils
+  mit kleiner SVG-Flagge (Schwarz-Rot-Gold bzw. Union Jack, inline, keine
+  externen Ressourcen) und aktuellem Sprachtext. Die aktive Sprache erscheint
+  in Akzentgrün, die inaktive in Grau. Kein Toggle-Ratespiel mehr – der
+  Besucher sieht beide Optionen.
+* **Sprung DE/EN verhindert:** Jeder Nav-Button rendert das eigene Label
+  sichtbar und das gegensprachige Label unsichtbar in derselben CSS-Grid-Zelle
+  (`display:inline-grid; gridTemplateAreas:'"lbl"'`). Die Button-Breite ist
+  damit `max(width_DE, width_EN)` und ändert sich beim Sprachwechsel nicht
+  mehr – die Menüleiste bleibt in Position, Breite und Höhe stabil.
+* **MobileMenu** (`assets/js/app.js`, Zeilen 68–155): Sprachumschalter analog
+  angepasst (zwei kleine Buttons mit Flagge nebeneinander statt einem
+  Toggle-Button). „Startseite" und „Kontakt" fehlen dort automatisch, weil sie
+  aus dem gemeinsamen `nav`-Array entfernt sind.
+
+### Geprüft
+
+* `node --check assets/js/app.js` nach jedem Änderungspaket: fehlerfrei.
+* Lokaler Server (`python3 -m http.server 8080`), Chromium via Playwright,
+  Viewport 1440×900, Cookie-Banner ausgeblendet:
+  * **Startseite DE + EN**: Kein „Startseite"/„Home"- und kein
+    „Kontakt"/„Contact"-Eintrag mehr, Button rechts heißt „Kontakt" bzw.
+    „Contact". Sprachumschalter zeigt DE (Schwarz-Rot-Gold) und EN (Union
+    Jack), aktive Sprache in Akzentgrün. Wechsel DE ↔ EN: die Menüpunkte
+    bleiben in Position (Grid-Overlay wirkt).
+  * **Footer**: Text deutlich lesbarer als vorher, Struktur unverändert,
+    schwarzer Hintergrund bleibt.
+  * **Leistungen → Internationales Steuerrecht**: Die Info-Box (Berlin & Köln
+    / TGS Global / 58 Länder / Unternehmer & Privatpersonen) ist weiß mit
+    grünen Werten und dezenten Labels – schwarz ist verschwunden.
+  * **Leistungen → Für Unternehmen** und **→ Drei Bereiche**: Bullet-Punkte
+    („Laufende Steuerberatung", „E-Commerce & Onlinehandel", …) sind sichtbar
+    größer und passen zur Beschreibungszeile darüber. Menüleiste bleibt beim
+    Vorbeiscrollen an der schwarzen „Für die richtigen Mandanten"-Sektion
+    strahlend weiß, kein Grau-Durchschimmern.
+  * **Impressum + Datenschutz**: Kein dunkler Hero mehr, stattdessen der
+    gleiche helle Hero mit „RECHTLICHES"-Label wie auf allen anderen Seiten.
+* Keine Konsolen- oder Seitenfehler im Browser.
+
+### Offen / Achtung
+
+* Der TGS-Global-Link im Footer öffnet weiterhin `https://tgs-global.com` in
+  neuem Tab – wie bisher die einzige externe Netzwerk-Verbindung außerhalb
+  von Google Maps. Nicht geändert.
+* Der grüne Kontakt-Button rechts oben zeigt zusätzlich zum Text ein kleines
+  Kalender-SVG. Unverändert übernommen – nur der Text ist auf „Kontakt" /
+  „Contact" gekürzt.
+* Bewusst unverändert (im Rahmen der bestehenden „Offenen Punkte"): das
+  Kontaktformular verschickt weiterhin nichts (Punkt 2), `contact.php` fehlt
+  (Punkt 3), Cookie-Banner-Logik unverändert (Punkt 4). Diese liegen bei der
+  Projektleitung.
+* Der Footer-Button „Kontakt aufnehmen" / „Get in touch" ist nicht mit
+  umbenannt worden – der Kundenwunsch bezog sich ausdrücklich auf den
+  Nav-Button oben rechts. Falls im Footer die gleiche Verkürzung gewünscht
+  ist, bitte kurz Bescheid geben.
+
+---
+
 ## [2026-07-17] Einstiegs-Prompt und Leitplanken für den Kunden
 
 **Bearbeiter:** Claude (Claude Code, Opus 4.8) · beauftragt durch Projektleitung

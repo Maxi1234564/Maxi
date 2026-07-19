@@ -143,9 +143,27 @@ function MobileMenu({ nav, page, go, onClose, t, lang, setLang }) {
           e('a', { href:'mailto:info@nsbb.de', style:{ fontSize:'13px',color:'var(--accent)',fontFamily:"'DM Sans',sans-serif",textDecoration:'none',fontWeight:500 } }, 'info@nsbb.de'),
         ),
 
-        // Language switch
-        e('button', { onClick:()=>setLang(l=>l==='DE'?'EN':'DE'), style:{ marginTop:'20px',fontSize:'11px',fontWeight:600,letterSpacing:'.08em',color:'#B0A89E',fontFamily:"'DM Sans',sans-serif",background:'none',border:'1px solid #ECEAE6',borderRadius:'6px',padding:'6px 12px',cursor:'pointer' } },
-          lang==='DE'?'English':'Deutsch'
+        // Language switch – analog zum Desktop-Header: DE und EN nebeneinander,
+        // beide mit Flagge, aktive Sprache in Akzentfarbe hervorgehoben.
+        e('div', { role:'group', 'aria-label': lang==='DE'?'Sprache':'Language', style:{ marginTop:'20px', display:'flex', gap:'8px' } },
+          e('button', { onClick:()=>setLang('DE'), 'aria-pressed': lang==='DE', style:{ display:'flex', alignItems:'center', gap:'6px', padding:'6px 12px', background:'none', border:'1px solid ' + (lang==='DE' ? 'var(--accent)' : '#ECEAE6'), borderRadius:'6px', cursor:'pointer', fontSize:'12px', fontWeight:700, letterSpacing:'.08em', fontFamily:"'DM Sans',sans-serif", color: lang==='DE' ? 'var(--accent)' : '#B0A89E' } },
+            e('svg', { width:14, height:10, viewBox:'0 0 5 3', style:{ borderRadius:'1px', display:'block', flexShrink:0, boxShadow:'0 0 0 1px rgba(0,0,0,.08)' } },
+              e('rect',{ width:5, height:1, y:0, fill:'#000' }),
+              e('rect',{ width:5, height:1, y:1, fill:'#DD0000' }),
+              e('rect',{ width:5, height:1, y:2, fill:'#FFCE00' })
+            ),
+            'DE'
+          ),
+          e('button', { onClick:()=>setLang('EN'), 'aria-pressed': lang==='EN', style:{ display:'flex', alignItems:'center', gap:'6px', padding:'6px 12px', background:'none', border:'1px solid ' + (lang==='EN' ? 'var(--accent)' : '#ECEAE6'), borderRadius:'6px', cursor:'pointer', fontSize:'12px', fontWeight:700, letterSpacing:'.08em', fontFamily:"'DM Sans',sans-serif", color: lang==='EN' ? 'var(--accent)' : '#B0A89E' } },
+            e('svg', { width:14, height:10, viewBox:'0 0 60 30', style:{ borderRadius:'1px', display:'block', flexShrink:0, boxShadow:'0 0 0 1px rgba(0,0,0,.08)' } },
+              e('rect', { width:60, height:30, fill:'#012169' }),
+              e('path', { d:'M0,0 L60,30 M60,0 L0,30', stroke:'#fff', strokeWidth:6 }),
+              e('path', { d:'M0,0 L60,30 M60,0 L0,30', stroke:'#C8102E', strokeWidth:2 }),
+              e('path', { d:'M30,0 v30 M0,15 h60', stroke:'#fff', strokeWidth:10 }),
+              e('path', { d:'M30,0 v30 M0,15 h60', stroke:'#C8102E', strokeWidth:6 })
+            ),
+            'EN'
+          )
         ),
       ),
     ),
@@ -173,20 +191,22 @@ function Nav({ page, setPage, lang, setLang, t }) {
     return () => { document.body.style.overflow = ''; };
   }, [mobileOpen]);
 
+  // Nav ohne "Startseite/Home" (Logo fuehrt zurueck) und ohne "Kontakt/Contact"
+  // (rechts steht bereits der Kontakt-Button). altLabel enthaelt die jeweils
+  // andere Sprache, damit die Button-Breite beim DE/EN-Wechsel stabil bleibt
+  // (unsichtbarer Zwilling reserviert die max. Breite).
   const nav = [
-    { label: lang==='DE'?'Startseite':'Home', key: 'home' },
-    { label: lang==='DE'?'Digitale Kanzlei':'Digital Office', key: 'digital' },
-    { label: lang==='DE'?'Leistungen':'Services', key: 'leistungen-unternehmen', children: [
+    { label: lang==='DE'?'Digitale Kanzlei':'Digital Office', altLabel: lang==='DE'?'Digital Office':'Digitale Kanzlei', key: 'digital' },
+    { label: lang==='DE'?'Leistungen':'Services', altLabel: lang==='DE'?'Services':'Leistungen', key: 'leistungen-unternehmen', children: [
       { label: lang==='DE'?'Für Unternehmen':'For Businesses', key: 'leistungen-unternehmen' },
       { label: lang==='DE'?'Internationales Steuerrecht':'International Tax', key: 'leistungen-international' },
       { label: lang==='DE'?'Für Privatpersonen':'For Individuals', key: 'leistungen-privat' },
     ]},
-    { label: 'TGS International', key: 'tgs' },
-    { label: 'Insights', key: 'insights' },
-    { label: lang==='DE'?'Über uns':'About us', key: 'ueber-uns' },
-    { label: lang==='DE'?'Karriere':'Careers', key: 'karriere' },
-    { label: lang==='DE'?'Kanzleinachfolge':'Practice Succession', key: 'kanzleinachfolge' },
-    { label: lang==='DE'?'Kontakt':'Contact', key: 'kontakt' },
+    { label: 'TGS International', altLabel: 'TGS International', key: 'tgs' },
+    { label: 'Insights', altLabel: 'Insights', key: 'insights' },
+    { label: lang==='DE'?'Über uns':'About us', altLabel: lang==='DE'?'About us':'Über uns', key: 'ueber-uns' },
+    { label: lang==='DE'?'Karriere':'Careers', altLabel: lang==='DE'?'Careers':'Karriere', key: 'karriere' },
+    { label: lang==='DE'?'Kanzleinachfolge':'Practice Succession', altLabel: lang==='DE'?'Practice Succession':'Kanzleinachfolge', key: 'kanzleinachfolge' },
   ];
 
   const go = (key) => { setPage(key); setMobileOpen(false); setOpenDrop(null); window.scrollTo(0,0); };
@@ -196,11 +216,10 @@ function Nav({ page, setPage, lang, setLang, t }) {
       style:{
         position:'fixed', top:0, left:0, right:0,
         zIndex:50,
-        background: scrolled ? 'rgba(255,255,255,0.97)' : 'rgba(255,255,255,0.92)',
-        backdropFilter:'blur(12px)',
-        WebkitBackdropFilter:'blur(12px)',
+        // Immer voll deckendes Weiss – kein Grau-Durchschimmern ueber dunklen Sektionen (z.B. Leistungen)
+        background: '#ffffff',
         boxShadow: scrolled ? '0 1px 0 rgba(0,0,0,.07)' : 'none',
-        transition:'all .3s ease',
+        transition:'padding .3s ease, box-shadow .3s ease',
         padding: scrolled ? '12px 0' : '16px 0',
       },
     },
@@ -216,10 +235,15 @@ function Nav({ page, setPage, lang, setLang, t }) {
             e('div', { key: item.key, style:{ position:'relative' } },
               e('button', {
                 'aria-current': page.startsWith(item.key) ? 'page' : undefined,
-                style:{ padding:'8px 14px', borderRadius:'8px', fontSize:'14px', fontWeight:500, border:'none', background:'none', cursor:'pointer', fontFamily:"'DM Sans',sans-serif", color: page.startsWith(item.key) ? '#4A7C59' : '#524C44', display:'flex', alignItems:'center', gap:'4px' },
+                style:{ padding:'8px 14px', borderRadius:'8px', fontSize:'14px', fontWeight:500, border:'none', background:'none', cursor:'pointer', fontFamily:"'DM Sans',sans-serif", color: page.startsWith(item.key) ? '#4A7C59' : '#524C44', display:'flex', alignItems:'center', justifyContent:'center', gap:'4px' },
                 onClick: () => item.children ? setOpenDrop(openDrop === item.key ? null : item.key) : go(item.key),
               },
-                item.label,
+                // Grid-Overlay: sichtbares Label + unsichtbarer Zwilling in derselben
+                // Grid-Zelle -> Buttonbreite bleibt konstant beim DE/EN-Wechsel.
+                e('span', { style:{ display:'inline-grid', gridTemplateAreas:'"lbl"' } },
+                  e('span', { style:{ gridArea:'lbl', whiteSpace:'nowrap' } }, item.label),
+                  item.altLabel && item.altLabel !== item.label && e('span', { 'aria-hidden':'true', style:{ gridArea:'lbl', whiteSpace:'nowrap', visibility:'hidden', pointerEvents:'none' } }, item.altLabel)
+                ),
                 item.children && e('svg',{width:13,height:13,viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:2,style:{transform: openDrop===item.key?'rotate(180deg)':'rotate(0deg)',transition:'transform .2s'}},e('path',{d:'M6 9l6 6 6-6'}))
               ),
               item.children && openDrop === item.key && e('div', {
@@ -252,7 +276,39 @@ function Nav({ page, setPage, lang, setLang, t }) {
         // Right: lang + CTA (desktop) + hamburger (mobile)
         e('div', { style:{ display:'flex', alignItems:'center', gap:'12px' } },
           e('a', { href:'tel:+493081580930', style:{ display:'none', fontFamily:"'DM Sans',sans-serif", fontSize:'13px', fontWeight:500, color:'var(--muted)', textDecoration:'none', letterSpacing:'.01em' }, className:'nav-phone' }, '+49 30 815 80 93'),
-          e('button', { onClick: () => setLang(l => l==='DE'?'EN':'DE'), 'aria-label': lang==='DE'?'Switch to English':'Auf Deutsch wechseln', style:{ fontSize:'11px',fontWeight:600,letterSpacing:'.15em',color:'#A39D95',background:'none',border:'none',cursor:'pointer',fontFamily:"'DM Sans',sans-serif",padding:'4px 8px' } }, lang==='DE'?'EN':'DE'),
+          // Sprachumschalter: DE und EN untereinander, jeweils mit Flagge, aktive
+          // Sprache in Akzentfarbe. So sieht der Besucher beide Optionen und muss
+          // nicht raten, welche der beiden gerade aktiv ist.
+          e('div', { role:'group', 'aria-label': lang==='DE'?'Sprache':'Language', style:{ display:'flex', flexDirection:'column', gap:'2px' } },
+            e('button', {
+              onClick: () => setLang('DE'),
+              'aria-label': 'Auf Deutsch wechseln',
+              'aria-pressed': lang==='DE',
+              style:{ display:'flex', alignItems:'center', gap:'6px', padding:'2px 6px', background:'none', border:'none', cursor:'pointer', fontSize:'11px', fontWeight:700, letterSpacing:'.1em', fontFamily:"'DM Sans',sans-serif", color: lang==='DE' ? 'var(--accent)' : '#B0A89E', transition:'color .2s' }
+            },
+              e('svg', { width:14, height:10, viewBox:'0 0 5 3', style:{ borderRadius:'1px', display:'block', flexShrink:0, boxShadow:'0 0 0 1px rgba(0,0,0,.08)' } },
+                e('rect',{ width:5, height:1, y:0, fill:'#000' }),
+                e('rect',{ width:5, height:1, y:1, fill:'#DD0000' }),
+                e('rect',{ width:5, height:1, y:2, fill:'#FFCE00' })
+              ),
+              'DE'
+            ),
+            e('button', {
+              onClick: () => setLang('EN'),
+              'aria-label': 'Switch to English',
+              'aria-pressed': lang==='EN',
+              style:{ display:'flex', alignItems:'center', gap:'6px', padding:'2px 6px', background:'none', border:'none', cursor:'pointer', fontSize:'11px', fontWeight:700, letterSpacing:'.1em', fontFamily:"'DM Sans',sans-serif", color: lang==='EN' ? 'var(--accent)' : '#B0A89E', transition:'color .2s' }
+            },
+              e('svg', { width:14, height:10, viewBox:'0 0 60 30', style:{ borderRadius:'1px', display:'block', flexShrink:0, boxShadow:'0 0 0 1px rgba(0,0,0,.08)' } },
+                e('rect', { width:60, height:30, fill:'#012169' }),
+                e('path', { d:'M0,0 L60,30 M60,0 L0,30', stroke:'#fff', strokeWidth:6 }),
+                e('path', { d:'M0,0 L60,30 M60,0 L0,30', stroke:'#C8102E', strokeWidth:2 }),
+                e('path', { d:'M30,0 v30 M0,15 h60', stroke:'#fff', strokeWidth:10 }),
+                e('path', { d:'M30,0 v30 M0,15 h60', stroke:'#C8102E', strokeWidth:6 })
+              ),
+              'EN'
+            )
+          ),
           e('button', {
             className:'hidden lg:inline-flex',
             style:{ alignItems:'center', gap:'6px', padding:'10px 20px', borderRadius:'999px', background:'#4A7C59', color:'#fff', border:'none', cursor:'pointer', fontSize:'13px', fontWeight:500, fontFamily:"'DM Sans',sans-serif" },
@@ -289,34 +345,34 @@ function Footer({ setPage, lang, t }) {
   const go = k => { setPage(k); window.scrollTo(0,0); };
   const year = new Date().getFullYear();
 
-  const lbl  = { fontSize:'10px', fontWeight:600, letterSpacing:'.1em', textTransform:'uppercase', color:'rgba(255,255,255,.3)', fontFamily:"'DM Sans',sans-serif", marginBottom:'8px' };
-  const body = { fontSize:'12px', lineHeight:1.7, color:'rgba(255,255,255,.5)', fontFamily:"'DM Sans',sans-serif", margin:0 };
-  const lnk  = { display:'block', fontSize:'12px', color:'rgba(255,255,255,.5)', fontFamily:"'DM Sans',sans-serif", textDecoration:'none' };
+  const lbl  = { fontSize:'12px', fontWeight:600, letterSpacing:'.1em', textTransform:'uppercase', color:'rgba(255,255,255,.7)', fontFamily:"'DM Sans',sans-serif", marginBottom:'8px' };
+  const body = { fontSize:'14px', lineHeight:1.7, color:'rgba(255,255,255,.85)', fontFamily:"'DM Sans',sans-serif", margin:0 };
+  const lnk  = { display:'block', fontSize:'14px', color:'rgba(255,255,255,.85)', fontFamily:"'DM Sans',sans-serif", textDecoration:'none' };
 
   return e('footer', { style:{ backgroundColor:'#1A1917', paddingTop:'36px', paddingBottom:'28px' } },
     e('div', { style:{ maxWidth:'1320px', margin:'0 auto', padding:'0 20px' } },
 
       // Row 1: Logo + tagline + TGS line
-      e('div', { style:{ display:'flex', flexDirection:'column', alignItems:'flex-start', gap:'10px', paddingBottom:'22px', borderBottom:'1px solid rgba(255,255,255,.08)' } },
+      e('div', { style:{ display:'flex', flexDirection:'column', alignItems:'flex-start', gap:'10px', paddingBottom:'22px', borderBottom:'1px solid rgba(255,255,255,.12)' } },
         e('button', { onClick:()=>go('home'), style:{ background:'none', border:'none', cursor:'pointer', padding:0 } },
-          e('img', { src:LOGO_URI, alt:'NSBB', style:{ height:'32px', width:'auto', filter:'brightness(0) invert(1)', opacity:.75 } })
+          e('img', { src:LOGO_URI, alt:'NSBB', style:{ height:'32px', width:'auto', filter:'brightness(0) invert(1)', opacity:.9 } })
         ),
         e('div', null,
-          e('p', { style:{ fontSize:'12px', color:'rgba(255,255,255,.4)', fontFamily:"'DM Sans',sans-serif", margin:'0 0 5px' } },
+          e('p', { style:{ fontSize:'14px', color:'rgba(255,255,255,.82)', fontFamily:"'DM Sans',sans-serif", margin:'0 0 5px' } },
             isDE ? 'Strategisch beraten. Digital begleitet. Persönlich verbunden.' : 'Strategically advised. Digitally accompanied. Personally connected.'
           ),
-          e('p', { style:{ fontSize:'11px', color:'rgba(255,255,255,.25)', fontFamily:"'DM Sans',sans-serif", margin:'0 0 5px' } },
+          e('p', { style:{ fontSize:'13px', color:'rgba(255,255,255,.72)', fontFamily:"'DM Sans',sans-serif", margin:'0 0 5px' } },
             isDE ? 'Persönliche Steuerberatung für Unternehmen, Privatpersonen und internationale Mandanten.' : 'Personal tax advisory for businesses, individuals and international clients.'
           ),
-          e('a', { href:'https://tgs-global.com', target:'_blank', rel:'noopener noreferrer', style:{ display:'inline-flex', alignItems:'center', gap:'5px', fontSize:'11px', color:'rgba(255,255,255,.38)', fontFamily:"'DM Sans',sans-serif", textDecoration:'none', letterSpacing:'.01em', marginTop:'2px' } },
-            e('svg',{width:11,height:11,viewBox:'0 0 24 24',fill:'none',stroke:'rgba(255,255,255,.4)',strokeWidth:1.8,strokeLinecap:'round'},e('circle',{cx:12,cy:12,r:10}),e('path',{d:'M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z'})),
+          e('a', { href:'https://tgs-global.com', target:'_blank', rel:'noopener noreferrer', style:{ display:'inline-flex', alignItems:'center', gap:'5px', fontSize:'13px', color:'rgba(255,255,255,.8)', fontFamily:"'DM Sans',sans-serif", textDecoration:'none', letterSpacing:'.01em', marginTop:'2px' } },
+            e('svg',{width:12,height:12,viewBox:'0 0 24 24',fill:'none',stroke:'rgba(255,255,255,.8)',strokeWidth:1.8,strokeLinecap:'round'},e('circle',{cx:12,cy:12,r:10}),e('path',{d:'M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z'})),
             isDE ? 'International tätig über das TGS Global Netzwerk' : 'Active internationally via the TGS Global Network',
           ),
         ),
       ),
 
       // Row 2: Berlin | Köln
-      e('div', { style:{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'20px', paddingTop:'22px', paddingBottom:'22px', borderBottom:'1px solid rgba(255,255,255,.08)' } },
+      e('div', { style:{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'20px', paddingTop:'22px', paddingBottom:'22px', borderBottom:'1px solid rgba(255,255,255,.12)' } },
         e('div', null,
           e('p', { style:lbl }, 'Berlin'),
           e('a', { href:'https://www.google.com/maps/place/NSBB+Steuerberatungsgesellschaft+mbH/@52.4293359,13.2562634,19z/data=!4m15!1m8!3m7!1s0x47a85bcd32214c33:0xc49996f097d43f61!2sBerlepschstra%C3%9Fe+1,+14165+Berlin!3b1!8m2!3d52.429461!4d13.2565531!16s%2Fg%2F11b8v5lfv2!3m5!1s0x47a85bee320dfedf:0xd5c5592d1cbe082d!8m2!3d52.4294067!4d13.2565013!16s%2Fg%2F11qpl7gh9y', target:'_blank', rel:'noopener noreferrer', style:{ ...body, textDecoration:'none' } }, 'Berlepschstr. 1, 14165 Berlin'),
@@ -330,31 +386,31 @@ function Footer({ setPage, lang, t }) {
       ),
 
       // Row 3: Kontakt + CTA (grid matches Row 2 so button sits under Köln)
-      e('div', { style:{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'20px', paddingTop:'18px', paddingBottom:'20px', borderBottom:'1px solid rgba(255,255,255,.08)' } },
+      e('div', { style:{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'20px', paddingTop:'18px', paddingBottom:'20px', borderBottom:'1px solid rgba(255,255,255,.12)' } },
         e('div', { style:{ display:'flex', flexDirection:'column', gap:'6px' } },
-          e('a', { href:'mailto:info@nsbb.de', style:{ ...lnk, fontSize:'12px', display:'flex', alignItems:'center', gap:'5px' } },
-            e('svg',{width:12,height:12,viewBox:'0 0 24 24',fill:'none',stroke:'rgba(255,255,255,.4)',strokeWidth:1.8,strokeLinecap:'round'},e('rect',{x:2,y:4,width:20,height:16,rx:2}),e('path',{d:'M22 7l-10 7L2 7'})),
+          e('a', { href:'mailto:info@nsbb.de', style:{ ...lnk, fontSize:'14px', display:'flex', alignItems:'center', gap:'6px' } },
+            e('svg',{width:14,height:14,viewBox:'0 0 24 24',fill:'none',stroke:'rgba(255,255,255,.8)',strokeWidth:1.8,strokeLinecap:'round'},e('rect',{x:2,y:4,width:20,height:16,rx:2}),e('path',{d:'M22 7l-10 7L2 7'})),
             'info@nsbb.de'
           ),
         ),
-        e('button', { onClick:()=>go('kontakt'), style:{ fontSize:'11px', fontWeight:600, color:'var(--accent-light)', fontFamily:"'DM Sans',sans-serif", background:'none', border:'1px solid rgba(74,124,89,.45)', borderRadius:'999px', padding:'8px 18px', cursor:'pointer', whiteSpace:'nowrap', alignSelf:'start', justifySelf:'start' } },
+        e('button', { onClick:()=>go('kontakt'), style:{ fontSize:'13px', fontWeight:600, color:'var(--accent-light)', fontFamily:"'DM Sans',sans-serif", background:'none', border:'1px solid rgba(94,148,112,.7)', borderRadius:'999px', padding:'8px 18px', cursor:'pointer', whiteSpace:'nowrap', alignSelf:'start', justifySelf:'start' } },
           isDE ? 'Kontakt aufnehmen' : 'Get in touch'
         ),
       ),
 
       // FAQ link
-      e('div', { style:{ paddingTop:'18px', paddingBottom:'18px', borderBottom:'1px solid rgba(255,255,255,.08)' } },
-        e('button', { onClick:()=>go('faq'), style:{ fontSize:'12px', fontWeight:500, color:'rgba(255,255,255,.38)', fontFamily:"'DM Sans',sans-serif", background:'none', border:'none', cursor:'pointer', padding:0 } },
+      e('div', { style:{ paddingTop:'18px', paddingBottom:'18px', borderBottom:'1px solid rgba(255,255,255,.12)' } },
+        e('button', { onClick:()=>go('faq'), style:{ fontSize:'14px', fontWeight:500, color:'rgba(255,255,255,.8)', fontFamily:"'DM Sans',sans-serif", background:'none', border:'none', cursor:'pointer', padding:0 } },
           isDE ? 'Häufige Fragen zur Zusammenarbeit →' : 'Frequently asked questions about working with us →'
         ),
       ),
 
       // Bottom bar
       e('div', { style:{ paddingTop:'16px', display:'flex', flexWrap:'wrap', alignItems:'center', justifyContent:'space-between', gap:'8px' } },
-        e('p', { style:{ fontSize:'11px', color:'rgba(255,255,255,.22)', fontFamily:"'DM Sans',sans-serif", margin:0 } }, `© ${year} NSBB Steuerberatungsgesellschaft mbH`),
+        e('p', { style:{ fontSize:'13px', color:'rgba(255,255,255,.65)', fontFamily:"'DM Sans',sans-serif", margin:0 } }, `© ${year} NSBB Steuerberatungsgesellschaft mbH`),
         e('div', { style:{ display:'flex', gap:'16px' } },
           [['impressum', isDE?'Impressum':'Legal'], ['datenschutz', isDE?'Datenschutz':'Privacy']].map(([k,l]) =>
-            e('button', { key:k, onClick:()=>go(k), style:{ fontSize:'11px', color:'rgba(255,255,255,.28)', fontFamily:"'DM Sans',sans-serif", background:'none', border:'none', cursor:'pointer', padding:0 } }, l)
+            e('button', { key:k, onClick:()=>go(k), style:{ fontSize:'13px', color:'rgba(255,255,255,.75)', fontFamily:"'DM Sans',sans-serif", background:'none', border:'none', cursor:'pointer', padding:0 } }, l)
           ),
         ),
       ),
@@ -665,7 +721,7 @@ function LeistungenUnternehmenPage({ setPage, lang, t, setKontaktPreset }) {
           e('h2', { className:'font-display mb-4', style:{ fontSize:'clamp(1.4rem,2.5vw,1.9rem)', lineHeight:1.15, color:'#1A1917', fontFamily:"'Cormorant Garamond',serif" } }, tile.title),
           e('p', { className:'text-sm leading-relaxed mb-7 flex-1' }, tile.desc),
           e('ul', { className:'space-y-2 mb-8' },
-            tile.items.map(it => e('li', { key:it, className:'flex items-center gap-2.5 text-xs', style:{ color:'var(--muted)', fontFamily:"'DM Sans',sans-serif" } },
+            tile.items.map(it => e('li', { key:it, className:'flex items-center gap-2.5 text-sm', style:{ color:'var(--muted)', fontFamily:"'DM Sans',sans-serif" } },
               e('span', { style:{ width:'6px', height:'6px', borderRadius:'50%', backgroundColor:'var(--accent)', flexShrink:0, display:'inline-block' } }),
               it
             ))
@@ -701,10 +757,10 @@ function LeistungenUnternehmenLeistungenPage({ setPage, lang, t, setKontaktPrese
           e('h2', { className:'font-display mb-4', style:{ fontSize:'1.45rem', lineHeight:1.2, color:'#1A1917', fontFamily:"'Cormorant Garamond',serif" } }, area.title),
           e('p', { className:'text-sm leading-relaxed mb-6 flex-1' }, area.desc),
           e('ul', { className:'space-y-2 mb-7' },
-            area.items.slice(0,4).map(it => e('li', { key:it, className:'flex items-center gap-2.5 text-xs', style:{ color:'var(--muted)', fontFamily:"'DM Sans',sans-serif" } },
-              e('span', { style:{ width:'5px', height:'5px', borderRadius:'50%', backgroundColor:'var(--accent)', flexShrink:0, display:'inline-block' } }), it
+            area.items.slice(0,4).map(it => e('li', { key:it, className:'flex items-center gap-2.5 text-sm', style:{ color:'var(--muted)', fontFamily:"'DM Sans',sans-serif" } },
+              e('span', { style:{ width:'6px', height:'6px', borderRadius:'50%', backgroundColor:'var(--accent)', flexShrink:0, display:'inline-block' } }), it
             )),
-            area.items.length > 4 && e('li', { className:'text-xs', style:{ color:'var(--subtle)', fontFamily:"'DM Sans',sans-serif" } }, isDE?`+ ${area.items.length-4} weitere`:`+ ${area.items.length-4} more`)
+            area.items.length > 4 && e('li', { className:'text-sm', style:{ color:'var(--subtle)', fontFamily:"'DM Sans',sans-serif" } }, isDE?`+ ${area.items.length-4} weitere`:`+ ${area.items.length-4} more`)
           ),
           e('div', { className:'flex items-center gap-2 text-sm font-medium mt-auto', style:{ color:'var(--accent)', fontFamily:"'DM Sans',sans-serif" } }, isDE?'Mehr erfahren':'Learn more', e(Ico,{name:'arrowRight',size:15})),
         ))
@@ -880,8 +936,8 @@ function LeistungenInternationalPage({ setPage, lang, t, setKontaktPreset }) {
   subtitle:isDE?['Steuerberatung für grenzüberschreitende Sachverhalte','und Mandanten mit internationalem Bezug.']:['Tax advisory for cross-border matters and','clients with international connections.']
 }),
 
-    // ── Trust bar (black box – visually separate from hero) ─
-    e('section', { style:{ backgroundColor:'#1A1917', padding:'22px 0' } },
+    // ── Trust bar (weisser Hintergrund, dezente Trennung nach unten) ─
+    e('section', { style:{ backgroundColor:'#ffffff', padding:'22px 0', borderBottom:'1px solid #ECEAE6' } },
       e('div', { className:'max-w-site mx-auto px-5 md:px-8' },
         e('div', { style:{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'14px 24px', maxWidth:'620px' } },
           [
@@ -890,8 +946,8 @@ function LeistungenInternationalPage({ setPage, lang, t, setKontaktPreset }) {
             { v: isDE?'58 Länder':'58 Countries',                   l: isDE?'Internationale Mandate':'International mandates' },
             { v: isDE?'Unternehmer & Privatpersonen':'Entrepreneurs & Individuals', l: isDE?'Mandantenkreis':'Clients' },
           ].map(m => e('div', { key:m.v, style:{ display:'flex', flexDirection:'column', gap:'2px' } },
-            e('span', { style:{ fontFamily:"'Cormorant Garamond',serif", fontSize:'1.05rem', fontWeight:500, color:'var(--accent-light)', lineHeight:1.2 } }, m.v),
-            e('span', { style:{ fontSize:'11px', color:'rgba(255,255,255,.55)', fontFamily:"'DM Sans',sans-serif" } }, m.l),
+            e('span', { style:{ fontFamily:"'Cormorant Garamond',serif", fontSize:'1.05rem', fontWeight:500, color:'var(--accent-dark)', lineHeight:1.2 } }, m.v),
+            e('span', { style:{ fontSize:'12px', color:'var(--muted)', fontFamily:"'DM Sans',sans-serif" } }, m.l),
           ))
         )
       ),
@@ -3679,12 +3735,7 @@ function ImpressumPage({ setPage, lang, t }) {
   ];
 
   return e('div', { className:'page-enter' },
-    e('section', { style:{ backgroundColor:'#1A1917', paddingTop:'80px', paddingBottom:'56px' } },
-      e('div', { style:{ maxWidth:'760px', margin:'0 auto', padding:'0 24px' } },
-        e('p', { style:{ fontSize:'11px', fontWeight:600, letterSpacing:'.14em', textTransform:'uppercase', color:'var(--accent-light)', fontFamily:"'DM Sans',sans-serif", marginBottom:'16px' } }, 'Rechtliches'),
-        e('h1', { style:{ fontFamily:"'Cormorant Garamond',serif", fontSize:'clamp(2rem,4vw,3rem)', fontWeight:400, color:'white', lineHeight:1.1, marginBottom:'0' } }, 'Impressum'),
-      ),
-    ),
+    e(PageHero, { label: isDE?'Rechtliches':'Legal', title: 'Impressum' }),
 
     e('section', { style:{ backgroundColor:'white', paddingTop:'64px', paddingBottom:'80px' } },
       e('div', { style:{ maxWidth:'760px', margin:'0 auto', padding:'0 24px' } },
@@ -3723,12 +3774,7 @@ function DatenschutzPage({ setPage, lang, t }) {
 
   return e('div', { className:'page-enter' },
 
-    e('section', { style:{ backgroundColor:'#1A1917', paddingTop:'80px', paddingBottom:'56px' } },
-      e('div', { style:{ maxWidth:'760px', margin:'0 auto', padding:'0 24px' } },
-        e('p', { style:{ fontSize:'11px', fontWeight:600, letterSpacing:'.14em', textTransform:'uppercase', color:'var(--accent-light)', fontFamily:"'DM Sans',sans-serif", marginBottom:'16px' } }, isDE?'Rechtliches':'Legal'),
-        e('h1', { style:{ fontFamily:"'Cormorant Garamond',serif", fontSize:'clamp(2rem,4vw,3rem)', fontWeight:400, color:'white', lineHeight:1.1, marginBottom:'0' } }, isDE?'Datenschutzerklärung':'Privacy Policy'),
-      ),
-    ),
+    e(PageHero, { label: isDE?'Rechtliches':'Legal', title: isDE?'Datenschutzerklärung':'Privacy Policy' }),
 
     e('section', { style:{ backgroundColor:'white', paddingTop:'64px', paddingBottom:'80px' } },
       e('div', { style:{ maxWidth:'760px', margin:'0 auto', padding:'0 24px' } },
@@ -4538,7 +4584,7 @@ function KarriereInitPage({ setPage, lang, t }) {
 const T = {
   DE: {
     // Nav
-    navBook: 'Kontakt aufnehmen',
+    navBook: 'Kontakt',
     navCall: 'Anrufen',
     navHome: 'Startseite', navLeistungen: 'Leistungen',
     navLeistUnternehmen: 'Unternehmen',
@@ -4809,7 +4855,7 @@ const T = {
   },
 
   EN: {
-    navBook: 'Contact us',
+    navBook: 'Contact',
     navCall: 'Call us',
     navHome: 'Home', navLeistungen: 'Services',
     navLeistUnternehmen: 'Businesses',
