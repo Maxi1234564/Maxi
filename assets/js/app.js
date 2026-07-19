@@ -223,7 +223,7 @@ function Nav({ page, setPage, lang, setLang, t }) {
         padding: scrolled ? '12px 0' : '16px 0',
       },
     },
-      e('div', { style:{ maxWidth:'1320px', margin:'0 auto', padding:'0 20px', display:'flex', alignItems:'center', justifyContent:'space-between', gap:'24px' } },
+      e('div', { className:'nav-inner', style:{ maxWidth:'1320px', margin:'0 auto', padding:'0 20px', display:'flex', alignItems:'center', gap:'14px' } },
         // Logo
         e('button', { onClick: () => go('home'), 'aria-label':'NSBB – Startseite', style:{ flexShrink:0, background:'none', border:'none', cursor:'pointer', padding:0, display:'flex', alignItems:'center' } },
           e('img', { src:'assets/images/logo-nav.webp', alt:'NSBB – Die Steuerberaterkanzlei', style:{ height:'44px', width:'auto', display:'block' } })
@@ -274,17 +274,17 @@ function Nav({ page, setPage, lang, setLang, t }) {
         ),
 
         // Right: lang + CTA (desktop) + hamburger (mobile)
-        e('div', { style:{ display:'flex', alignItems:'center', gap:'12px' } },
+        e('div', { style:{ display:'flex', alignItems:'center', gap:'9px' } },
           e('a', { href:'tel:+493081580930', style:{ display:'none', fontFamily:"'DM Sans',sans-serif", fontSize:'13px', fontWeight:500, color:'var(--muted)', textDecoration:'none', letterSpacing:'.01em' }, className:'nav-phone' }, '+49 30 815 80 93'),
           // Sprachumschalter: DE und EN untereinander, jeweils mit Flagge, aktive
           // Sprache in Akzentfarbe. So sieht der Besucher beide Optionen und muss
-          // nicht raten, welche der beiden gerade aktiv ist.
-          e('div', { role:'group', 'aria-label': lang==='DE'?'Sprache':'Language', style:{ display:'flex', flexDirection:'column', gap:'2px' } },
+          // nicht raten, welche der beiden gerade aktiv ist. Eng gesetzt (gap 0).
+          e('div', { role:'group', 'aria-label': lang==='DE'?'Sprache':'Language', style:{ display:'flex', flexDirection:'column', gap:'0px' } },
             e('button', {
               onClick: () => setLang('DE'),
               'aria-label': 'Auf Deutsch wechseln',
               'aria-pressed': lang==='DE',
-              style:{ display:'flex', alignItems:'center', gap:'6px', padding:'2px 6px', background:'none', border:'none', cursor:'pointer', fontSize:'11px', fontWeight:700, letterSpacing:'.1em', fontFamily:"'DM Sans',sans-serif", color: lang==='DE' ? 'var(--accent)' : '#B0A89E', transition:'color .2s' }
+              style:{ display:'flex', alignItems:'center', gap:'6px', padding:'1px 6px', lineHeight:1.05, background:'none', border:'none', cursor:'pointer', fontSize:'11px', fontWeight:700, letterSpacing:'.1em', fontFamily:"'DM Sans',sans-serif", color: lang==='DE' ? 'var(--accent)' : '#B0A89E', transition:'color .2s' }
             },
               e('svg', { width:14, height:10, viewBox:'0 0 5 3', style:{ borderRadius:'1px', display:'block', flexShrink:0, boxShadow:'0 0 0 1px rgba(0,0,0,.08)' } },
                 e('rect',{ width:5, height:1, y:0, fill:'#000' }),
@@ -297,7 +297,7 @@ function Nav({ page, setPage, lang, setLang, t }) {
               onClick: () => setLang('EN'),
               'aria-label': 'Switch to English',
               'aria-pressed': lang==='EN',
-              style:{ display:'flex', alignItems:'center', gap:'6px', padding:'2px 6px', background:'none', border:'none', cursor:'pointer', fontSize:'11px', fontWeight:700, letterSpacing:'.1em', fontFamily:"'DM Sans',sans-serif", color: lang==='EN' ? 'var(--accent)' : '#B0A89E', transition:'color .2s' }
+              style:{ display:'flex', alignItems:'center', gap:'6px', padding:'1px 6px', lineHeight:1.05, background:'none', border:'none', cursor:'pointer', fontSize:'11px', fontWeight:700, letterSpacing:'.1em', fontFamily:"'DM Sans',sans-serif", color: lang==='EN' ? 'var(--accent)' : '#B0A89E', transition:'color .2s' }
             },
               e('svg', { width:14, height:10, viewBox:'0 0 60 30', style:{ borderRadius:'1px', display:'block', flexShrink:0, boxShadow:'0 0 0 1px rgba(0,0,0,.08)' } },
                 e('rect', { width:60, height:30, fill:'#012169' }),
@@ -448,21 +448,25 @@ function PageHero({ label, title, accent, subtitle, back, backFn, fit }) {
   // sits at an identical vertical position on EVERY page – with or without a
   // back-link – so all hero sections have the same size and alignment.
   //
-  // fit=true  → MAIN CHAPTERS: title+accent are each forced onto a single line
-  //             (nowrap, auto-scaling) so the heading is ALWAYS exactly two lines
-  //             and every main-chapter hero is identical in size. Subtitle may be
-  //             passed as [line1, line2] to force exactly two lines too.
+  // fit=true  → MAIN CHAPTERS: title on line 1, accent on line 2 (each its own
+  //             block), so the heading is a two-line structure and every hero
+  //             shares the SAME type scale and height. Anders als frueher KEIN
+  //             whiteSpace:nowrap mehr – lange Titel duerfen umbrechen statt auf
+  //             schmalen Screens abgeschnitten zu werden. Untertitel als
+  //             [line1, line2] mit lesbarer Mindestgroesse.
   // fit=false → SUB-PAGES with long headings: natural wrapping (no cut-off).
+  var fitTitleStyle = { fontSize:'clamp(1.55rem,5.2vw,2.9rem)', textWrap:'balance', overflowWrap:'break-word' };
+  var fitSubStyle   = { fontSize:'clamp(0.95rem,2.1vw,1.1rem)', textWrap:'balance', overflowWrap:'break-word' };
   var titleNode = fit
-    ? [ e('span', { key:'t', className:'block', style:{ whiteSpace:'nowrap', fontSize:'clamp(1.1rem,6vw,4rem)' } }, title),
-        accent && e('span', { key:'a', className:'block', style:{ whiteSpace:'nowrap', fontSize:'clamp(1.1rem,6vw,4rem)', color:'var(--accent)' } }, accent) ]
+    ? [ e('span', { key:'t', className:'block', style:fitTitleStyle }, title),
+        accent && e('span', { key:'a', className:'block', style:{ ...fitTitleStyle, color:'var(--accent)' } }, accent) ]
     : [ e('span', { key:'t' }, title),
         accent && e('em', { key:'a', className:'not-italic block', style:{ color:'var(--accent)' } }, accent) ];
   var subNode = !subtitle ? null
     : (fit && Array.isArray(subtitle))
       ? e('p', { className:'leading-relaxed', style:{ color:'var(--muted)' } },
-          e('span', { className:'block', style:{ whiteSpace:'nowrap', fontSize:'clamp(0.6rem,2.9vw,1.05rem)' } }, subtitle[0]),
-          e('span', { className:'block', style:{ whiteSpace:'nowrap', fontSize:'clamp(0.6rem,2.9vw,1.05rem)' } }, subtitle[1]))
+          e('span', { className:'block', style:fitSubStyle }, subtitle[0]),
+          e('span', { className:'block', style:fitSubStyle }, subtitle[1]))
       : e('p', { className:'text-base md:text-lg leading-relaxed', style:{ color:'var(--muted)' } }, Array.isArray(subtitle)?subtitle.join(' '):subtitle);
   return e('section', { className: 'relative pt-32 pb-20 md:pt-36 md:pb-24', style: { backgroundColor: 'var(--offwhite)' } },
     back && e('div', { className: 'absolute left-0 right-0', style: { top: '5.5rem' } },
@@ -473,7 +477,7 @@ function PageHero({ label, title, accent, subtitle, back, backFn, fit }) {
       ),
     ),
     e('div', { className: 'max-w-site mx-auto px-5 md:px-8' },
-      e('div', { className: 'max-w-2xl fade-up' },
+      e('div', { className: 'max-w-2xl fade-up' + (fit ? ' hero-fit-body' : '') },
         label && e('p', { className: 'label mb-4' }, label),
         e('h1', { className: 'font-display mb-6', style: { fontSize: fit ? undefined : 'clamp(2.5rem,5vw,4rem)', lineHeight: 1.12, letterSpacing: '-.025em', color: '#1A1917', fontFamily: "'Cormorant Garamond',serif" } }, titleNode),
         subNode,
@@ -749,7 +753,7 @@ function LeistungenUnternehmenLeistungenPage({ setPage, lang, t, setKontaktPrese
     { key:'leistungen-unternehmen-bwl', icon:'zap', title:isDE?'Betriebswirtschaftliche Beratung':'Business Management Advisory', desc:isDE?'Mehr als Steuern – unternehmerische Begleitung bei Planung, Liquidität und strategischen Entscheidungen.':'More than tax – entrepreneurial support for planning, liquidity and strategic decisions.', items:isDE?['Betriebswirtschaftliche Auswertungen','Unternehmensplanung','Liquiditätsplanung','Unternehmenskennzahlen','Strategische Begleitung']:['Business analyses (BWA)','Corporate planning','Liquidity planning','Business KPIs','Strategic guidance'] },
   ];
   return e('div', { className:'page-enter' },
-    e(PageHero, { label:isDE?'Steuerberatung für Unternehmen':'Tax advisory for businesses', title:isDE?'Drei Bereiche.':'Three areas.', accent:isDE?'Ein Ansprechpartner.':'One contact.', subtitle:isDE?'Laufende Betreuung, strategische Gestaltung und betriebswirtschaftliche Begleitung – aus einer Hand.':'Ongoing support, strategic structuring and business guidance – from a single source.', back:isDE?'Leistungen für Unternehmen':'Services for Businesses', backFn:()=>go('leistungen-unternehmen') }),
+    e(PageHero, { label:isDE?'Steuerberatung für Unternehmen':'Tax advisory for businesses', fit:true, title:isDE?'Drei Bereiche.':'Three areas.', accent:isDE?'Ein Ansprechpartner.':'One contact.', subtitle:isDE?['Laufende Betreuung, strategische Gestaltung und','betriebswirtschaftliche Begleitung – aus einer Hand.']:['Ongoing support, strategic structuring and business','guidance – from a single source.'], back:isDE?'Leistungen für Unternehmen':'Services for Businesses', backFn:()=>go('leistungen-unternehmen') }),
     e('section', { className:'py-20 bg-white' },
       e('div', { className:'max-w-site mx-auto px-5 md:px-8 grid grid-cols-1 md:grid-cols-3 gap-6' },
         areas.map((area,i) => e('div', { key:area.key, className:'rounded-3xl p-8 flex flex-col card-hover cursor-pointer fade-up border', style:{ transitionDelay:`${i*90}ms`, borderColor:'var(--border)', boxShadow:'0 1px 3px rgba(0,0,0,.05)', backgroundColor:'white' }, onClick:()=>go(area.key) },
@@ -790,7 +794,7 @@ function LeistungenLaufendePage({ setPage, lang, t, setKontaktPreset }) {
     { title:'Tax audit support', desc:'Professional preparation, active accompaniment and careful follow-up of tax audits – calm, structured and with years of experience.' },
   ];
   return e('div', { className:'page-enter' },
-    e(PageHero, { label:isDE?'Laufende Steuerberatung':'Ongoing Tax Advisory', title:isDE?'Verlässlich.':'Reliable.', accent:isDE?'Strukturiert. Digital.':'Structured. Digital.', subtitle:isDE?'Zuverlässige laufende Betreuung – damit Sie sich auf Ihr Unternehmen konzentrieren können.':'Reliable ongoing support – so you can focus on your business.', back:isDE?'Leistungen für Unternehmen':'Services for Businesses', backFn:()=>{ setPage('leistungen-unternehmen'); window.scrollTo(0,0); } }),
+    e(PageHero, { label:isDE?'Laufende Steuerberatung':'Ongoing Tax Advisory', fit:true, title:isDE?'Verlässlich.':'Reliable.', accent:isDE?'Strukturiert. Digital.':'Structured. Digital.', subtitle:isDE?['Zuverlässige laufende Betreuung – damit Sie sich','auf Ihr Unternehmen konzentrieren können.']:['Reliable ongoing support – so you can','focus on your business.'], back:isDE?'Leistungen für Unternehmen':'Services for Businesses', backFn:()=>{ setPage('leistungen-unternehmen'); window.scrollTo(0,0); } }),
     e('section', { className:'py-20 bg-white' },
       e('div', { className:'max-w-site mx-auto px-5 md:px-8 grid grid-cols-1 md:grid-cols-2 gap-6' },
         items.map((s,i) => e('div', { key:s.title, className:'rounded-2xl p-8 fade-up border', style:{ transitionDelay:`${i*70}ms`, borderColor:'var(--border)', boxShadow:'0 1px 3px rgba(0,0,0,.04)', backgroundColor:'white' } },
@@ -824,7 +828,7 @@ function LeistungenGestaltungPage({ setPage, lang, t, setKontaktPreset }) {
     { title:'Strategic tax planning', desc:'Long-term, structured tax planning as an integral part of your corporate strategy – forward-looking, individual and always in dialogue with you.' },
   ];
   return e('div', { className:'page-enter' },
-    e(PageHero, { label:isDE?'Gestaltungsberatung':'Structuring Advisory', title:isDE?'Vorausschauend.':'Forward-looking.', accent:isDE?'Strukturiert. Individuell.':'Structured. Individual.', subtitle:isDE?'Steuerliche Strukturierung, die langfristig wirkt – für Ihr Unternehmen und Ihre Vermögensnachfolge.':'Tax structuring with lasting effect – for your business and your succession.', back:isDE?'Leistungen für Unternehmen':'Services for Businesses', backFn:()=>{ setPage('leistungen-unternehmen'); window.scrollTo(0,0); } }),
+    e(PageHero, { label:isDE?'Gestaltungsberatung':'Structuring Advisory', fit:true, title:isDE?'Vorausschauend.':'Forward-looking.', accent:isDE?'Strukturiert. Individuell.':'Structured. Individual.', subtitle:isDE?['Steuerliche Strukturierung, die langfristig wirkt –','für Ihr Unternehmen und Ihre Vermögensnachfolge.']:['Tax structuring with lasting effect – for your','business and your succession.'], back:isDE?'Leistungen für Unternehmen':'Services for Businesses', backFn:()=>{ setPage('leistungen-unternehmen'); window.scrollTo(0,0); } }),
     e('section', { className:'py-20 bg-white' },
       e('div', { className:'max-w-site mx-auto px-5 md:px-8 grid grid-cols-1 md:grid-cols-2 gap-6' },
         items.map((s,i) => e('div', { key:s.title, className:'rounded-2xl p-8 fade-up border', style:{ transitionDelay:`${i*70}ms`, borderColor:'var(--border)', boxShadow:'0 1px 3px rgba(0,0,0,.04)', backgroundColor:'white' } },
@@ -858,7 +862,7 @@ function LeistungenBWLPage({ setPage, lang, t, setKontaktPreset }) {
     { title:'Strategic business guidance', desc:'We think entrepreneurially alongside you – on growth decisions, financing questions, investment planning and strategic choices, we are your sparring partner.' },
   ];
   return e('div', { className:'page-enter' },
-    e(PageHero, { label:isDE?'Betriebswirtschaftliche Beratung':'Business Management Advisory', title:isDE?'Unternehmerisch.':'Entrepreneurial.', accent:isDE?'Mehr als Steuern.':'More than tax.', subtitle:isDE?'Wir begleiten Ihr Unternehmen weit über die Steuererklärung hinaus – als strategischer Sparringspartner auf Augenhöhe.':'We support your business well beyond the tax return – as a strategic sparring partner at eye level.', back:isDE?'Leistungen für Unternehmen':'Services for Businesses', backFn:()=>{ setPage('leistungen-unternehmen'); window.scrollTo(0,0); } }),
+    e(PageHero, { label:isDE?'Betriebswirtschaftliche Beratung':'Business Management Advisory', fit:true, title:isDE?'Unternehmerisch.':'Entrepreneurial.', accent:isDE?'Mehr als Steuern.':'More than tax.', subtitle:isDE?['Wir begleiten Ihr Unternehmen weit über die Steuererklärung hinaus –','als strategischer Sparringspartner auf Augenhöhe.']:['We support your business well beyond the tax return –','as a strategic sparring partner at eye level.'], back:isDE?'Leistungen für Unternehmen':'Services for Businesses', backFn:()=>{ setPage('leistungen-unternehmen'); window.scrollTo(0,0); } }),
     e('section', { className:'py-20 bg-white' },
       e('div', { className:'max-w-site mx-auto px-5 md:px-8 grid grid-cols-1 md:grid-cols-2 gap-6' },
         items.map((s,i) => e('div', { key:s.title, className:'rounded-2xl p-8 fade-up border', style:{ transitionDelay:`${i*70}ms`, borderColor:'var(--border)', boxShadow:'0 1px 3px rgba(0,0,0,.04)', backgroundColor:'white' } },
@@ -2226,8 +2230,8 @@ function IntlGrenzgaengerPage({ setPage, lang, t, setKontaktPreset }) {
     e(PageHero, {
       label: isDE?'Internationales Steuerrecht':'International Tax',
       fit: true,
-      title: isDE?'Grenzgänger:':'Cross-Border',
-      accent: isDE?'Wo zahle ich Steuern?':'Commuters.',
+      title: isDE?'Grenzgänger:':'Cross-Border Workers:',
+      accent: isDE?'Wo zahle ich Steuern?':'Where Do I Pay Tax?',
       subtitle: isDE?['Wer regelmäßig die Grenze überschreitet, steht vor','einer zentralen Frage: Wer darf besteuern?']:['Anyone who regularly crosses a border faces a','key question: who has the right to tax?'],
       back: isDE?'Internationales Steuerrecht':'International Tax',
       backFn: function(){ setPage('leistungen-international'); window.scrollTo(0,0); },
@@ -3511,7 +3515,7 @@ function KontaktPage({ setPage, lang, t, kontaktPreset, setKontaktPreset }) {
                     e('label', { className:'flabel' }, isDE?'Art des Sachverhalts':'Type of matter', e('span',{style:{color:'var(--accent)'}},' *')),
                     e('select', { value:form.sachverhaltIntlTyp, onChange:ev=>set('sachverhaltIntlTyp',ev.target.value), className:'finput' },
                       e('option',{value:''},isDE?'Bitte auswählen ...':'Please select ...'),
-                      (isDE?['Ausländische Einkünfte','Wohnsitz im Ausland','Wegzugsbesteuerung','Erbschaft mit Auslandsbezug','Grenzgänger','Immobilien im Ausland','Schenkungen mit Auslandsbezug','Rückkehr nach Deutschland','Internationale Vermögensstrukturierung','Sonstige']:['Foreign income','Residence abroad','Exit taxation','Inheritance with foreign connection','Cross-border commuter','Real estate abroad','Gifts with foreign connection','Return to Germany','International wealth structuring','Other']).map(o=>e('option',{key:o,value:o},o))
+                      (isDE?['Ausländische Einkünfte','Wohnsitz im Ausland','Wegzugsbesteuerung','Erbschaft mit Auslandsbezug','Grenzgänger','Immobilien im Ausland','Schenkungen mit Auslandsbezug','Rückkehr nach Deutschland','Internationale Vermögensstrukturierung','Sonstige']:['Foreign income','Residence abroad','Exit taxation','Inheritance with foreign connection','Cross-border worker','Real estate abroad','Gifts with foreign connection','Return to Germany','International wealth structuring','Other']).map(o=>e('option',{key:o,value:o},o))
                     ),
                     errors.sachverhaltIntlTyp && e('p',{className:'ferr'},errors.sachverhaltIntlTyp),
                   ),

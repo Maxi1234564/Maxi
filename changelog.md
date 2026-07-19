@@ -15,6 +15,106 @@ Format: neueste Einträge oben. Aufbau eines Eintrags siehe Vorlage am Ende.
 
 ---
 
+## [2026-07-19] Kundenwunsch (Runde 2): Menüleiste kompakt, Hero-Sections vereinheitlicht (kein Springen/Abschneiden), DE/EN-Abgleich
+
+**Bearbeiter:** Claude (Claude Code, Opus 4.8) · beauftragt durch Kunde
+**Grund:** Zweite Rückmeldung des Kunden. Die Menüleiste war zu weit
+auseinandergezogen; die Hero-Sections „sprangen" beim Seitenwechsel und wurden
+auf Mobil teils abgeschnitten. Zusätzlich vollständige DE/EN-Prüfung gewünscht.
+Vorgehen war ein freigegebener Analyse-/Umsetzungsplan (Auswahl des Kunden:
+Menüleiste linksbündig-kompakt · Hero-Option B · DE/EN „beides").
+
+Cache-Version: `?v=20260719` → `?v=20260720` (in `index.html`).
+`node --check assets/js/app.js` nach jedem Schritt: fehlerfrei.
+
+### Geändert
+
+**1. Menüleiste kompakt** (`assets/js/app.js` Funktion `Nav`; `assets/css/style.css`)
+Die drei Gruppen (Logo · Menü · DE-EN+Kontakt) waren per
+`justify-content:space-between` maximal auseinandergezogen. Jetzt linksbündig
+kompakt:
+* Neue CSS-Klasse `.nav-inner`: Mobil weiterhin `space-between` (Hamburger sitzt
+  rechts), ab Desktop (`min-width:1024px`) `flex-start` – alles rückt links
+  zusammen. Der äußere `gap` wurde 24px → 14px reduziert.
+* Der DE/EN-Umschalter steht enger untereinander (`gap` 2px → 0px, Button-Padding
+  `2px 6px` → `1px 6px`, `lineHeight:1.05`), die rechte Gruppe enger (`gap`
+  12px → 9px).
+* Kein Springen beim Sprachwechsel: das bestehende Grid-Overlay pro Menü-Button
+  (reserviert die max. Breite aus DE+EN) bleibt. Header-Höhe DE = EN = 120px,
+  Button-Positionen identisch (im Browser verifiziert). Bewusste Nebenwirkung:
+  auf breiten Bildschirmen bleibt rechts eine freie Fläche (Folge des kompakten
+  Linkspackens).
+
+**2. Hero-Sections vereinheitlicht – kein Springen, kein Abschneiden**
+(`assets/js/app.js` Komponente `PageHero`; `assets/css/style.css`)
+Ursache der Uneinheitlichkeit: Es gab zwei Hero-Systeme. `fit:true` erzwang
+zweizeilige Titel mit `white-space:nowrap` → lange Titel liefen auf Mobil über
+den Rand (Abschneiden) und der Untertitel schrumpfte auf ~9,6px. `fit:false`
+nutzte 40px-Titel mit freiem Umbruch → je nach Textlänge unterschiedlich hohe
+Heroes (Springen). Vereinheitlicht:
+* `fit:true`-Zweig: `nowrap` entfernt (Titel dürfen umbrechen statt
+  abzuschneiden), `text-wrap:balance` + `overflow-wrap:break-word`. Titel-Größe
+  `clamp(1.55rem,5.2vw,2.9rem)` (Desktop-Max so gewählt, dass auch der längste
+  Titel „Doppelbesteuerungsabkommen:" einzeilig bleibt), Untertitel lesbar
+  `clamp(0.95rem,2.1vw,1.1rem)` (vorher min 0,6rem).
+* Neue Klasse `.hero-fit-body` mit `min-height:218px` **nur auf Mobil**
+  (`max-width:767px`): reserviert eine konsistente Höhe, damit Seiten mit 2- vs.
+  3-zeiligem Untertitel gleich hoch sind. Ab Tablet sind die Heroes ohnehin
+  einheitlich.
+* **Verifiziert im Browser** (Chromium, je Seite mit echtem Reload) bei 320 /
+  375 / 414 / 768 / 1440 px in **DE und EN**: Hero-Höhe über alle Seiten und
+  beide Sprachen identisch (Abweichung 0px bei 375/414/768/1440), **kein
+  horizontaler Überlauf/Abschneiden**. Einzige Rest-Abweichung: bei sehr schmalen
+  320px bricht der eine längste Titel (DBA) auf DE um (+23px) – kein Abschneiden,
+  nur minimal höher; 320px ist ein Rand-Sonderfall.
+
+**3. 4 Leistungen-Unterseiten auf denselben Hero-Standard** (`assets/js/app.js`)
+„Drei Bereiche", „Laufende Steuerberatung", „Gestaltungsberatung",
+„Betriebswirtschaftliche Beratung" nutzten den abweichenden `fit:false`-Hero.
+Jetzt `fit:true` und ihr String-Untertitel in ein 2-Zeilen-Array aufgeteilt
+(reines Umbrechen, **kein** inhaltlicher Eingriff). Damit reihen sie sich in den
+einheitlichen Standard ein.
+
+**4. DE/EN-Abgleich (vollständig)**
+* **Grenzgänger-Hero:** Die englische Fassung war „Cross-Border / Commuters."
+  und ließ die Steuer-Frage weg. An die deutsche angeglichen →
+  „Cross-Border Workers: / Where Do I Pay Tax?".
+* **Begriffs-Vereinheitlichung „Grenzgänger" (EN):** Die Seite verwendete
+  gemischt „worker(s)" (Übersichtskachel, Fließtext, FAQ) und „commuter"
+  (Kontakt-Formular-Dropdown). Auf die vorhandene Mehrheit **„Cross-Border
+  Worker(s)"** vereinheitlicht (Dropdown „commuter" → „worker"). Reine
+  Übersetzungs-/Konsistenzänderung.
+* **Ergebnis der Gesamtprüfung:** Das Übersetzungswörterbuch `T` hat in DE und EN
+  exakt dieselben 184 Schlüssel (keine fehlende Übersetzung). Automatischer Scan
+  aller Inline-`isDE ? … : …` (einfache, Array- und Template-Literale): **kein
+  Deutsch auf der EN-Seite, kein Englisch auf der DE-Seite**. Die 5 in DE/EN
+  identischen Werte sind bewusste Markenbegriffe („TGS International", „Insights",
+  „Team", „Insights & Expertise"). Es waren also **keine inhaltlichen
+  Korrekturen** nötig außer der Grenzgänger-Vereinheitlichung.
+
+### Geprüft
+* `node --check assets/js/app.js`: fehlerfrei.
+* Chromium/Playwright, echte Seiten-Reloads, Cookie-Banner ausgeblendet:
+  * Menüleiste Desktop 1440 DE **und** EN: kompakt links, Header-Höhe 120=120,
+    keine Positions-/Breitenverschiebung beim Sprachwechsel; Mobil 375: Logo
+    links, DE/EN + Hamburger rechts, kein horizontaler Überlauf.
+  * Heroes 320/375/414/768/1440 px, DE **und** EN, 9 Seiten (u. a. DBA,
+    Vermögensstrukturierung, BWL, Drei Bereiche, Kontakt, Team, Grenzgänger,
+    Digital, Karriere): gleiche Höhe, kein Abschneiden, Untertitel lesbar.
+* Keine Konsolen-/Seitenfehler.
+
+### Offen / Achtung
+* Bei sehr schmalen 320px ist der Hero „Doppelbesteuerungsabkommen" auf DE
+  minimal höher (längster Titel bricht um). Kein Abschneiden. Bei Bedarf ließe
+  sich die Titel-Mindestgröße weiter senken – dann würde der Titel aber überall
+  etwas kleiner. Absichtlich nicht gemacht, um die Lesbarkeit zu halten.
+* Startseite (großer Landing-Hero) und Impressum/Datenschutz (schlichter Hero
+  ohne Untertitel) blieben wie vom Kunden gewünscht ausgenommen.
+* Die 5 Karriere-Stellenseiten (eigener kürzerer Hero, Option C) wurden auf
+  Kundenwunsch **nicht** angefasst.
+
+---
+
 ## [2026-07-19] Kundenwunsch: Footer lesbarer, Info-Box weiß, kleine Schrift größer, Menüleiste durchgängig weiß, Nav verschlankt + Sprachumschalter
 
 **Bearbeiter:** Claude (Claude Code, Opus 4.7) · beauftragt durch Kunde
