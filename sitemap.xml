@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Hinweis: Die Website ist eine Single-Page-Application mit Hash-Routing
+  (#leistungen, #kontakt, ...). Suchmaschinen indexieren Hash-Fragmente NICHT
+  als eigene Seiten – deshalb enthält diese Sitemap nur die eine reale URL.
+  Sobald die Unterseiten echte URLs bekommen, gehört jede davon hier hinein.
+  Siehe changelog.md, Abschnitt "Offene Punkte".
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://www.nsbb.de/</loc>
+    <lastmod>2026-07-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>1.0</priority>
+  </url>
+</urlset>

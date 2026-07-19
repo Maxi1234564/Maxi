@@ -1,0 +1,144 @@
+# ═══════════════════════════════════════════════════════════════════════════
+#  NSBB Website – Apache-Konfiguration für ALL-INKL (Apache 2.4)
+#  Diese Datei gehört ins gleiche Verzeichnis wie die index.html.
+#  Achtung: Dateien, die mit einem Punkt beginnen, werden von vielen
+#  FTP-Programmen standardmäßig ausgeblendet ("versteckte Dateien anzeigen").
+# ═══════════════════════════════════════════════════════════════════════════
+
+# ── Zeichensatz ────────────────────────────────────────────────────────────
+AddDefaultCharset UTF-8
+
+# ── Verzeichnislisting abschalten ──────────────────────────────────────────
+Options -Indexes
+
+DirectoryIndex index.html
+
+# ═══════════════════════════════════════════════════════════════════════════
+#  1. HTTPS + www erzwingen
+#     Der canonical-Tag der Seite zeigt auf https://www.nsbb.de – damit es nur
+#     EINE gültige Adresse gibt, wird alles andere dauerhaft dorthin geleitet.
+#
+#     WICHTIG: Erst aktivieren, wenn das SSL-Zertifikat im KAS eingerichtet ist,
+#     sonst sperrt man sich die Seite aus. Zum Testen die vier Zeilen unter
+#     "HTTPS" auskommentieren.
+# ═══════════════════════════════════════════════════════════════════════════
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # HTTPS erzwingen
+  RewriteCond %{HTTPS} !=on
+  RewriteCond %{HTTP:X-Forwarded-Proto} !https
+  RewriteRule ^(.*)$ https://www.nsbb.de/$1 [R=301,L]
+
+  # www erzwingen (nsbb.de -> www.nsbb.de)
+  RewriteCond %{HTTP_HOST} !^www\. [NC]
+  RewriteCond %{HTTP_HOST} !^$
+  RewriteRule ^(.*)$ https://www.nsbb.de/$1 [R=301,L]
+</IfModule>
+
+# ═══════════════════════════════════════════════════════════════════════════
+#  2. Kompression
+#     Der grösste Hebel: react-bundle.js (558 KB) und app.js (457 KB) sind
+#     reiner Text und schrumpfen dadurch auf etwa ein Viertel.
+#     Bereits komprimierte Formate (woff2, webp, jpg, png) NICHT anfassen –
+#     das kostet CPU und bringt nichts.
+# ═══════════════════════════════════════════════════════════════════════════
+<IfModule mod_brotli.c>
+  AddOutputFilterByType BROTLI_COMPRESS text/html text/plain text/css text/xml
+  AddOutputFilterByType BROTLI_COMPRESS application/javascript application/x-javascript text/javascript
+  AddOutputFilterByType BROTLI_COMPRESS application/json application/ld+json
+  AddOutputFilterByType BROTLI_COMPRESS image/svg+xml application/xml
+</IfModule>
+
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/plain text/css text/xml
+  AddOutputFilterByType DEFLATE application/javascript application/x-javascript text/javascript
+  AddOutputFilterByType DEFLATE application/json application/ld+json
+  AddOutputFilterByType DEFLATE image/svg+xml application/xml
+</IfModule>
+
+# ═══════════════════════════════════════════════════════════════════════════
+#  3. Caching
+#     CSS/JS tragen in der index.html ein "?v=..." – deshalb ist ein langer
+#     Cache gefahrlos, solange die Versionsnummer bei jeder Änderung erhöht
+#     wird. Die index.html selbst darf NIE gecacht werden, sonst bekommt der
+#     Besucher die alte Datei mit der alten Versionsnummer serviert.
+# ═══════════════════════════════════════════════════════════════════════════
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresDefault                          "access plus 1 month"
+
+  ExpiresByType text/html                 "access plus 0 seconds"
+
+  ExpiresByType text/css                  "access plus 1 year"
+  ExpiresByType application/javascript    "access plus 1 year"
+  ExpiresByType text/javascript           "access plus 1 year"
+
+  ExpiresByType font/woff2                "access plus 1 year"
+  ExpiresByType image/webp                "access plus 1 year"
+  ExpiresByType image/jpeg                "access plus 1 year"
+  ExpiresByType image/png                 "access plus 1 year"
+  ExpiresByType image/svg+xml             "access plus 1 year"
+</IfModule>
+
+<IfModule mod_headers.c>
+  # index.html: immer frisch vom Server holen
+  <FilesMatch "\.html$">
+    Header set Cache-Control "no-cache, must-revalidate"
+  </FilesMatch>
+
+  # Versionierte Assets: darf der Browser behalten und muss nicht nachfragen
+  <FilesMatch "\.(css|js|woff2|webp|jpg|jpeg|png|svg|ico)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+
+  # ── Sicherheits-Header ──────────────────────────────────────────────────
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=(), interest-cohort=()"
+
+  # HSTS – erst einschalten, wenn HTTPS zuverlässig läuft. Ein zu früh
+  # gesetzter HSTS-Header lässt sich beim Besucher nicht zurücknehmen.
+  # Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+
+  # Content-Security-Policy
+  # 'unsafe-inline' bei style-src ist nötig, weil die Anwendung ihre Styles
+  # als React-Style-Objekte setzt (= style-Attribute im HTML).
+  # Skripte brauchen KEIN 'unsafe-inline' mehr, seit der Code in eigene
+  # Dateien ausgelagert ist – das ist der Sicherheitsgewinn der Aufteilung.
+  # frame-src google.com wird für die eingebetteten Standort-Karten gebraucht.
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-src https://www.google.com; form-action 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'"
+</IfModule>
+
+# ── MIME-Typen (falls der Server sie nicht kennt) ──────────────────────────
+<IfModule mod_mime.c>
+  AddType font/woff2  .woff2
+  AddType image/webp  .webp
+  AddType application/json .json
+</IfModule>
+
+# ── Fonts für Cross-Origin-Zugriff freigeben ───────────────────────────────
+# Greift, falls die Seite später auch unter einer zweiten Domain läuft.
+<IfModule mod_headers.c>
+  <FilesMatch "\.woff2$">
+    Header set Access-Control-Allow-Origin "*"
+  </FilesMatch>
+</IfModule>
+
+# ═══════════════════════════════════════════════════════════════════════════
+#  4. Zugriffsschutz
+#     Projektdateien, die zwar im ZIP liegen, aber nichts im Web zu suchen
+#     haben. Falls der _source-Ordner versehentlich mit hochgeladen wird,
+#     ist er hierdurch trotzdem nicht abrufbar.
+# ═══════════════════════════════════════════════════════════════════════════
+<FilesMatch "\.(md|sha256|orig|bak|log)$">
+  Require all denied
+</FilesMatch>
+
+RedirectMatch 404 ^/_source(/.*)?$
+
+# Punktdateien (.htaccess, .git, ...) sperren
+<FilesMatch "^\.">
+  Require all denied
+</FilesMatch>

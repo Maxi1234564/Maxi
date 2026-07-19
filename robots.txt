@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+
+# Projekt- und Quelldateien gehören nicht in den Index.
+# Zusätzlich serverseitig gesperrt: die .htaccess liefert für *.md
+# und /_source/ ohnehin einen Fehler aus.
+Disallow: /_source/
+Disallow: /tools/
+Disallow: /README.md
+Disallow: /changelog.md
+Disallow: /CLAUDE.md
+Disallow: /PROMPT-FUER-CLAUDE.md
+
+Sitemap: https://www.nsbb.de/sitemap.xml

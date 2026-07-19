@@ -1,0 +1,14 @@
+# macOS
+.DS_Store
+._*
+
+# Editor
+*.swp
+*~
+.vscode/
+.idea/
+
+# Archive / Zwischenstände
+*.zip
+*.orig
+*.bak
