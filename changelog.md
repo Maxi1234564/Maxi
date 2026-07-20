@@ -15,6 +15,51 @@ Format: neueste Einträge oben. Aufbau eines Eintrags siehe Vorlage am Ende.
 
 ---
 
+## [2026-07-19] Bugfix: Team-Profile (Über uns) und mobiles Menü öffneten nicht (createPortal fehlte)
+
+**Bearbeiter:** Claude (Claude Code, Opus 4.8) · beauftragt durch Kunde
+**Grund:** Der Kunde meldete, dass sich die Team-Profile auf „Über uns" nicht
+öffnen lassen. Im Browser reproduziert: Beim Klick wirft die Seite intern
+`ReactDOM.createPortal is not a function` – für den Besucher „passiert nichts".
+
+Cache-Version: `?v=20260722` → `?v=20260723`. `node --check`: fehlerfrei.
+
+### Ursache
+Die ausgelieferte `assets/js/vendor/react-bundle.js` setzt
+`window.ReactDOM = __require__('react-dom-client')`. Dieses Client-Modul enthält
+`createRoot`, **aber nicht** `createPortal`. Der App-Code nutzt aber
+`ReactDOM.createPortal` an zwei Stellen – dadurch waren **beide** Portale defekt:
+* das **Profil-Modal** auf „Über uns" (`app.js:2918`) und
+* das **mobile Menü** (`app.js:183`).
+Ein reiner Bundle-Fehler, der beide Overlays lahmlegte.
+
+### Geändert (`assets/js/app.js`) – Bundle NICHT angefasst (Regel 2)
+* Neue kleine Komponente **`Portal`** (vor `MobileMenu`): rendert ihre Kinder über
+  das im Bundle vorhandene `ReactDOM.createRoot` in ein an `document.body`
+  angehängtes `<div>` und räumt beim Schließen wieder auf. Funktional identisch
+  zu einem React-Portal (liegt außerhalb der `transform`-Container wie
+  `.page-enter`, daher bleibt `position:fixed` viewport-zentriert).
+* Beide `ReactDOM.createPortal(x, document.body)`-Aufrufe → `e(Portal, null, x)`
+  (MobileMenu und Profil-Modal).
+
+### Geprüft (Playwright/Chromium)
+* **Über uns, Desktop DE + EN:** alle **4** Profilkarten öffnen das Modal
+  (Foto, Name, Titel, Zitat, Fachgebiete, Sprachen, Werdegang, Kontakt).
+  Schließen per **X**, **Hintergrund-Klick** und **ESC** funktioniert.
+* **Mobiles Menü (390px):** Hamburger öffnet das Panel (Navigation, CTA, Kontakt,
+  Sprachumschalter) – war vorher durch denselben Bug ebenfalls defekt.
+* **Keine** `createPortal`-Fehlermeldung mehr, keine Konsolen-/Seitenfehler.
+
+### Offen / Achtung (für die Projektleitung)
+* Die **Wurzelursache** liegt in `react-bundle.js` (exponiert `react-dom-client`
+  statt des vollen `react-dom` inkl. `createPortal`). Der Fix in `app.js` ist ein
+  bewusst regel-konformer Workaround, damit nichts am Fremd-Bundle geändert werden
+  muss. Sauberer wäre langfristig, das Bundle so zu erzeugen, dass
+  `window.ReactDOM` das volle `react-dom` ist – dann könnte der `Portal`-Workaround
+  wieder entfallen. Das betrifft `react-bundle.js` und liegt bei der Projektleitung.
+
+---
+
 ## [2026-07-19] Feinschliff vor Übergabe: Hero-Sections überall gleich, Schriftgrößen angehoben
 
 **Bearbeiter:** Claude (Claude Code, Opus 4.8) · beauftragt durch Kunde

@@ -65,6 +65,29 @@ function useScrollAnim() {
 /* ─────────────────────────────────────────────────────────
    NAVIGATION
 ───────────────────────────────────────────────────────── */
+// Portal-Ersatz: Die ausgelieferte react-bundle.js exponiert als window.ReactDOM
+// nur "react-dom-client" (createRoot) – OHNE ReactDOM.createPortal. Dadurch liefen
+// das Profil-Modal (Ueber uns) und das mobile Menue in einen Fehler und oeffneten
+// nicht. Da das Bundle nicht angefasst werden darf, rendern wir hier die Inhalte
+// ueber einen eigenen createRoot in ein an document.body angehaengtes <div> –
+// funktional identisch zu einem Portal (liegt ausserhalb der transform-Container).
+function Portal({ children }) {
+  const elRef = React.useRef(null);
+  const rootRef = React.useRef(null);
+  if (!elRef.current) elRef.current = document.createElement('div');
+  React.useEffect(() => {
+    const el = elRef.current;
+    document.body.appendChild(el);
+    rootRef.current = ReactDOM.createRoot(el);
+    return () => {
+      const r = rootRef.current;
+      // Unmount verzoegern, sonst warnt React ("unmount while rendering").
+      setTimeout(() => { try { r.unmount(); } catch (e) {} if (el.parentNode) el.parentNode.removeChild(el); }, 0);
+    };
+  }, []);
+  React.useEffect(() => { if (rootRef.current) rootRef.current.render(children); });
+  return null;
+}
 // Mini-Flaggen fuer den Sprachumschalter – rein vektoriell (SVG), keine externen
 // Assets. Werden im Desktop-Header und im MobileMenu genutzt, damit beide Stellen
 // dieselbe, saubere Darstellung haben.
@@ -180,7 +203,7 @@ function MobileMenu({ nav, page, go, onClose, t, lang, setLang }) {
     ),
   );
 
-  return ReactDOM.createPortal(menuContent, document.body);
+  return e(Portal, null, menuContent);
 }
 
 
@@ -2915,7 +2938,7 @@ function UeberUnsPage({ setPage, lang, t }) {
     e(ContactCTA, { setPage, t }),
 
     // ── Profile Modal ──────────────────────────────────────
-    active && ReactDOM.createPortal(
+    active && e(Portal, null,
       e('div', {
         style:{ position:'fixed', inset:0, zIndex:9900, display:'flex', alignItems:'center', justifyContent:'center', padding:'16px' },
         onClick:()=>setActiveProfile(null)
@@ -2978,7 +3001,6 @@ function UeberUnsPage({ setPage, lang, t }) {
           ),
         ),
       ),
-      document.body
     ),
   );
 }
