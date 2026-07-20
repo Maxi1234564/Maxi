@@ -65,6 +65,27 @@ function useScrollAnim() {
 /* ─────────────────────────────────────────────────────────
    NAVIGATION
 ───────────────────────────────────────────────────────── */
+// Mini-Flaggen fuer den Sprachumschalter – rein vektoriell (SVG), keine externen
+// Assets. Werden im Desktop-Header und im MobileMenu genutzt, damit beide Stellen
+// dieselbe, saubere Darstellung haben.
+function FlagDE({ w }) {
+  const s = w || 20;
+  return e('svg', { width:s, height:Math.round(s*3/5), viewBox:'0 0 5 3', style:{ borderRadius:'2px', overflow:'hidden', display:'block', flexShrink:0, boxShadow:'0 0 0 1px rgba(0,0,0,.18)' } },
+    e('rect', { width:5, height:1, y:0, fill:'#000000' }),
+    e('rect', { width:5, height:1, y:1, fill:'#DD0000' }),
+    e('rect', { width:5, height:1, y:2, fill:'#FFCE00' })
+  );
+}
+function FlagEN({ w }) {
+  const s = w || 20;
+  return e('svg', { width:s, height:Math.round(s*3/5), viewBox:'0 0 50 30', style:{ borderRadius:'2px', overflow:'hidden', display:'block', flexShrink:0, boxShadow:'0 0 0 1px rgba(0,0,0,.18)' } },
+    e('rect', { width:50, height:30, fill:'#012169' }),
+    e('path', { d:'M0,0 L50,30 M50,0 L0,30', stroke:'#ffffff', strokeWidth:7 }),
+    e('path', { d:'M0,0 L50,30 M50,0 L0,30', stroke:'#C8102E', strokeWidth:3 }),
+    e('path', { d:'M25,0 V30 M0,15 H50', stroke:'#ffffff', strokeWidth:10 }),
+    e('path', { d:'M25,0 V30 M0,15 H50', stroke:'#C8102E', strokeWidth:5 })
+  );
+}
 function MobileMenu({ nav, page, go, onClose, t, lang, setLang }) {
   const isDE = lang === 'DE';
   const [openSub, setOpenSub] = React.useState(null);
@@ -147,21 +168,11 @@ function MobileMenu({ nav, page, go, onClose, t, lang, setLang }) {
         // beide mit Flagge, aktive Sprache in Akzentfarbe hervorgehoben.
         e('div', { role:'group', 'aria-label': lang==='DE'?'Sprache':'Language', style:{ marginTop:'20px', display:'flex', gap:'8px' } },
           e('button', { onClick:()=>setLang('DE'), 'aria-pressed': lang==='DE', style:{ display:'flex', alignItems:'center', gap:'6px', padding:'6px 12px', background:'none', border:'1px solid ' + (lang==='DE' ? 'var(--accent)' : '#ECEAE6'), borderRadius:'6px', cursor:'pointer', fontSize:'12px', fontWeight:700, letterSpacing:'.08em', fontFamily:"'DM Sans',sans-serif", color: lang==='DE' ? 'var(--accent)' : '#B0A89E' } },
-            e('svg', { width:14, height:10, viewBox:'0 0 5 3', style:{ borderRadius:'1px', display:'block', flexShrink:0, boxShadow:'0 0 0 1px rgba(0,0,0,.08)' } },
-              e('rect',{ width:5, height:1, y:0, fill:'#000' }),
-              e('rect',{ width:5, height:1, y:1, fill:'#DD0000' }),
-              e('rect',{ width:5, height:1, y:2, fill:'#FFCE00' })
-            ),
+            e(FlagDE, { w:20 }),
             'DE'
           ),
           e('button', { onClick:()=>setLang('EN'), 'aria-pressed': lang==='EN', style:{ display:'flex', alignItems:'center', gap:'6px', padding:'6px 12px', background:'none', border:'1px solid ' + (lang==='EN' ? 'var(--accent)' : '#ECEAE6'), borderRadius:'6px', cursor:'pointer', fontSize:'12px', fontWeight:700, letterSpacing:'.08em', fontFamily:"'DM Sans',sans-serif", color: lang==='EN' ? 'var(--accent)' : '#B0A89E' } },
-            e('svg', { width:14, height:10, viewBox:'0 0 60 30', style:{ borderRadius:'1px', display:'block', flexShrink:0, boxShadow:'0 0 0 1px rgba(0,0,0,.08)' } },
-              e('rect', { width:60, height:30, fill:'#012169' }),
-              e('path', { d:'M0,0 L60,30 M60,0 L0,30', stroke:'#fff', strokeWidth:6 }),
-              e('path', { d:'M0,0 L60,30 M60,0 L0,30', stroke:'#C8102E', strokeWidth:2 }),
-              e('path', { d:'M30,0 v30 M0,15 h60', stroke:'#fff', strokeWidth:10 }),
-              e('path', { d:'M30,0 v30 M0,15 h60', stroke:'#C8102E', strokeWidth:6 })
-            ),
+            e(FlagEN, { w:20 }),
             'EN'
           )
         ),
@@ -279,33 +290,25 @@ function Nav({ page, setPage, lang, setLang, t }) {
           // Sprachumschalter: DE und EN untereinander, jeweils mit Flagge, aktive
           // Sprache in Akzentfarbe. So sieht der Besucher beide Optionen und muss
           // nicht raten, welche der beiden gerade aktiv ist. Eng gesetzt (gap 0).
-          e('div', { role:'group', 'aria-label': lang==='DE'?'Sprache':'Language', style:{ display:'flex', flexDirection:'column', gap:'0px' } },
+          e('div', { role:'group', 'aria-label': lang==='DE'?'Sprache':'Language', style:{ display:'flex', flexDirection:'column', gap:'2px' } },
             e('button', {
               onClick: () => setLang('DE'),
               'aria-label': 'Auf Deutsch wechseln',
               'aria-pressed': lang==='DE',
-              style:{ display:'flex', alignItems:'center', gap:'6px', padding:'1px 6px', lineHeight:1.05, background:'none', border:'none', cursor:'pointer', fontSize:'11px', fontWeight:700, letterSpacing:'.1em', fontFamily:"'DM Sans',sans-serif", color: lang==='DE' ? 'var(--accent)' : '#B0A89E', transition:'color .2s' }
+              // minHeight:auto hebt die globale 44px-Touch-Regel auf, damit DE/EN
+              // eng untereinander stehen (Desktop = Maus, kein Touch-Target noetig).
+              style:{ display:'flex', alignItems:'center', gap:'6px', padding:'1px 6px', minHeight:'auto', lineHeight:1, background:'none', border:'none', cursor:'pointer', fontSize:'11px', fontWeight:700, letterSpacing:'.1em', fontFamily:"'DM Sans',sans-serif", color: lang==='DE' ? 'var(--accent)' : '#B0A89E', transition:'color .2s' }
             },
-              e('svg', { width:14, height:10, viewBox:'0 0 5 3', style:{ borderRadius:'1px', display:'block', flexShrink:0, boxShadow:'0 0 0 1px rgba(0,0,0,.08)' } },
-                e('rect',{ width:5, height:1, y:0, fill:'#000' }),
-                e('rect',{ width:5, height:1, y:1, fill:'#DD0000' }),
-                e('rect',{ width:5, height:1, y:2, fill:'#FFCE00' })
-              ),
+              e(FlagDE, { w:18 }),
               'DE'
             ),
             e('button', {
               onClick: () => setLang('EN'),
               'aria-label': 'Switch to English',
               'aria-pressed': lang==='EN',
-              style:{ display:'flex', alignItems:'center', gap:'6px', padding:'1px 6px', lineHeight:1.05, background:'none', border:'none', cursor:'pointer', fontSize:'11px', fontWeight:700, letterSpacing:'.1em', fontFamily:"'DM Sans',sans-serif", color: lang==='EN' ? 'var(--accent)' : '#B0A89E', transition:'color .2s' }
+              style:{ display:'flex', alignItems:'center', gap:'6px', padding:'1px 6px', minHeight:'auto', lineHeight:1, background:'none', border:'none', cursor:'pointer', fontSize:'11px', fontWeight:700, letterSpacing:'.1em', fontFamily:"'DM Sans',sans-serif", color: lang==='EN' ? 'var(--accent)' : '#B0A89E', transition:'color .2s' }
             },
-              e('svg', { width:14, height:10, viewBox:'0 0 60 30', style:{ borderRadius:'1px', display:'block', flexShrink:0, boxShadow:'0 0 0 1px rgba(0,0,0,.08)' } },
-                e('rect', { width:60, height:30, fill:'#012169' }),
-                e('path', { d:'M0,0 L60,30 M60,0 L0,30', stroke:'#fff', strokeWidth:6 }),
-                e('path', { d:'M0,0 L60,30 M60,0 L0,30', stroke:'#C8102E', strokeWidth:2 }),
-                e('path', { d:'M30,0 v30 M0,15 h60', stroke:'#fff', strokeWidth:10 }),
-                e('path', { d:'M30,0 v30 M0,15 h60', stroke:'#C8102E', strokeWidth:6 })
-              ),
+              e(FlagEN, { w:18 }),
               'EN'
             )
           ),

@@ -15,6 +15,48 @@ Format: neueste Einträge oben. Aufbau eines Eintrags siehe Vorlage am Ende.
 
 ---
 
+## [2026-07-19] Kundenwunsch (Runde 3): Sprachumschalter – Abstand DE/EN reduziert, Flaggen verbessert
+
+**Bearbeiter:** Claude (Claude Code, Opus 4.8) · beauftragt durch Kunde
+**Grund:** Im Sprachumschalter standen DE und EN zu weit auseinander, und die
+Flaggen waren zu klein/unsauber. **Keine inhaltliche Änderung an Texten.**
+
+Cache-Version: `?v=20260720` → `?v=20260721` (in `index.html`).
+`node --check assets/js/app.js`: fehlerfrei.
+
+### Geändert (`assets/js/app.js`)
+
+**1. Abstand DE/EN deutlich reduziert (Desktop-Umschalter).**
+Ursache des großen Abstands war die globale CSS-Regel `button { min-height:44px }`
+(Touch-Target): jede der beiden gestapelten Schaltflächen war 44px hoch, der
+Umschalter-Block also **87px**. Für die **Desktop**-Umschalter-Buttons (reine
+Maus-Bedienung) wird `min-height` jetzt per Inline-Style auf `auto` gesetzt,
+Padding auf `1px 6px`, `line-height:1`, Zeilenabstand 2px. Der Block ist damit nur
+noch **28px** hoch, DE und EN stehen dicht untereinander (2px). Der **mobile**
+Umschalter im aufklappbaren Menü behält seine 44px-Touch-Targets (Finger-Bedienung).
+
+**2. Flaggen verbessert.**
+Neu: zwei kleine, rein vektorielle SVG-Komponenten `FlagDE` und `FlagEN` (keine
+externen Assets), an allen vier Stellen (Desktop + MobileMenu) genutzt:
+* Deutschland: saubere Schwarz-Rot-Gold-Streifen (#000000 / #DD0000 / #FFCE00).
+* Union Jack: korrektere Geometrie (viewBox 50×30 = Seitenverhältnis 5:3),
+  kräftigere weiße/rote Diagonalen und Kreuzbalken, abgerundete Ecken.
+* Etwas größer gerendert (18–20px statt 14px) → deutlich schärfer und klar
+  erkennbar. Die aktive Sprache bleibt in Akzentgrün hervorgehoben.
+
+### Geprüft
+* `node --check assets/js/app.js`: fehlerfrei.
+* Chromium/Playwright, 3-fache Auflösung: Desktop-Umschalter-Höhe von 87px auf
+  28px reduziert (DE/EN-Abstand 2px, gemessen), Flaggen scharf und erkennbar;
+  Mobil-Header ebenso geprüft. Aktive Sprache korrekt grün.
+
+### Offen / Achtung
+* Die Desktop-Umschalter-Buttons sind jetzt kleiner als 44px – bewusst, weil sie
+  am Desktop mit der Maus bedient werden. Der Touch-Umschalter (mobiles Menü)
+  bleibt bei 44px.
+
+---
+
 ## [2026-07-19] Kundenwunsch (Runde 2): Menüleiste kompakt, Hero-Sections vereinheitlicht (kein Springen/Abschneiden), DE/EN-Abgleich
 
 **Bearbeiter:** Claude (Claude Code, Opus 4.8) · beauftragt durch Kunde
