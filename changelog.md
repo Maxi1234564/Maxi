@@ -15,6 +15,70 @@ Format: neueste Einträge oben. Aufbau eines Eintrags siehe Vorlage am Ende.
 
 ---
 
+## [2026-07-19] Feinschliff vor Übergabe: Hero-Sections überall gleich, Schriftgrößen angehoben
+
+**Bearbeiter:** Claude (Claude Code, Opus 4.8) · beauftragt durch Kunde
+**Grund:** Letzter Feinschliff vor der Übergabe an die Projektleitung. Alle
+Hero-Sections sollen dieselbe Struktur/Größe haben, und zu kleine Schriften
+sollen angehoben werden (Lesbarkeit, v. a. Mobil). Analyse + Plan waren
+freigegeben. Keine inhaltlichen Textänderungen außer minimalen, zur einheitlichen
+Struktur nötigen Kurz-Untertiteln (vom Kunden freigegeben).
+
+Cache-Version: `?v=20260721` → `?v=20260722`. `node --check`: fehlerfrei.
+
+### Geändert
+
+**1. Verbliebene Hero-Sections auf den einheitlichen `fit:true`-Standard gebracht**
+(`assets/js/app.js`) – bisher wichen noch ab:
+* **Branchen-Übersicht** (`LeistungenBranchenPage`): `fit:true` + String-Untertitel
+  → 2-Zeilen-Array (in Runde 2 übersehen, jetzt nachgezogen).
+* **5 Karriere-Stellenseiten** (Steuerberater/in, Steuerfachwirt/in,
+  Steuerfachangestellte/r, Bilanzbuchhalter/in, Initiativbewerbung): `fit:true`,
+  Einzeltitel beibehalten (kein erfundener Akzent), Untertitel als 2-Zeilen-Array
+  (Zeile 1 = bestehendes „Voll-/Teilzeit · Berlin oder Köln" bzw. „Alle
+  Positionen · …", Zeile 2 = kurzer Zusatz „Moderne, digitale Kanzlei mit echten
+  Perspektiven." / „A modern, fully digital firm with real prospects.").
+* **Impressum**: `fit:true` + Untertitel „Angaben gemäß § 5 TMG und
+  berufsrechtliche Informationen." (EN „Information pursuant to § 5 TMG and
+  professional regulations.").
+* **Datenschutz**: `fit:true` + Untertitel „Wie wir mit Ihren personenbezogenen
+  Daten umgehen." (EN „How we handle your personal data.").
+* **Startseite** bleibt bewusst der größere Landing-Hero.
+
+**2. Gleiche Hero-Höhe auf allen Breiten** (`assets/css/style.css`)
+Die Mindesthöhe-Reserve `.hero-fit-body` galt bisher nur auf Mobil. Da die neu
+angeglichenen Seiten Einzeltitel (1 statt 2 Titelzeilen) haben, wurde sie auf
+**alle Breiten** erweitert (`min-height:224px`, Mobil 218px). Dadurch ist jeder
+`fit:true`-Hero exakt gleich hoch.
+
+**3. Schriftgrößen angehoben (Lesbarkeit, v. a. Mobil)**
+* `assets/css/style.css`: Eyebrow-Label-Klasse `.label` `0.7rem` → `0.75rem`
+  (wirkt zentral an ~65 Stellen).
+* `assets/js/app.js`: alle 7 Inline-10px-Uppercase-Labels → 11px; sechs 12px-
+  Beschreibungs-/Fließtexte → 13px (internationale Themen-Karten, Digital-Tools,
+  Team-Lebensläufe, Kanzleinachfolge-Statistik, Datenschutz-Einwilligung im
+  Formular, Anfahrtsbeschreibungen). Bewusst klein belassen: Meta-/Hinweistexte
+  (Zeichenzähler, Formular-Hinweise, Statistik-Unterzeilen, 11px).
+
+### Geprüft
+* `node --check assets/js/app.js`: fehlerfrei.
+* Playwright/Chromium, echte Seiten-Reloads, Cookie-Banner aus, 9 repräsentative
+  Seiten (inkl. der neu angeglichenen Branchen/Karriere/Impressum/Datenschutz)
+  bei 320/375/768/1440px in DE **und** EN:
+  * **Hero-Höhe identisch** über alle Seiten und beide Sprachen: 375px = 426,
+    768px = 464, 1440px = 464 (spread 0). Kein horizontaler Überlauf/Abschneiden.
+  * Nur bei sehr schmalen **320px** minimale Abweichung, wenn der längste Titel
+    (DBA) bzw. der längste Untertitel (BWL) auf DE umbricht – kein Abschneiden.
+* Schriftänderungen visuell geprüft (intl. Karten, Team, Datenschutz/Impressum-
+  Heroes): lesbarer, Layout intakt, keine Konsolen-/Seitenfehler.
+
+### Offen / Achtung
+* 320px bleibt der einzige Rand-Sonderfall (extrem schmale Alt-Geräte); alle
+  gängigen Handybreiten (≥360px) sind exakt einheitlich.
+* Startseite (Landing) und die Menü-/Flaggen-Anpassungen der Vorrunden bleiben.
+
+---
+
 ## [2026-07-19] Kundenwunsch (Runde 3): Sprachumschalter – Abstand DE/EN reduziert, Flaggen verbessert
 
 **Bearbeiter:** Claude (Claude Code, Opus 4.8) · beauftragt durch Kunde

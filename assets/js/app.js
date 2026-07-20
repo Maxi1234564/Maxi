@@ -154,11 +154,11 @@ function MobileMenu({ nav, page, go, onClose, t, lang, setLang }) {
         // Contact info
         e('div', { style:{ display:'flex',flexDirection:'column',gap:'14px' } },
           e('div', null,
-            e('p', { style:{ fontSize:'10px',fontWeight:600,letterSpacing:'.1em',textTransform:'uppercase',color:'#B0A89E',fontFamily:"'DM Sans',sans-serif",marginBottom:'4px' } }, 'Berlin'),
+            e('p', { style:{ fontSize:'11px',fontWeight:600,letterSpacing:'.1em',textTransform:'uppercase',color:'#B0A89E',fontFamily:"'DM Sans',sans-serif",marginBottom:'4px' } }, 'Berlin'),
             e('a', { href:'tel:+493081580930', style:{ fontSize:'13px',color:'#3D3830',fontFamily:"'DM Sans',sans-serif",textDecoration:'none',display:'block' } }, '+49 (0) 30 815 80 93'),
           ),
           e('div', null,
-            e('p', { style:{ fontSize:'10px',fontWeight:600,letterSpacing:'.1em',textTransform:'uppercase',color:'#B0A89E',fontFamily:"'DM Sans',sans-serif",marginBottom:'4px' } }, 'Köln'),
+            e('p', { style:{ fontSize:'11px',fontWeight:600,letterSpacing:'.1em',textTransform:'uppercase',color:'#B0A89E',fontFamily:"'DM Sans',sans-serif",marginBottom:'4px' } }, 'Köln'),
             e('a', { href:'tel:+492219730640', style:{ fontSize:'13px',color:'#3D3830',fontFamily:"'DM Sans',sans-serif",textDecoration:'none',display:'block' } }, '+49 (0) 221 973 064 0'),
           ),
           e('a', { href:'mailto:info@nsbb.de', style:{ fontSize:'13px',color:'var(--accent)',fontFamily:"'DM Sans',sans-serif",textDecoration:'none',fontWeight:500 } }, 'info@nsbb.de'),
@@ -993,7 +993,7 @@ function LeistungenInternationalPage({ setPage, lang, t, setKontaktPreset }) {
           isDE ? 'Schwerpunkte im internationalen Steuerrecht.' : 'Focus areas in international tax.'
         ),
         topics.map(group => e('div', { key:group.cat, style:{ marginBottom:'48px' } },
-          e('p', { style:{ fontSize:'10px', fontWeight:600, letterSpacing:'.12em', textTransform:'uppercase', color:'#B0A89E', fontFamily:"'DM Sans',sans-serif", marginBottom:'16px', paddingBottom:'8px', borderBottom:'1px solid #ECEAE6' } }, group.cat),
+          e('p', { style:{ fontSize:'11px', fontWeight:600, letterSpacing:'.12em', textTransform:'uppercase', color:'#B0A89E', fontFamily:"'DM Sans',sans-serif", marginBottom:'16px', paddingBottom:'8px', borderBottom:'1px solid #ECEAE6' } }, group.cat),
           e('div', { className:'fade-up grid grid-cols-1 md:grid-cols-2', style:{ gap:'12px' } },
             group.items.map(item => e('div', { key:item.key,
               style:{ backgroundColor:'white', border:'1px solid #ECEAE6', borderRadius:'14px', padding:'20px 22px', cursor: item.page !== 'leistungen-international' ? 'pointer' : 'default', transition:'box-shadow .18s, border-color .18s' },
@@ -1005,7 +1005,7 @@ function LeistungenInternationalPage({ setPage, lang, t, setKontaktPreset }) {
                 e('h3', { style:{ fontFamily:"'Cormorant Garamond',serif", fontSize:'1.05rem', fontWeight:500, color:'#1A1917', lineHeight:1.3, margin:0, flex:1 } }, item.title),
                 item.page !== 'leistungen-international' && e('svg',{width:12,height:12,viewBox:'0 0 24 24',fill:'none',stroke:'var(--accent)',strokeWidth:2,strokeLinecap:'round',style:{flexShrink:0,marginTop:'3px',marginLeft:'8px'}},e('path',{d:'M5 12h14M12 5l7 7-7 7'})),
               ),
-              e('p', { style:{ fontSize:'12px', lineHeight:1.6, color:'var(--muted)', fontFamily:"'DM Sans',sans-serif", margin:0 } }, item.desc),
+              e('p', { style:{ fontSize:'13px', lineHeight:1.6, color:'var(--muted)', fontFamily:"'DM Sans',sans-serif", margin:0 } }, item.desc),
             ))
           ),
         )),
@@ -2564,7 +2564,7 @@ function DigitalPage({ setPage, lang, t, setKontaktPreset }) {
             },
               e('div', null,
                 e('p', { style:{ fontFamily:"'Cormorant Garamond',serif", fontSize:'1.1rem', fontWeight:500, color:'var(--accent)', marginBottom:'2px', lineHeight:1.2 } }, tool.n),
-                e('p', { style:{ fontSize:'12px', lineHeight:1.5, color:'var(--muted)', fontFamily:"'DM Sans',sans-serif", margin:0 } }, tool.d),
+                e('p', { style:{ fontSize:'13px', lineHeight:1.5, color:'var(--muted)', fontFamily:"'DM Sans',sans-serif", margin:0 } }, tool.d),
               ),
               e('div', { style:{ flexShrink:0, width:'28px', height:'28px', borderRadius:'8px', backgroundColor:'var(--accent-subtle)', display:'flex', alignItems:'center', justifyContent:'center' } },
                 e('svg',{width:12,height:12,viewBox:'0 0 24 24',fill:'none',stroke:'var(--accent)',strokeWidth:2.5,strokeLinecap:'round'},e('path',{d:'M7 17L17 7M7 7h10v10'}))
@@ -2888,7 +2888,7 @@ function UeberUnsPage({ setPage, lang, t }) {
 
               // Card body
               e('div', { style:{ padding:'18px 20px 20px', display:'flex', flexDirection:'column', flex:'1' } },
-                e('p', { style:{ fontSize:'10px', fontWeight:600, letterSpacing:'.1em', textTransform:'uppercase', color:'var(--accent)', fontFamily:"'DM Sans',sans-serif", marginBottom:'4px' } }, isDE?p.title:(p.titleEN||p.title)),
+                e('p', { style:{ fontSize:'11px', fontWeight:600, letterSpacing:'.1em', textTransform:'uppercase', color:'var(--accent)', fontFamily:"'DM Sans',sans-serif", marginBottom:'4px' } }, isDE?p.title:(p.titleEN||p.title)),
                 e('h3', { style:{ fontFamily:"'Cormorant Garamond',serif", fontSize:'1.25rem', color:'#1A1917', fontWeight:500, lineHeight:1.2, marginBottom:'2px' } }, p.name),
                 e('p', { style:{ fontSize:'12px', color:'var(--muted)', fontFamily:"'DM Sans',sans-serif", marginBottom:'10px' } },
                   (isDE?p.profession:(p.professionEN||p.profession)) + (p.standort ? ' · ' + p.standort : '')
@@ -2948,21 +2948,21 @@ function UeberUnsPage({ setPage, lang, t }) {
               ),
             ),
             active.focus && active.focus.length > 0 && e('div', { style:{ marginBottom:'20px' } },
-              e('p', { style:{ fontSize:'10px', fontWeight:600, letterSpacing:'.1em', textTransform:'uppercase', color:'#B0A89E', fontFamily:"'DM Sans',sans-serif", marginBottom:'10px' } }, isDE?'Fachgebiete':'Expertise'),
+              e('p', { style:{ fontSize:'11px', fontWeight:600, letterSpacing:'.1em', textTransform:'uppercase', color:'#B0A89E', fontFamily:"'DM Sans',sans-serif", marginBottom:'10px' } }, isDE?'Fachgebiete':'Expertise'),
               e('div', { style:{ display:'flex', flexWrap:'wrap', gap:'6px' } },
                 (isDE?active.focus:(active.focusEN||active.focus)).map(f => e('span', { key:f, style:{ fontSize:'12px', fontWeight:500, color:'#3A342C', fontFamily:"'DM Sans',sans-serif", backgroundColor:'#F4F2EE', borderRadius:'6px', padding:'5px 10px' } }, f))
               ),
             ),
             active.sprachen && active.sprachen.length > 0 && e('div', { style:{ marginBottom:'24px' } },
-              e('p', { style:{ fontSize:'10px', fontWeight:600, letterSpacing:'.1em', textTransform:'uppercase', color:'#B0A89E', fontFamily:"'DM Sans',sans-serif", marginBottom:'10px' } }, isDE?'Sprachen':'Languages'),
+              e('p', { style:{ fontSize:'11px', fontWeight:600, letterSpacing:'.1em', textTransform:'uppercase', color:'#B0A89E', fontFamily:"'DM Sans',sans-serif", marginBottom:'10px' } }, isDE?'Sprachen':'Languages'),
               e('div', { style:{ display:'flex', flexWrap:'wrap', gap:'6px' } },
                 active.sprachen.map(s => e('span', { key:s, style:{ fontSize:'12px', fontWeight:500, color:'var(--accent)', fontFamily:"'DM Sans',sans-serif", backgroundColor:'var(--accent-subtle)', borderRadius:'6px', padding:'5px 10px' } }, isDE?s:(s==='Deutsch'?'German':s==='Englisch'?'English':s)))
               ),
             ),
             active.cv && active.cv.length > 0 && e('div', { style:{ paddingTop:'20px', borderTop:'1px solid #ECEAE6' } },
-              e('p', { style:{ fontSize:'10px', fontWeight:600, letterSpacing:'.1em', textTransform:'uppercase', color:'#B0A89E', fontFamily:"'DM Sans',sans-serif", marginBottom:'12px' } }, isDE?'Werdegang':'Background'),
+              e('p', { style:{ fontSize:'11px', fontWeight:600, letterSpacing:'.1em', textTransform:'uppercase', color:'#B0A89E', fontFamily:"'DM Sans',sans-serif", marginBottom:'12px' } }, isDE?'Werdegang':'Background'),
               e('div', { style:{ display:'flex', flexDirection:'column', gap:'6px' } },
-                (isDE?active.cv:(active.cvEN||active.cv)).map((c,ci) => e('p', { key:ci, style:{ fontSize:'12px', color:'#8A8075', fontFamily:"'DM Sans',sans-serif", margin:0, paddingLeft:'12px', borderLeft:'2px solid #ECEAE6', lineHeight:1.6 } }, c))
+                (isDE?active.cv:(active.cvEN||active.cv)).map((c,ci) => e('p', { key:ci, style:{ fontSize:'13px', color:'#8A8075', fontFamily:"'DM Sans',sans-serif", margin:0, paddingLeft:'12px', borderLeft:'2px solid #ECEAE6', lineHeight:1.6 } }, c))
               ),
             ),
             e('div', { style:{ paddingTop:'24px', borderTop:'1px solid #ECEAE6', marginTop:'24px', display:'flex', flexDirection:'column', gap:'10px' } },
@@ -3229,7 +3229,7 @@ function NachfolgePage({ setPage, lang, t }) {
           e('h2', { className:'font-display mb-6', style:{ fontSize:'clamp(1.8rem,3.5vw,2.8rem)', color:'#1A1917', fontFamily:"'Cormorant Garamond',serif" } }, t.nachfolgeExpH2),
           e('div', { className:'fade-up', style:{ backgroundColor:'var(--accent-subtle)', borderRadius:'12px', padding:'10px 12px 12px', textAlign:'center', marginBottom:'20px' } },
             e('p', { style:{ fontFamily:"'Cormorant Garamond',serif", fontSize:'2.6rem', fontWeight:400, color:'var(--accent)', lineHeight:1, marginBottom:'10px' } }, '5'),
-            e('p', { style:{ fontFamily:"'DM Sans',sans-serif", fontSize:'12px', fontWeight:500, color:'#3A342C', lineHeight:1.4 } }, isDE ? 'erfolgreich integrierte Kanzleien seit 2014' : 'successfully integrated practices since 2014'),
+            e('p', { style:{ fontFamily:"'DM Sans',sans-serif", fontSize:'13px', fontWeight:500, color:'#3A342C', lineHeight:1.4 } }, isDE ? 'erfolgreich integrierte Kanzleien seit 2014' : 'successfully integrated practices since 2014'),
           ),
           e('p', { className:'text-base leading-relaxed mb-2' }, isDE
             ? 'Seit 2014 übernimmt und integriert NSBB erfolgreich Steuerkanzleien. Neben der ersten übernommenen Kanzlei wurden inzwischen vier weitere Kanzleien erfolgreich in die NSBB-Strukturen integriert.'
@@ -3558,7 +3558,7 @@ function KontaktPage({ setPage, lang, t, kontaktPreset, setKontaktPreset }) {
                 e('div', { style:{ paddingTop:'8px' } },
                   e('label', { style:{ display:'flex', alignItems:'flex-start', gap:'10px', cursor:'pointer', marginBottom:'16px' } },
                     e('input', { type:'checkbox', checked:form.datenschutz, onChange:ev=>set('datenschutz',ev.target.checked), style:{ marginTop:'3px', flexShrink:0, accentColor:'var(--accent)' }, 'aria-required':'true' }),
-                    e('span', { style:{ fontSize:'12px', color:'var(--muted)', fontFamily:"'DM Sans',sans-serif", lineHeight:1.5 } },
+                    e('span', { style:{ fontSize:'13px', color:'var(--muted)', fontFamily:"'DM Sans',sans-serif", lineHeight:1.5 } },
                       isDE ? 'Ich habe die ' : 'I have read the ',
                       e('button', { type:'button', onClick:()=>{setPage('datenschutz'); window.scrollTo(0,0);}, style:{ color:'var(--accent)', background:'none', border:'none', cursor:'pointer', fontSize:'12px', padding:0, textDecoration:'underline', fontFamily:"'DM Sans',sans-serif" } }, isDE?'Datenschutzerklärung':'privacy policy'),
                       isDE?' gelesen und stimme der Verarbeitung meiner Daten zur Bearbeitung meiner Anfrage zu.':' and consent to the processing of my data to handle my enquiry.'
@@ -3613,7 +3613,7 @@ function KontaktPage({ setPage, lang, t, kontaktPreset, setKontaktPreset }) {
             e('div', { style:{ borderTop:'1px solid var(--border)', padding:'14px 20px', backgroundColor:'white' } },
               e('div', { style:{ display:'flex', alignItems:'flex-start', gap:'8px' } },
                 e('span', { style:{ flexShrink:0, marginTop:'2px' } }, e(Ico,{name:'mapPin',size:13})),
-                e('div', { style:{ fontSize:'12px', lineHeight:1.6, color:'var(--muted)', fontFamily:"'DM Sans',sans-serif" } },
+                e('div', { style:{ fontSize:'13px', lineHeight:1.6, color:'var(--muted)', fontFamily:"'DM Sans',sans-serif" } },
                   e('p', { style:{ margin:0 } },
                     loc.city==='Berlin'
                       ? (isDE?'S1 bis Zehlendorf (ca. 5 Min.). Bus M48/X10 Haltestelle Berlepschstr.':'S-Bahn S1 to Zehlendorf (5 min walk). Bus M48/X10 stop Berlepschstr.')
@@ -3742,7 +3742,7 @@ function ImpressumPage({ setPage, lang, t }) {
   ];
 
   return e('div', { className:'page-enter' },
-    e(PageHero, { label: isDE?'Rechtliches':'Legal', title: 'Impressum' }),
+    e(PageHero, { label: isDE?'Rechtliches':'Legal', fit:true, title: 'Impressum', subtitle: isDE?['Angaben gemäß § 5 TMG und','berufsrechtliche Informationen.']:['Information pursuant to § 5 TMG','and professional regulations.'] }),
 
     e('section', { style:{ backgroundColor:'white', paddingTop:'64px', paddingBottom:'80px' } },
       e('div', { style:{ maxWidth:'760px', margin:'0 auto', padding:'0 24px' } },
@@ -3781,7 +3781,7 @@ function DatenschutzPage({ setPage, lang, t }) {
 
   return e('div', { className:'page-enter' },
 
-    e(PageHero, { label: isDE?'Rechtliches':'Legal', title: isDE?'Datenschutzerklärung':'Privacy Policy' }),
+    e(PageHero, { label: isDE?'Rechtliches':'Legal', fit:true, title: isDE?'Datenschutzerklärung':'Privacy Policy', subtitle: isDE?['Wie wir mit Ihren personenbezogenen','Daten umgehen.']:['How we handle your','personal data.'] }),
 
     e('section', { style:{ backgroundColor:'white', paddingTop:'64px', paddingBottom:'80px' } },
       e('div', { style:{ maxWidth:'760px', margin:'0 auto', padding:'0 24px' } },
@@ -4026,7 +4026,7 @@ function LeistungenBranchenPage({ setPage, lang, t, setKontaktPreset }) {
     { key:'branche-startup', icon:'users', color:'#EAF0EC', title:isDE?'Start-ups & Wachstumsunternehmen':'Start-ups & Growth Companies', desc:isDE?'Gründung, Beteiligungsstrukturen, Investoren und Mitarbeiterbeteiligungen – wir begleiten Start-ups von der ersten GmbH bis zur Wachstumsphase.':'Incorporation, equity structures, investors and employee participation – we support start-ups from the first GmbH through to the growth phase.', tags:['Gründung & GmbH-Setup','Beteiligungen & Investoren','Mitarbeiterbeteiligungen','Wachstumsplanung'] },
   ];
   return e('div', { className:'page-enter' },
-    e(PageHero, { label:isDE?'Branchenlösungen':'Industry solutions', title:isDE?'Spezialisierte Beratung':'Specialised advice', accent:isDE?'für Ihre Branche.':'for your sector.', subtitle:isDE?'Tiefes Branchenverständnis kombiniert mit strategischer Steuerberatung – für die Anforderungen Ihrer Branche.':'Deep sector understanding combined with strategic tax advice – for the requirements of your industry.', back:isDE?'Leistungen für Unternehmen':'Services for Businesses', backFn:()=>go('leistungen-unternehmen') }),
+    e(PageHero, { label:isDE?'Branchenlösungen':'Industry solutions', fit:true, title:isDE?'Spezialisierte Beratung':'Specialised advice', accent:isDE?'für Ihre Branche.':'for your sector.', subtitle:isDE?['Tiefes Branchenverständnis kombiniert mit strategischer','Steuerberatung – für die Anforderungen Ihrer Branche.']:['Deep sector understanding combined with strategic tax','advice – for the requirements of your industry.'], back:isDE?'Leistungen für Unternehmen':'Services for Businesses', backFn:()=>go('leistungen-unternehmen') }),
     e('section', { className:'py-20 bg-white' },
       e('div', { className:'max-w-site mx-auto px-5 md:px-8 grid grid-cols-1 md:grid-cols-2 gap-6' },
         branches.map((b,i) => e('div', { key:b.key, className:'rounded-3xl p-8 md:p-10 flex flex-col card-hover cursor-pointer fade-up border', style:{ transitionDelay:`${i*80}ms`, borderColor:'var(--border)', boxShadow:'0 1px 3px rgba(0,0,0,.05)', backgroundColor:'white' }, onClick:()=>go(b.key) },
@@ -4413,7 +4413,7 @@ function KarriereStbPage({ setPage, lang, t }) {
   var jobTitleDE = 'Steuerberater/in';
   var jobTitleEN = 'Tax Advisor';
   return e('div', { className:'page-enter' },
-    e(PageHero, { label:isDE?'Karriere bei NSBB':'Career at NSBB', title:isDE?'Steuerberater/in':'Tax Advisor', subtitle:isDE?'Voll- oder Teilzeit · Berlin oder Köln':'Full or part time · Berlin or Cologne', back:isDE?'Alle Stellen':'All positions', backFn:function(){ setPage('karriere'); } }),
+    e(PageHero, { label:isDE?'Karriere bei NSBB':'Career at NSBB', fit:true, title:isDE?'Steuerberater/in':'Tax Advisor', subtitle:isDE?['Voll- oder Teilzeit · Berlin oder Köln','Moderne, digitale Kanzlei mit echten Perspektiven.']:['Full or part time · Berlin or Cologne','A modern, fully digital firm with real prospects.'], back:isDE?'Alle Stellen':'All positions', backFn:function(){ setPage('karriere'); } }),
     e('section', { className:'py-14 bg-white' },
       e('div', { className:'max-w-site mx-auto px-5 md:px-8' },
         e('p', { className:'text-base leading-relaxed max-w-2xl', style:{ color:'var(--muted)' } }, isDE?'Als Steuerberater/in bei NSBB übernehmen Sie eigenverantwortlich die steuerliche Beratung eines festen Mandantenstamms – in einer modernen, digitalen Kanzlei.':'As a Tax Advisor at NSBB, you take independent responsibility for the tax advisory of an established client portfolio – within a modern, digital firm.'),
@@ -4448,7 +4448,7 @@ function KarriereSfwPage({ setPage, lang, t }) {
   var jobTitleDE = 'Steuerfachwirt/in';
   var jobTitleEN = 'Senior Tax Clerk';
   return e('div', { className:'page-enter' },
-    e(PageHero, { label:isDE?'Karriere bei NSBB':'Career at NSBB', title:isDE?'Steuerfachwirt/in':'Senior Tax Clerk', subtitle:isDE?'Voll- oder Teilzeit · Berlin oder Köln':'Full or part time · Berlin or Cologne', back:isDE?'Alle Stellen':'All positions', backFn:function(){ setPage('karriere'); } }),
+    e(PageHero, { label:isDE?'Karriere bei NSBB':'Career at NSBB', fit:true, title:isDE?'Steuerfachwirt/in':'Senior Tax Clerk', subtitle:isDE?['Voll- oder Teilzeit · Berlin oder Köln','Moderne, digitale Kanzlei mit echten Perspektiven.']:['Full or part time · Berlin or Cologne','A modern, fully digital firm with real prospects.'], back:isDE?'Alle Stellen':'All positions', backFn:function(){ setPage('karriere'); } }),
     e('section', { className:'py-14 bg-white' },
       e('div', { className:'max-w-site mx-auto px-5 md:px-8' },
         e('p', { className:'text-base leading-relaxed max-w-2xl', style:{ color:'var(--muted)' } }, isDE?'Als Steuerfachwirt/in bei NSBB übernehmen Sie eigenverantwortlich die laufende Betreuung anspruchsvoller Mandate – in einer modernen, digitalen Kanzlei.':'As a Senior Tax Clerk at NSBB, you take independent responsibility for the ongoing support of demanding mandates – within a modern, digital firm.'),
@@ -4483,7 +4483,7 @@ function KarriereSfaPage({ setPage, lang, t }) {
   var jobTitleDE = 'Steuerfachangestellte/r';
   var jobTitleEN = 'Tax Clerk';
   return e('div', { className:'page-enter' },
-    e(PageHero, { label:isDE?'Karriere bei NSBB':'Career at NSBB', title:isDE?'Steuerfachangestellte/r':'Tax Clerk', subtitle:isDE?'Voll- oder Teilzeit · Berlin oder Köln':'Full or part time · Berlin or Cologne', back:isDE?'Alle Stellen':'All positions', backFn:function(){ setPage('karriere'); } }),
+    e(PageHero, { label:isDE?'Karriere bei NSBB':'Career at NSBB', fit:true, title:isDE?'Steuerfachangestellte/r':'Tax Clerk', subtitle:isDE?['Voll- oder Teilzeit · Berlin oder Köln','Moderne, digitale Kanzlei mit echten Perspektiven.']:['Full or part time · Berlin or Cologne','A modern, fully digital firm with real prospects.'], back:isDE?'Alle Stellen':'All positions', backFn:function(){ setPage('karriere'); } }),
     e('section', { className:'py-14 bg-white' },
       e('div', { className:'max-w-site mx-auto px-5 md:px-8' },
         e('p', { className:'text-base leading-relaxed max-w-2xl', style:{ color:'var(--muted)' } }, isDE?'Als Steuerfachangestellte/r bei NSBB übernehmen Sie eigenverantwortlich die laufende Betreuung unserer Mandanten – in einer modernen, digitalen Kanzlei.':'As a Tax Clerk at NSBB, you take independent responsibility for the ongoing support of our clients – within a modern, digital firm.'),
@@ -4518,7 +4518,7 @@ function KarriereBbhPage({ setPage, lang, t }) {
   var jobTitleDE = 'Bilanzbuchhalter/in';
   var jobTitleEN = 'Financial Accountant';
   return e('div', { className:'page-enter' },
-    e(PageHero, { label:isDE?'Karriere bei NSBB':'Career at NSBB', title:isDE?'Bilanzbuchhalter/in':'Financial Accountant', subtitle:isDE?'Voll- oder Teilzeit · Berlin oder Köln':'Full or part time · Berlin or Cologne', back:isDE?'Alle Stellen':'All positions', backFn:function(){ setPage('karriere'); } }),
+    e(PageHero, { label:isDE?'Karriere bei NSBB':'Career at NSBB', fit:true, title:isDE?'Bilanzbuchhalter/in':'Financial Accountant', subtitle:isDE?['Voll- oder Teilzeit · Berlin oder Köln','Moderne, digitale Kanzlei mit echten Perspektiven.']:['Full or part time · Berlin or Cologne','A modern, fully digital firm with real prospects.'], back:isDE?'Alle Stellen':'All positions', backFn:function(){ setPage('karriere'); } }),
     e('section', { className:'py-14 bg-white' },
       e('div', { className:'max-w-site mx-auto px-5 md:px-8' },
         e('p', { className:'text-base leading-relaxed max-w-2xl', style:{ color:'var(--muted)' } }, isDE?'Als Bilanzbuchhalter/in bei NSBB übernehmen Sie eigenverantwortlich anspruchsvolle Mandate in der Finanzbuchhaltung – in einer modernen, digitalen Kanzlei.':'As a Financial Accountant at NSBB, you take independent responsibility for demanding mandates in financial accounting – within a modern, digital firm.'),
@@ -4553,7 +4553,7 @@ function KarriereInitPage({ setPage, lang, t }) {
   var jobTitleDE = 'Initiativbewerbung';
   var jobTitleEN = 'Speculative Application';
   return e('div', { className:'page-enter' },
-    e(PageHero, { label:isDE?'Karriere bei NSBB':'Career at NSBB', title:isDE?'Initiativbewerbung':'Speculative Application', subtitle:isDE?'Alle Positionen · Berlin oder Köln':'All positions · Berlin or Cologne', back:isDE?'Alle Stellen':'All positions', backFn:function(){ setPage('karriere'); } }),
+    e(PageHero, { label:isDE?'Karriere bei NSBB':'Career at NSBB', fit:true, title:isDE?'Initiativbewerbung':'Speculative Application', subtitle:isDE?['Alle Positionen · Berlin oder Köln','Moderne, digitale Kanzlei mit echten Perspektiven.']:['All positions · Berlin or Cologne','A modern, fully digital firm with real prospects.'], back:isDE?'Alle Stellen':'All positions', backFn:function(){ setPage('karriere'); } }),
     e('section', { className:'py-14 bg-white' },
       e('div', { className:'max-w-site mx-auto px-5 md:px-8' },
         e('p', { className:'text-base leading-relaxed max-w-2xl', style:{ color:'var(--muted)' } }, isDE?'Bei NSBB erwartet Sie eigenverantwortliche Mandantenarbeit in einem eingespielten Team – in einer modernen, digitalen Kanzlei.':'At NSBB, independent client work awaits you within a well-established team – in a modern, digital firm.'),
