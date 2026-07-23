@@ -15,6 +15,69 @@ Format: neueste Einträge oben. Aufbau eines Eintrags siehe Vorlage am Ende.
 
 ---
 
+## [2026-07-23] Landingpages: Look an die Hauptseite angeglichen + SEO/GEO-Feinschliff
+
+**Bearbeiter:** Claude (Claude Code, Opus 4.8) · beauftragt durch Kunde
+**Grund:** Der Kunde wünschte, dass die vier Standort-Landingpages optisch **den
+übrigen (SPA-)Seiten entsprechen**, und dass in diesem Schritt die SEO-/GEO-
+Optimierung noch einmal geprüft und, wo nötig, nachgezogen wird.
+
+Cache-Version `landing.css`: `?v=20260724` → `?v=20260725` in allen vier Seiten.
+`app.js`/`style.css`/`index.html` **nicht** verändert (kein `?v=`-Sprung nötig).
+`node --check assets/js/app.js`: fehlerfrei (unverändert).
+
+### Look 1:1 an die SPA angeglichen (`assets/css/landing.css` überarbeitet)
+* **Hero** wie die `PageHero`-Unterseiten: flaches Off-White (`--offwhite`) statt
+  dunklem Verlauf, Eyebrow in Akzentgrün, Serifen-Titel (Cormorant), ruhiger
+  Untertitel – identische Anmutung wie im Rest der Seite.
+* **Buttons** wie `.btn-p`/`.btn-s` der SPA (Pillen-Form, grüner Primär-Button
+  mit Hover-Lift, dezenter Ghost-Button).
+* **Service-Karten** wie die SPA-Karten: `rounded-3xl` (1,5 rem), feine Border,
+  sanfter Hover-Lift (`translateY(-4px)`).
+* **Abschnitte** alternierend weiß/Off-White; **Final-CTA** als heller
+  Akzent-Block (`--accent-subtle`) wie die `ContactCTA`; **Footer**
+  fast-schwarz mit Logo, Tagline, beiden Standorten und Bottom-Bar – wie der
+  SPA-Footer.
+* **FAQ** als natives `<details>`-Accordion in SPA-Anmutung (+/–, Serifen-Frage).
+
+### Header je Seite an die SPA-Nav angeglichen
+* Weißer, klebender Header mit Logo, **Menü-Links** (Digitale Kanzlei/Digital
+  Office, Leistungen/Services, TGS International, Über uns/About us,
+  Karriere/Careers → SPA-Routen), **DE/EN-Umschalter mit gestapelten Flaggen**
+  (dieselben Tricolore-/Union-Jack-SVGs wie in der SPA; aktive Sprache grün) und
+  grünem **Kontakt/Contact**-Button mit Durchwahl. Nav-Links ab 1024 px sichtbar,
+  darunter kompakter Header (mobil geprüft, keine Überläufe).
+
+### SEO/GEO-Feinschliff im `<head>` aller vier Seiten
+* **Geo-Meta** ergänzt: `geo.region` (DE-BE / DE-NW), `geo.placename`,
+  `geo.position` (Berlin `52.42941;13.25650`, Köln `50.92863;6.96324`) und
+  `ICBM` – für lokale Auffindbarkeit.
+* **OG erweitert:** `og:image:width`=1200, `og:image:height`=630,
+  `og:image:alt`; `og:locale` sprachrichtig (`de_DE` / `en_GB`).
+* **Twitter-Card** ergänzt (`summary_large_image`: title/description/image).
+* Bestätigt/geprüft (unverändert korrekt): genau **ein** `<h1>` je Seite,
+  saubere H2-Hierarchie, selbst-referenzierender `canonical` (mit Slash),
+  hreflang **de/en/x-default** symmetrisch über alle vier Seiten,
+  JSON-LD **AccountingService + BreadcrumbList + FAQPage** valide, Telefon als
+  E.164 (`+493081580930` / `+492219730640`), `og:image` verweist auf real
+  vorhandene 1200×630-JPGs. Interne Links zeigen ausnahmslos auf gültige
+  SPA-Routen.
+
+### Geprüft
+* Alle vier Seiten im Browser (Chromium/Playwright) gerendert:
+  Berlin & Köln (DE) + Tax Advisor Berlin & Cologne (EN), je Desktop (1440) und
+  Mobil (390). **Keine** Konsolen-/Seitenfehler, je genau ein `<h1>`, Titel
+  korrekt. Look deckt sich mit den SPA-Unterseiten (Hero, Karten, CTA, Footer).
+* `sitemap.xml` unverändert korrekt (Home + 4 Landing-URLs mit hreflang-Alternates).
+
+### Offen / bewusst nicht geändert
+* Klick aus einer EN-Landingpage in die SPA landet weiterhin auf **DE** (die SPA
+  liest die Sprache nicht aus der URL – offener Punkt #7, Projektleitung).
+* Kontaktformular verschickt weiterhin nichts (Punkt #2/#3) → CTA bleibt bewusst
+  telefon-/e-mail-zuerst.
+
+---
+
 ## [2026-07-19] Neu: Lokale Standort-Landingpages Berlin & Köln (DE+EN) für SEO/GEO
 
 **Bearbeiter:** Claude (Claude Code, Opus 4.8) · beauftragt durch Kunde
