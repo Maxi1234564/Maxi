@@ -400,12 +400,13 @@ function Footer({ setPage, lang, t }) {
       // Row 2: Berlin | Köln
       e('div', { style:{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'20px', paddingTop:'22px', paddingBottom:'22px', borderBottom:'1px solid rgba(255,255,255,.12)' } },
         e('div', null,
-          e('p', { style:lbl }, 'Berlin'),
+          // Städtename verlinkt auf die lokale Landingpage (SEO: sitewide interne Verlinkung)
+          e('a', { href: isDE ? '/steuerberater-berlin/' : '/en/tax-advisor-berlin/', style:{ ...lbl, display:'inline-block', textDecoration:'none' } }, isDE ? 'Steuerberater Berlin' : 'Tax Advisor Berlin'),
           e('a', { href:'https://www.google.com/maps/place/NSBB+Steuerberatungsgesellschaft+mbH/@52.4293359,13.2562634,19z/data=!4m15!1m8!3m7!1s0x47a85bcd32214c33:0xc49996f097d43f61!2sBerlepschstra%C3%9Fe+1,+14165+Berlin!3b1!8m2!3d52.429461!4d13.2565531!16s%2Fg%2F11b8v5lfv2!3m5!1s0x47a85bee320dfedf:0xd5c5592d1cbe082d!8m2!3d52.4294067!4d13.2565013!16s%2Fg%2F11qpl7gh9y', target:'_blank', rel:'noopener noreferrer', style:{ ...body, textDecoration:'none' } }, 'Berlepschstr. 1, 14165 Berlin'),
           e('a', { href:'tel:+493081580930', style:{ ...lnk, marginTop:'5px' } }, '+49 30 815 80 93'),
         ),
         e('div', null,
-          e('p', { style:lbl }, 'Köln'),
+          e('a', { href: isDE ? '/steuerberater-koeln/' : '/en/tax-advisor-cologne/', style:{ ...lbl, display:'inline-block', textDecoration:'none' } }, isDE ? 'Steuerberater Köln' : 'Tax Advisor Cologne'),
           e('a', { href:'https://www.google.com/maps/place/NSBB+Steuerberatungsgesellschaft+mbH/@50.9286295,6.9619573,18z/data=!3m1!4b1!4m6!3m5!1s0x47bf251aeb6f96e7:0xe6cbbac13cb5a3c8!8m2!3d50.9286278!4d6.9632448!16s%2Fg%2F11lkz0nrsq', target:'_blank', rel:'noopener noreferrer', style:{ ...body, textDecoration:'none' } }, 'Holzmarkt 2/2A, 50676 Köln'),
           e('a', { href:'tel:+492219730640', style:{ ...lnk, marginTop:'5px' } }, '+49 221 973 064 0'),
         ),
@@ -554,6 +555,13 @@ function HomePage({ setPage, lang, t }) {
                 ),
                 e('p', { className: 'text-xs mt-0.5 font-medium', style: { color: 'var(--muted)', fontFamily: "'DM Sans',sans-serif" } }, s.lbl),
               ))
+            ),
+            // Dezenter Verweis auf die lokalen Standort-Landingpages (SEO-Verlinkung)
+            e('div', { style:{ marginTop:'14px', fontSize:'13px', fontFamily:"'DM Sans',sans-serif", color:'var(--muted)' } },
+              (isDE?'Standorte: ':'Offices: '),
+              e('a', { href: isDE?'/steuerberater-berlin/':'/en/tax-advisor-berlin/', style:{ color:'var(--accent)', fontWeight:600, textDecoration:'none' } }, isDE?'Steuerberater Berlin':'Tax Advisor Berlin'),
+              ' · ',
+              e('a', { href: isDE?'/steuerberater-koeln/':'/en/tax-advisor-cologne/', style:{ color:'var(--accent)', fontWeight:600, textDecoration:'none' } }, isDE?'Steuerberater Köln':'Tax Advisor Cologne'),
             ),
           ),
           // Visual card stack
@@ -3629,6 +3637,10 @@ function KontaktPage({ setPage, lang, t, kontaktPreset, setKontaktPreset }) {
                 e('p', { style:{ fontSize:'13px', color:'var(--muted)', fontFamily:"'DM Sans',sans-serif", whiteSpace:'pre-line', marginBottom:'10px' } }, loc.addr),
                 e('a', { href:loc.href, style:{ display:'inline-flex', alignItems:'center', gap:'6px', fontSize:'14px', fontWeight:600, color:'var(--accent)', fontFamily:"'DM Sans',sans-serif", textDecoration:'none' } },
                   e(Ico,{name:'phone',size:14}), loc.tel
+                ),
+                // Link zur lokalen Landingpage (SEO: interne Verlinkung auf echte URL)
+                e('a', { href: loc.city==='Berlin' ? (isDE?'/steuerberater-berlin/':'/en/tax-advisor-berlin/') : (isDE?'/steuerberater-koeln/':'/en/tax-advisor-cologne/'), style:{ display:'inline-flex', alignItems:'center', gap:'6px', fontSize:'13px', fontWeight:600, color:'var(--accent)', fontFamily:"'DM Sans',sans-serif", textDecoration:'none', marginTop:'8px' } },
+                  (isDE?'Steuerberater ':'Tax advisor ') + loc.city, ' →'
                 ),
               ),
             ),

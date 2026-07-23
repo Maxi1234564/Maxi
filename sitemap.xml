@@ -1,16 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Hinweis: Die Website ist eine Single-Page-Application mit Hash-Routing
+  Hinweis: Die Hauptseite ist eine Single-Page-Application mit Hash-Routing
   (#leistungen, #kontakt, ...). Suchmaschinen indexieren Hash-Fragmente NICHT
-  als eigene Seiten – deshalb enthält diese Sitemap nur die eine reale URL.
-  Sobald die Unterseiten echte URLs bekommen, gehört jede davon hier hinein.
-  Siehe changelog.md, Abschnitt "Offene Punkte".
+  als eigene Seiten – deshalb steht hier nur die eine reale SPA-URL.
+  Zusätzlich gibt es echte, crawlbare Standort-Landingpages (statisches HTML)
+  mit eigenem Title/Meta/Canonical/JSON-LD – diese sind hier mit ihren
+  DE/EN-Alternates aufgeführt. Weitere echte URLs siehe changelog.md.
 -->
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://www.nsbb.de/</loc>
-    <lastmod>2026-07-17</lastmod>
+    <lastmod>2026-07-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
+  </url>
+
+  <url>
+    <loc>https://www.nsbb.de/steuerberater-berlin/</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.nsbb.de/steuerberater-berlin/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.nsbb.de/en/tax-advisor-berlin/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.nsbb.de/steuerberater-berlin/"/>
+  </url>
+
+  <url>
+    <loc>https://www.nsbb.de/steuerberater-koeln/</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.nsbb.de/steuerberater-koeln/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.nsbb.de/en/tax-advisor-cologne/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.nsbb.de/steuerberater-koeln/"/>
+  </url>
+
+  <url>
+    <loc>https://www.nsbb.de/en/tax-advisor-berlin/</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.nsbb.de/steuerberater-berlin/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.nsbb.de/en/tax-advisor-berlin/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.nsbb.de/steuerberater-berlin/"/>
+  </url>
+
+  <url>
+    <loc>https://www.nsbb.de/en/tax-advisor-cologne/</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.nsbb.de/steuerberater-koeln/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.nsbb.de/en/tax-advisor-cologne/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.nsbb.de/steuerberater-koeln/"/>
   </url>
 </urlset>

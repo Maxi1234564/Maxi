@@ -15,6 +15,93 @@ Format: neueste Einträge oben. Aufbau eines Eintrags siehe Vorlage am Ende.
 
 ---
 
+## [2026-07-19] Neu: Lokale Standort-Landingpages Berlin & Köln (DE+EN) für SEO/GEO
+
+**Bearbeiter:** Claude (Claude Code, Opus 4.8) · beauftragt durch Kunde
+**Grund:** Der Kunde wünscht standortspezifische, suchmaschinen-optimierte Seiten
+für „Steuerberater Berlin" und „Steuerberater Köln" (lokale SEO + GEO), inkl.
+strukturierter Daten. Texte (DE+EN, je Stadt) vom Kunden geliefert.
+
+Cache-Version: `?v=20260723` → `?v=20260724`. `node --check`: fehlerfrei.
+
+### Warum statische HTML-Seiten (Architektur-Entscheidung)
+Die Hauptseite ist eine **Hash-Routing-SPA ohne Build/SSR**; Hash-Fragmente werden
+von Suchmaschinen **nicht** indexiert und pro SPA-Seite lässt sich kein eigenes
+`title`/`meta`/`canonical`/JSON-LD im initialen HTML ausliefern (= offener
+Punkt #6). Landingpages als SPA-Hash-Route hätten daher **keinen** lokalen
+SEO-Wert. Lösung (mit dem Kunden abgestimmt): **eigenständige statische
+HTML-Seiten** an echten Pfaden – ohne Build-System, sie binden die vorhandenen
+Schriften wieder ein und liefern vollständigen, crawlbaren Inhalt. Die
+`react-bundle.js` wurde **nicht** angefasst.
+
+### Neu angelegt
+* **4 statische Landingpages** (je eigenes Verzeichnis mit `index.html`):
+  * `steuerberater-berlin/` · `steuerberater-koeln/`
+  * `en/tax-advisor-berlin/` · `en/tax-advisor-cologne/`
+  * Je Seite: genau **ein** `<h1>`, vorgegebene H2-Struktur, Kundentexte;
+    eigener `<title>`, Meta-Description, `canonical`, OG-Tags, hreflang
+    (de/en/x-default), JSON-LD **AccountingService + BreadcrumbList + FAQPage** –
+    **alle URLs auf `https://www.nsbb.de`** (die Vorlage nutzte fälschlich
+    `nsbb.de` ohne www). Telefon im Schema als E.164.
+  * Statischer Header (Logo → `/`, DE/EN-Umschalter, Telefon-CTA) + statischer
+    Footer (NAP beider Standorte, Impressum/Datenschutz).
+  * **CTA telefon-/e-mail-zuerst** (Durchwahl + info@nsbb.de), Kontaktformular
+    nur sekundär – bewusst, weil das SPA-Formular derzeit nichts verschickt
+    (offener Punkt #2). Kein Auto-eingebettetes Google-Maps-iframe (Datenschutz),
+    stattdessen ein „Auf Google Maps ansehen"-Link.
+  * Interne Links führen in die SPA-Routen (`/#leistungen-unternehmen`,
+    `/#leistungen-international`, `/#leistungen-privat`, `/#ueber-uns`,
+    `/#kontakt`).
+* **`assets/css/landing.css`** – eigenständiges Layout der Landingpages
+  (Brand-Tokens der Hauptseite wiederverwendet).
+* **OG-Bilder 1200×630** je Stadt (`assets/images/og-steuerberater-berlin.jpg`,
+  `og-steuerberater-koeln.jpg`; Quelle auch in `_source/images/`) – gebrandet,
+  JPG (nicht WebP, wegen Social-Crawlern).
+
+### Geändert (bestehende Dateien)
+* `index.html`: dem `ProfessionalService`-JSON-LD `@id`
+  `https://www.nsbb.de/#organization` + `logo` ergänzt (die Landingpages
+  referenzieren diese Organisation via `parentOrganization`).
+* `assets/js/app.js`:
+  * Footer – Städtenamen jetzt als Link „Steuerberater Berlin/Köln" (bzw. EN)
+    auf die Landingpages (sitewide interne Verlinkung).
+  * Startseite – dezenter Verweis „Standorte: Steuerberater Berlin · Köln" unter
+    der Hero-Statistik.
+  * Kontaktseite – jede Standort-Karte verlinkt zusätzlich auf ihre Landingpage.
+* `sitemap.xml`: die 4 neuen URLs mit hreflang-Alternates ergänzt.
+* `.htaccess`: **keine Änderung nötig** – die bestehende Regel
+  `<FilesMatch "\.html$">` (no-cache) und `ExpiresByType text/html "0 seconds"`
+  greifen automatisch auch für die neuen `index.html`; die CSP erlaubt alles, was
+  die Seiten nutzen (JSON-LD `ld+json` unterliegt nicht `script-src`).
+
+### Geprüft
+* `node --check assets/js/app.js`: fehlerfrei.
+* Alle 4 Seiten via `curl`: `title` + genau **ein** `<h1>` im **initialen HTML**
+  (crawlbar, kein JS nötig); JSON-LD `JSON.parse`-valide; canonical/hreflang auf
+  `www.nsbb.de`.
+* Assets (landing.css, Logos, OG-Bilder) liefern HTTP 200; keine kaputten Bilder.
+* Playwright: Berlin (Desktop+Mobil) und Köln-EN – markenkonformes, responsives
+  Rendering; je 5 Telefon-Links; interne SPA-Links vorhanden; **keine** Konsolen-/
+  Seitenfehler. SPA-Startseite + Footer verlinken die Landingpages korrekt.
+
+### Offen / Achtung (für die Projektleitung)
+* **Nach Livegang:** in der Google Search Console die aktualisierte `sitemap.xml`
+  neu einreichen, URL-Prüfung für die 4 Seiten, Indexierung anfragen. Geo-
+  Koordinaten im JSON-LD (v. a. Köln) final in Google Maps gegenprüfen.
+* **EN-Einschränkung:** Ein Klick aus einer EN-Landingpage in die SPA landet
+  vorerst auf **DE** (die SPA liest die Sprache nicht aus der URL – offener
+  Punkt #7). Sauberer wäre, `?lang=`/Pfad in der SPA auszuwerten (Projektleitung).
+* **Formular:** Der eigentliche Conversion-Hebel bleibt, das Kontaktformular
+  serverseitig funktionsfähig zu machen (offene Punkte #2/#3). Bis dahin
+  Telefon-/E-Mail-CTA.
+* Diese Landingpages sind eine **taktische Ausnahme** für echte URLs; sie lösen
+  **nicht** die generelle Nicht-Indexierbarkeit der ~40 SPA-Themenseiten
+  (offener Punkt #6, „eigenes Projekt").
+* Später ergänzbar: echte Standort-/Team-Fotos (statt gebrandeter OG-Platzhalter)
+  und – bei genügend Bewertungen – `aggregateRating` im JSON-LD.
+
+---
+
 ## [2026-07-19] Bugfix: Team-Profile (Über uns) und mobiles Menü öffneten nicht (createPortal fehlte)
 
 **Bearbeiter:** Claude (Claude Code, Opus 4.8) · beauftragt durch Kunde
