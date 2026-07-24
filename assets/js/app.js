@@ -244,8 +244,8 @@ function Nav({ page, setPage, lang, setLang, t }) {
     { label: 'Insights', altLabel: 'Insights', key: 'insights' },
     { label: lang==='DE'?'Über uns':'About us', altLabel: lang==='DE'?'About us':'Über uns', key: 'ueber-uns', children: [
       { label: lang==='DE'?'Team':'Team', key: 'ueber-uns' },
-      { label: lang==='DE'?'Steuerberater Berlin':'Tax Advisor Berlin', href: lang==='DE'?'/steuerberater-berlin/':'/en/tax-advisor-berlin/' },
-      { label: lang==='DE'?'Steuerberater Köln':'Tax Advisor Cologne', href: lang==='DE'?'/steuerberater-koeln/':'/en/tax-advisor-cologne/' },
+      { label: lang==='DE'?'Steuerberater Berlin':'Tax Advisor Berlin', key: 'steuerberater-berlin' },
+      { label: lang==='DE'?'Steuerberater Köln':'Tax Advisor Cologne', key: 'steuerberater-koeln' },
     ]},
     { label: lang==='DE'?'Karriere':'Careers', altLabel: lang==='DE'?'Careers':'Karriere', key: 'karriere' },
     { label: lang==='DE'?'Kanzleinachfolge':'Practice Succession', altLabel: lang==='DE'?'Practice Succession':'Kanzleinachfolge', key: 'kanzleinachfolge' },
@@ -416,12 +416,12 @@ function Footer({ setPage, lang, t }) {
       e('div', { style:{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'20px', paddingTop:'22px', paddingBottom:'22px', borderBottom:'1px solid rgba(255,255,255,.12)' } },
         e('div', null,
           // Städtename verlinkt auf die lokale Landingpage (SEO: sitewide interne Verlinkung)
-          e('a', { href: isDE ? '/steuerberater-berlin/' : '/en/tax-advisor-berlin/', style:{ ...lbl, display:'inline-block', textDecoration:'none' } }, isDE ? 'Steuerberater Berlin' : 'Tax Advisor Berlin'),
+          e('a', { href: '#steuerberater-berlin', style:{ ...lbl, display:'inline-block', textDecoration:'none' } }, isDE ? 'Steuerberater Berlin' : 'Tax Advisor Berlin'),
           e('a', { href:'https://www.google.com/maps/place/NSBB+Steuerberatungsgesellschaft+mbH/@52.4293359,13.2562634,19z/data=!4m15!1m8!3m7!1s0x47a85bcd32214c33:0xc49996f097d43f61!2sBerlepschstra%C3%9Fe+1,+14165+Berlin!3b1!8m2!3d52.429461!4d13.2565531!16s%2Fg%2F11b8v5lfv2!3m5!1s0x47a85bee320dfedf:0xd5c5592d1cbe082d!8m2!3d52.4294067!4d13.2565013!16s%2Fg%2F11qpl7gh9y', target:'_blank', rel:'noopener noreferrer', style:{ ...body, textDecoration:'none' } }, 'Berlepschstr. 1, 14165 Berlin'),
           e('a', { href:'tel:+493081580930', style:{ ...lnk, marginTop:'5px' } }, '+49 30 815 80 93'),
         ),
         e('div', null,
-          e('a', { href: isDE ? '/steuerberater-koeln/' : '/en/tax-advisor-cologne/', style:{ ...lbl, display:'inline-block', textDecoration:'none' } }, isDE ? 'Steuerberater Köln' : 'Tax Advisor Cologne'),
+          e('a', { href: '#steuerberater-koeln', style:{ ...lbl, display:'inline-block', textDecoration:'none' } }, isDE ? 'Steuerberater Köln' : 'Tax Advisor Cologne'),
           e('a', { href:'https://www.google.com/maps/place/NSBB+Steuerberatungsgesellschaft+mbH/@50.9286295,6.9619573,18z/data=!3m1!4b1!4m6!3m5!1s0x47bf251aeb6f96e7:0xe6cbbac13cb5a3c8!8m2!3d50.9286278!4d6.9632448!16s%2Fg%2F11lkz0nrsq', target:'_blank', rel:'noopener noreferrer', style:{ ...body, textDecoration:'none' } }, 'Holzmarkt 2/2A, 50676 Köln'),
           e('a', { href:'tel:+492219730640', style:{ ...lnk, marginTop:'5px' } }, '+49 221 973 064 0'),
         ),
@@ -574,8 +574,8 @@ function HomePage({ setPage, lang, t }) {
               // Mobil in eigener Zeile darunter (SEO-Verlinkung).
               e('div', { className:'hero-stats-locations', style:{ display:'flex', flexDirection:'column', gap:'3px' } },
                 e('p', { className: 'text-xs font-medium', style:{ color:'var(--subtle)', fontFamily:"'DM Sans',sans-serif", letterSpacing:'.02em', marginBottom:'2px' } }, isDE?'Standorte':'Offices'),
-                e('a', { href: isDE?'/steuerberater-berlin/':'/en/tax-advisor-berlin/', style:{ color:'var(--accent)', fontWeight:600, fontSize:'14px', textDecoration:'none', fontFamily:"'DM Sans',sans-serif" } }, isDE?'Steuerberater Berlin':'Tax Advisor Berlin'),
-                e('a', { href: isDE?'/steuerberater-koeln/':'/en/tax-advisor-cologne/', style:{ color:'var(--accent)', fontWeight:600, fontSize:'14px', textDecoration:'none', fontFamily:"'DM Sans',sans-serif" } }, isDE?'Steuerberater Köln':'Tax Advisor Cologne'),
+                e('a', { href: '#steuerberater-berlin', style:{ color:'var(--accent)', fontWeight:600, fontSize:'14px', textDecoration:'none', fontFamily:"'DM Sans',sans-serif" } }, isDE?'Steuerberater Berlin':'Tax Advisor Berlin'),
+                e('a', { href: '#steuerberater-koeln', style:{ color:'var(--accent)', fontWeight:600, fontSize:'14px', textDecoration:'none', fontFamily:"'DM Sans',sans-serif" } }, isDE?'Steuerberater Köln':'Tax Advisor Cologne'),
               ),
             ),
           ),
@@ -3654,7 +3654,7 @@ function KontaktPage({ setPage, lang, t, kontaktPreset, setKontaktPreset }) {
                   e(Ico,{name:'phone',size:14}), loc.tel
                 ),
                 // Link zur lokalen Landingpage (SEO: interne Verlinkung auf echte URL)
-                e('a', { href: loc.city==='Berlin' ? (isDE?'/steuerberater-berlin/':'/en/tax-advisor-berlin/') : (isDE?'/steuerberater-koeln/':'/en/tax-advisor-cologne/'), style:{ display:'inline-flex', alignItems:'center', gap:'6px', fontSize:'13px', fontWeight:600, color:'var(--accent)', fontFamily:"'DM Sans',sans-serif", textDecoration:'none', marginTop:'8px' } },
+                e('a', { href: loc.city==='Berlin' ? '#steuerberater-berlin' : '#steuerberater-koeln', style:{ display:'inline-flex', alignItems:'center', gap:'6px', fontSize:'13px', fontWeight:600, color:'var(--accent)', fontFamily:"'DM Sans',sans-serif", textDecoration:'none', marginTop:'8px' } },
                   (isDE?'Steuerberater ':'Tax advisor ') + loc.city, ' →'
                 ),
               ),
@@ -5189,10 +5189,194 @@ function CookieBanner({ lang }) {
 
 function isDE_skip(lang){ return lang==='DE' ? 'Zum Inhalt springen' : 'Skip to content'; }
 
+/* ─────────────────────────────────────────────────────────
+   STANDORTSEITEN (Berlin / Köln) – echte SPA-Seiten mit
+   identischem Header (Nav) und identischer Hero (PageHero).
+   Die statischen HTML-Dateien bleiben zusätzlich für SEO bestehen.
+───────────────────────────────────────────────────────── */
+const STANDORT_DATA = {
+  berlin: {
+    teamStandort: 'Berlin',
+    eyebrow: { de:'Standort Berlin · Zehlendorf', en:'Berlin office · Zehlendorf' },
+    title:   { de:'Steuerberater in', en:'Tax Advisor in' }, accentDe:'Berlin.', accentEn:'Berlin.',
+    sub: { de:['Digital arbeitende Steuerberatung in Berlin-Zehlendorf –','für Unternehmen, Privatpersonen und international tätige Mandanten.'],
+           en:['A digitally run tax advisory firm in Berlin-Zehlendorf –','for companies, private individuals and internationally active clients.'] },
+    intro: { de:'Von der Berlepschstraße aus begleiten wir Unternehmen, Unternehmensgruppen und Privatpersonen – von der laufenden Steuerberatung bis zu komplexen Gestaltungsfragen. Steuerliche Entscheidungen denken wir nie isoliert, sondern immer im Zusammenhang mit Ihren langfristigen Zielen. Als unabhängiges Mitglied des weltweiten TGS-Netzwerks begleiten wir auch grenzüberschreitende Sachverhalte aus einer Hand.',
+             en:'From Berlepschstraße, we support companies, corporate groups and private individuals – from ongoing tax advice to complex structuring questions. We never view tax decisions in isolation, but always in the context of your long-term goals. As an independent member of the worldwide TGS network, we also handle cross-border matters from a single source.' },
+    servicesHead: { de:'Unsere Leistungen als Steuerberater in Berlin', en:'Our Services as a Tax Advisor in Berlin' },
+    servicesSub: { de:'Unser Anspruch: persönliche Beratung, klare Lösungen und langfristige Perspektiven – für den Mittelstand, für Unternehmensgruppen und für private Vermögen.', en:'Our standard: personal advice, clear solutions and long-term perspectives – for owner-managed businesses, corporate groups and private wealth.' },
+    svcUnternehmen: { de:'Wir übernehmen Ihre laufende Steuerberatung, entwickeln steuerliche Gestaltungen und begleiten Sie betriebswirtschaftlich – von der Jahresabschlusserstellung über Finanz- und Lohnbuchhaltung bis zur Vorbereitung von Bank- und Finanzierungsgesprächen.', en:'We handle your ongoing tax advice, develop tax structuring options and support you on the business side – from annual financial statements and financial and payroll accounting to the preparation of bank and financing discussions.' },
+    svcIntl: { de:'Wir beraten bei Inbound- und Outbound-Sachverhalten, bei der Errichtung von Auslandsgesellschaften und Betriebsstätten sowie bei Verrechnungspreisen – eigenständig und bei Bedarf gemeinsam mit unseren TGS-Partnern weltweit.', en:'We advise on inbound and outbound matters, on setting up foreign subsidiaries and permanent establishments, and on transfer pricing – independently and, where needed, together with our TGS partners worldwide.' },
+    svcPrivat: { de:'Wir begleiten Sie bei der Einkommensteuer, bei Erbschaft und Schenkung, bei Immobilien und bei der Vermögensnachfolge – vorausschauend und mit Blick auf die gesamte Vermögenssituation.', en:'We support you with income tax, inheritance and gifts, real estate and succession planning – with foresight and a view of your overall financial situation.' },
+    ansprechHead: { de:'Ihre Ansprechpartner in Berlin', en:'Your Contacts in Berlin' },
+    ansprechSub: { de:'Am Standort Berlin ist bei jedem Erstgespräch ein Berufsträger persönlich präsent – kein Callcenter, kein ständiger Wechsel.', en:'A qualified professional is personally present at every initial meeting – no call centre, no constant change of contact.' },
+    digitalHead: { de:'Digitale Zusammenarbeit', en:'Working Together Digitally' },
+    digitalText: { de:'Die Zusammenarbeit mit NSBB ist vollständig digital möglich. Über DATEV, gesicherte Cloud-Prozesse und digitale Belegübermittlung übermitteln Sie Unterlagen ortsunabhängig; Dokumente unterschreiben Sie per eSign. Feste Ansprechpartner, klare Abläufe und kurze Kommunikationswege sorgen dafür, dass Sie jederzeit den Überblick behalten und Zeit für Ihr Unternehmen gewinnen. Ob Sie in Berlin ansässig sind oder überregional arbeiten, spielt für die Zusammenarbeit keine Rolle.', en:'Working with NSBB can be entirely digital. Using DATEV, secure cloud processes and digital document submission, you send us your records from anywhere; documents are signed via eSign. Dedicated contacts, clear procedures and short communication paths keep you in control at all times and free up time for your business. Whether you are based in Berlin or work across Germany makes no difference to how we collaborate.' },
+    anfahrtHead: { de:'So finden Sie uns in Berlin', en:'How to Find Us in Berlin' },
+    addr: ['NSBB Steuerberatungsgesellschaft mbH','Berlepschstraße 1','14165 Berlin (Zehlendorf)'],
+    phoneDisp: '+49 30 8158093-0', phoneTel: '+493081580930',
+    anfahrtNote: { de:'Gut erreichbar in der Nähe des S-Bahnhofs Zehlendorf, mit Parkmöglichkeiten vor Ort. Rufen Sie uns an oder vereinbaren Sie ein unverbindliches Erstgespräch.', en:'Conveniently located near Zehlendorf S-Bahn station, with parking on site. Call us or arrange a no-obligation initial consultation.' },
+    mapsUrl: 'https://www.google.com/maps/place/NSBB+Steuerberatungsgesellschaft+mbH/@52.4293359,13.2562634,19z',
+    faq: { de:[
+      { q:'Was kostet ein Steuerberater in Berlin?', a:'Die Vergütung richtet sich nach der Steuerberatervergütungsverordnung (StBVV). Nach einem kurzen Erstgespräch erhalten Sie von uns ein transparentes, auf Ihren Bedarf zugeschnittenes Angebot.' },
+      { q:'Kann ich problemlos von meinem bisherigen Steuerberater zu NSBB wechseln?', a:'Ja. Ein Wechsel ist jederzeit möglich; die Übernahme Ihrer Unterlagen und Daten koordinieren wir für Sie.' },
+      { q:'Muss ich vor Ort sein oder geht alles digital?', a:'Die Zusammenarbeit ist vollständig digital möglich. Persönliche Termine in unserem Büro in Zehlendorf sind selbstverständlich ebenso möglich.' },
+      { q:'Betreuen Sie auch internationale Sachverhalte aus Berlin?', a:'Ja. Grenzüberschreitende Fragestellungen begleiten wir eigenständig und bei Bedarf gemeinsam mit unserem weltweiten TGS-Netzwerk.' },
+      { q:'Für wen arbeiten Sie in Berlin?', a:'Für Unternehmen und Unternehmensgruppen, Freiberufler sowie Privatpersonen mit anspruchsvollen steuerlichen Fragestellungen – national wie international.' },
+    ], en:[
+      { q:'How much does a tax advisor in Berlin cost?', a:'Fees are based on the German Tax Advisor Remuneration Regulation (StBVV). After a short initial conversation, we provide a transparent quote tailored to your needs.' },
+      { q:'Can I switch from my current tax advisor to NSBB easily?', a:'Yes. You can switch at any time; we coordinate the handover of your documents and data for you.' },
+      { q:'Do I have to come in person, or can everything be done digitally?', a:'Collaboration can be fully digital. In-person meetings at our Zehlendorf office are of course also possible.' },
+      { q:'Do you handle international matters from Berlin?', a:'Yes. We manage cross-border questions independently and, where required, together with our worldwide TGS network.' },
+      { q:'Who do you work with in Berlin?', a:'Companies and corporate groups, freelancers and private individuals with demanding tax questions – both national and international.' },
+    ] },
+  },
+  koeln: {
+    teamStandort: 'Köln',
+    eyebrow: { de:'Standort Köln · Rheinauhafen', en:'Cologne office · Rheinauhafen' },
+    title:   { de:'Steuerberater in', en:'Tax Advisor in' }, accentDe:'Köln.', accentEn:'Cologne.',
+    sub: { de:['Digitale Steuerberatung am Rheinauhafen –','für Unternehmen, Freiberufler, Privatpersonen und international tätige Mandanten.'],
+           en:['A digital tax advisory firm on the Rheinauhafen –','for companies, freelancers, private individuals and internationally active clients.'] },
+    intro: { de:'Vom Holzmarkt aus betreuen wir Mandanten im Rheinland und darüber hinaus. Unser Anspruch: Vermögen schützen, Chancen früh erkennen und tragfähige Lösungen entwickeln – nicht als Einzelmaßnahme, sondern mit Blick auf Ihre gesamte unternehmerische und private Entwicklung. Über das TGS-Netzwerk sind wir zugleich international vernetzt.',
+             en:'From Holzmarkt, we support clients in the Rhineland and beyond. Our aim: to protect wealth, spot opportunities early and develop durable solutions – with a view of your overall business and private development. Through the TGS network, we are internationally connected at the same time.' },
+    servicesHead: { de:'Unsere Leistungen als Steuerberater in Köln', en:'Our Services as a Tax Advisor in Cologne' },
+    servicesSub: { de:'Drei Schwerpunkte, ein Anspruch: persönliche Beratung, klare Lösungen und langfristige Perspektiven.', en:'Three areas of focus, one standard: personal advice, clear solutions and long-term perspectives.' },
+    svcUnternehmen: { de:'Von der laufenden Steuerberatung über die Gestaltungsberatung bis zur betriebswirtschaftlichen Begleitung – wir unterstützen Sie in allen Phasen, von der Gründung über das laufende Geschäft bis zur Nachfolge.', en:'From ongoing tax advice and structuring to business-management support – we assist you through every phase, from formation and day-to-day operations to succession.' },
+    svcIntl: { de:'Für Unternehmen und Privatpersonen mit Auslandsbezug beraten wir bei grenzüberschreitenden Strukturen, Inbound- und Outbound-Sachverhalten sowie Verrechnungspreisen – koordiniert und aus einer Hand.', en:'For companies and individuals with international ties, we advise on cross-border structures, inbound and outbound matters and transfer pricing – coordinated and from a single source.' },
+    svcPrivat: { de:'Einkommensteuer, Erbschaft und Schenkung, Immobilien und Vermögensnachfolge: Wir beraten persönlich und vorausschauend, damit private steuerliche Entscheidungen zu Ihrer Lebens- und Vermögensplanung passen.', en:'Income tax, inheritance and gifts, real estate and succession planning: we advise personally and with foresight, so that private tax decisions fit your life and wealth planning.' },
+    ansprechHead: { de:'Ihre Ansprechpartner in Köln', en:'Your Contacts in Cologne' },
+    ansprechSub: { de:'Zuhören steht bei uns am Anfang – erst nach der genauen Klärung Ihres Anliegens bestimmen wir gemeinsam den passenden Leistungsumfang.', en:'Listening comes first – only once we fully understand your situation do we define the right scope of services together with you.' },
+    digitalHead: { de:'Digitale Zusammenarbeit', en:'Working Together Digitally' },
+    digitalText: { de:'Sie arbeiten mit uns so digital, wie Sie möchten: Belege und Unterlagen tauschen Sie über DATEV und gesicherte Cloud-Wege aus, feste Ansprechpartner sorgen für kurze Wege und schnelle Antworten. Das spart Zeit, schafft Transparenz und macht den Standort zweitrangig – ob Sie im Rheinland sitzen oder bundesweit tätig sind, bleibt die Zusammenarbeit effizient und persönlich.', en:'You work with us as digitally as you like: you share records and documents via DATEV and secure cloud channels, and dedicated contacts ensure short paths and fast answers. This saves time, creates transparency and makes location secondary – whether you are based in the Rhineland or operate nationwide, our collaboration stays efficient and personal.' },
+    anfahrtHead: { de:'So finden Sie uns in Köln', en:'How to Find Us in Cologne' },
+    addr: ['NSBB Steuerberatungsgesellschaft mbH','Holzmarkt 2/2A','50676 Köln (Rheinauhafen / Altstadt-Süd)'],
+    phoneDisp: '+49 221 973064-0', phoneTel: '+492219730640',
+    anfahrtNote: { de:'Zentral gelegen und gut mit öffentlichen Verkehrsmitteln erreichbar. Rufen Sie uns an oder vereinbaren Sie ein unverbindliches Erstgespräch.', en:'Centrally located and easy to reach by public transport. Call us or arrange a no-obligation initial consultation.' },
+    mapsUrl: 'https://www.google.com/maps/place/NSBB+Steuerberatungsgesellschaft+mbH/@50.9286295,6.9619573,18z',
+    faq: { de:[
+      { q:'Was kostet ein Steuerberater in Köln?', a:'Unsere Vergütung richtet sich nach der Steuerberatervergütungsverordnung (StBVV). Im Erstgespräch klären wir Ihren Bedarf und erstellen Ihnen ein transparentes Angebot.' },
+      { q:'Ist ein Wechsel meines Steuerberaters aufwendig?', a:'Nein. Wir übernehmen die Abstimmung mit Ihrem bisherigen Berater und die Übernahme Ihrer Daten, sodass der Wechsel für Sie reibungslos verläuft.' },
+      { q:'Kann die Beratung vollständig digital ablaufen?', a:'Ja. Sie können vollständig digital mit uns arbeiten – persönliche Termine am Rheinauhafen sind jederzeit möglich.' },
+      { q:'Beraten Sie auch bei internationalen Steuerfragen?', a:'Ja. Auslandssachverhalte begleiten wir eigenständig und bei Bedarf gemeinsam mit unseren TGS-Partnern weltweit.' },
+      { q:'Welche Mandanten betreuen Sie in Köln?', a:'Unternehmen aller Rechtsformen und Größen, Freiberufler sowie Privatpersonen mit anspruchsvollen steuerlichen Fragestellungen.' },
+    ], en:[
+      { q:'How much does a tax advisor in Cologne cost?', a:'Our fees are based on the German Tax Advisor Remuneration Regulation (StBVV). In an initial meeting we clarify your needs and provide a transparent quote.' },
+      { q:'Is switching tax advisors complicated?', a:'No. We handle the coordination with your previous advisor and the transfer of your data, so the switch is smooth for you.' },
+      { q:'Can the advice be handled entirely digitally?', a:'Yes. You can work with us fully digitally – in-person meetings at the Rheinauhafen are always possible.' },
+      { q:'Do you also advise on international tax matters?', a:'Yes. We handle international matters independently and, where needed, together with our TGS partners worldwide.' },
+      { q:'Which clients do you support in Cologne?', a:'Companies of all legal forms and sizes, freelancers and private individuals with demanding tax questions.' },
+    ] },
+  },
+};
+
+function StandortAccordion({ items }) {
+  const [open, setOpen] = React.useState(null);
+  return e('div', { style:{ maxWidth:'720px' } },
+    items.map((it, i) => e('div', { key:i, style:{ borderBottom:'1px solid var(--border)' } },
+      e('button', { onClick:()=>setOpen(open===i?null:i), 'aria-expanded': open===i, style:{ width:'100%', textAlign:'left', background:'none', border:'none', cursor:'pointer', padding:'20px 0', display:'flex', justifyContent:'space-between', alignItems:'center', gap:'16px' } },
+        e('span', { style:{ fontFamily:"'Cormorant Garamond',serif", fontSize:'1.3rem', color:'#1A1917', lineHeight:1.25 } }, it.q),
+        e('span', { 'aria-hidden':'true', style:{ color:'var(--accent)', fontSize:'1.5rem', flexShrink:0, fontFamily:"'DM Sans',sans-serif", lineHeight:1 } }, open===i ? '–' : '+')
+      ),
+      open===i && e('p', { style:{ padding:'0 0 20px', color:'var(--muted)', lineHeight:1.7, maxWidth:'660px' } }, it.a)
+    ))
+  );
+}
+
+function StandortPage({ setPage, lang, t, setKontaktPreset, city }) {
+  useScrollAnim();
+  const isDE = lang === 'DE';
+  const d = STANDORT_DATA[city];
+  const L = (o) => isDE ? o.de : o.en;
+  const go = (k) => { setPage(k); window.scrollTo(0,0); };
+  const people = team.filter(p => p.standort === d.teamStandort);
+  const secH2 = { fontSize:'clamp(1.6rem,3vw,2.2rem)', color:'#1A1917', fontFamily:"'Cormorant Garamond',serif", lineHeight:1.15 };
+  const services = [
+    { key:'leistungen-unternehmen', h:{de:'Für Unternehmen',en:'For companies'}, p:d.svcUnternehmen, more:{de:'Mehr zur Beratung für Unternehmen',en:'More on advice for companies'} },
+    { key:'leistungen-international', h:{de:'Internationales Steuerrecht',en:'International tax law'}, p:d.svcIntl, more:{de:'Mehr zum internationalen Steuerrecht',en:'More on international tax law'} },
+    { key:'leistungen-privat', h:{de:'Für Privatpersonen',en:'For private individuals'}, p:d.svcPrivat, more:{de:'Mehr zur Beratung für Privatpersonen',en:'More on advice for private individuals'} },
+  ];
+  return e('div', { className:'page-enter' },
+    e(PageHero, { label:L(d.eyebrow), fit:true, title:L(d.title), accent:isDE?d.accentDe:d.accentEn, subtitle:isDE?d.sub.de:d.sub.en }),
+
+    e('section', { style:{ backgroundColor:'white', paddingTop:'40px', paddingBottom:'80px' } },
+      e('div', { className:'max-w-site mx-auto px-5 md:px-8' },
+        e('p', { className:'fade-up', style:{ maxWidth:'760px', color:'var(--muted)', lineHeight:1.8, marginBottom:'44px' } }, L(d.intro)),
+        e('div', { className:'max-w-2xl', style:{ marginBottom:'32px' } },
+          e('h2', { className:'font-display', style:{ ...secH2, marginBottom:'10px' } }, L(d.servicesHead)),
+          e('p', { style:{ color:'var(--muted)' } }, L(d.servicesSub))
+        ),
+        e('div', { className:'grid grid-cols-1 md:grid-cols-3', style:{ gap:'24px' } },
+          services.map(s => e('div', { key:s.key, className:'fade-up', style:{ background:'#fff', border:'1px solid var(--border)', borderRadius:'1.5rem', padding:'2.25rem', boxShadow:'0 1px 3px rgba(0,0,0,.05)' } },
+            e('h3', { style:{ fontFamily:"'Cormorant Garamond',serif", fontSize:'1.4rem', color:'#1A1917', marginBottom:'12px' } }, L(s.h)),
+            e('p', { style:{ color:'var(--muted)', fontSize:'.95rem', lineHeight:1.7, marginBottom:'18px' } }, L(s.p)),
+            e('button', { onClick:()=>go(s.key), style:{ background:'none', border:'none', cursor:'pointer', color:'var(--accent)', fontWeight:600, fontSize:'.9rem', fontFamily:"'DM Sans',sans-serif", padding:0 } }, L(s.more)+' →')
+          ))
+        )
+      )
+    ),
+
+    e('section', { style:{ backgroundColor:'var(--offwhite)', paddingTop:'72px', paddingBottom:'72px' } },
+      e('div', { className:'max-w-site mx-auto px-5 md:px-8' },
+        e('div', { className:'max-w-2xl', style:{ marginBottom:'28px' } },
+          e('h2', { className:'font-display', style:{ ...secH2, marginBottom:'10px' } }, L(d.ansprechHead)),
+          e('p', { style:{ color:'var(--muted)' } }, L(d.ansprechSub))
+        ),
+        e('div', { className:'grid grid-cols-1 sm:grid-cols-2', style:{ gap:'22px', maxWidth:'760px' } },
+          people.map(p => e('div', { key:p.name, style:{ background:'#fff', border:'1px solid var(--border)', borderRadius:'1.25rem', padding:'2rem 1.5rem', textAlign:'center', boxShadow:'0 1px 3px rgba(0,0,0,.05)' } },
+            e('div', { style:{ width:'120px', height:'120px', borderRadius:'50%', overflow:'hidden', margin:'0 auto 16px', border:'3px solid var(--accent-subtle)', boxShadow:'0 4px 16px rgba(0,0,0,.08)' } },
+              e('img', { src:p.photo, alt:p.name, loading:'lazy', style:{ width:'100%', height:'100%', objectFit:'cover', objectPosition:p.imgPos||'center 10%' } })
+            ),
+            e('p', { style:{ fontSize:'.7rem', fontWeight:600, letterSpacing:'.1em', textTransform:'uppercase', color:'var(--accent)', fontFamily:"'DM Sans',sans-serif" } }, isDE?p.title:(p.titleEN||p.title)),
+            e('h3', { style:{ fontFamily:"'Cormorant Garamond',serif", fontSize:'1.35rem', color:'#1A1917', marginTop:'4px', lineHeight:1.15 } }, p.name),
+            e('p', { style:{ fontSize:'.85rem', color:'var(--muted)', marginTop:'4px', fontFamily:"'DM Sans',sans-serif" } }, isDE?p.profession:(p.professionEN||p.profession))
+          ))
+        ),
+        e('div', { style:{ marginTop:'26px', textAlign:'center', maxWidth:'760px' } },
+          e('button', { onClick:()=>go('ueber-uns'), style:{ display:'inline-flex', alignItems:'center', gap:'.45rem', background:'var(--accent-subtle)', color:'var(--accent)', border:'none', borderRadius:'8px', padding:'9px 18px', fontSize:'.9rem', fontWeight:600, cursor:'pointer', fontFamily:"'DM Sans',sans-serif" } }, (isDE?'Team kennenlernen':'Meet the team')+' →')
+        )
+      )
+    ),
+
+    e('section', { style:{ backgroundColor:'white', paddingTop:'72px', paddingBottom:'72px' } },
+      e('div', { className:'max-w-site mx-auto px-5 md:px-8' },
+        e('h2', { className:'font-display', style:{ ...secH2, marginBottom:'16px' } }, L(d.digitalHead)),
+        e('p', { style:{ maxWidth:'760px', color:'var(--muted)', lineHeight:1.8 } }, L(d.digitalText))
+      )
+    ),
+
+    e('section', { style:{ backgroundColor:'var(--offwhite)', paddingTop:'72px', paddingBottom:'72px' } },
+      e('div', { className:'max-w-site mx-auto px-5 md:px-8' },
+        e('h2', { className:'font-display', style:{ ...secH2, marginBottom:'20px' } }, L(d.anfahrtHead)),
+        e('div', { style:{ background:'#fff', border:'1px solid var(--border)', borderRadius:'1.25rem', padding:'2rem', maxWidth:'720px', boxShadow:'0 1px 3px rgba(0,0,0,.05)' } },
+          e('p', { style:{ color:'#1A1917', lineHeight:1.9, fontFamily:"'DM Sans',sans-serif" } },
+            e('strong', null, d.addr[0]), e('br', null),
+            d.addr[1], e('br', null), d.addr[2], e('br', null),
+            (isDE?'Telefon: ':'Phone: '), e('a', { href:'tel:'+d.phoneTel, style:{ color:'var(--accent)', fontWeight:600, textDecoration:'none' } }, d.phoneDisp)
+          ),
+          e('p', { style:{ color:'var(--muted)', marginTop:'12px', lineHeight:1.7 } }, L(d.anfahrtNote)),
+          e('a', { href:d.mapsUrl, target:'_blank', rel:'noopener noreferrer', style:{ display:'inline-flex', alignItems:'center', gap:'6px', marginTop:'14px', color:'var(--accent)', fontWeight:600, textDecoration:'none', fontFamily:"'DM Sans',sans-serif" } }, (isDE?'Auf Google Maps ansehen':'View on Google Maps')+' →')
+        )
+      )
+    ),
+
+    e('section', { style:{ backgroundColor:'white', paddingTop:'72px', paddingBottom:'80px' } },
+      e('div', { className:'max-w-site mx-auto px-5 md:px-8' },
+        e('h2', { className:'font-display', style:{ ...secH2, marginBottom:'20px' } }, isDE?'Häufige Fragen':'Frequently Asked Questions'),
+        e(StandortAccordion, { items: isDE ? d.faq.de : d.faq.en })
+      )
+    ),
+
+    e(ContactCTA, { setPage, t, setKontaktPreset })
+  );
+}
+function SteuerberaterBerlinPage(props){ return e(StandortPage, Object.assign({}, props, { city:'berlin' })); }
+function SteuerberaterKoelnPage(props){ return e(StandortPage, Object.assign({}, props, { city:'koeln' })); }
+
+
 function App() {
   const [page, setPageState] = useState(() => {
     const h = window.location.hash.replace('#','');
-    const validPages = ['home','leistungen','leistungen-unternehmen','leistungen-unternehmen-leistungen','leistungen-unternehmen-laufend','leistungen-unternehmen-gestaltung','leistungen-unternehmen-bwl','leistungen-unternehmen-branchen','branche-ecommerce','branche-bau','branche-immobilien','branche-international','branche-startup','branche-aerzte','leistungen-international','intl-wegzug','intl-wohnsitz','intl-dba','intl-einkuenfte','intl-immobilien','intl-erbschaft','intl-schenkung','intl-rueckkehr','intl-grenzgaenger','intl-vermoegen','leistungen-privat','digital','tgs','insights','faq','ueber-uns','karriere','karriere-steuerberater','karriere-steuerfachwirt','karriere-steuerfachangestellte','karriere-bilanzbuchhalter','karriere-initiativbewerbung','kanzleinachfolge','kontakt','impressum','datenschutz'];
+    const validPages = ['home','leistungen','leistungen-unternehmen','leistungen-unternehmen-leistungen','leistungen-unternehmen-laufend','leistungen-unternehmen-gestaltung','leistungen-unternehmen-bwl','leistungen-unternehmen-branchen','branche-ecommerce','branche-bau','branche-immobilien','branche-international','branche-startup','branche-aerzte','leistungen-international','intl-wegzug','intl-wohnsitz','intl-dba','intl-einkuenfte','intl-immobilien','intl-erbschaft','intl-schenkung','intl-rueckkehr','intl-grenzgaenger','intl-vermoegen','leistungen-privat','digital','tgs','insights','faq','ueber-uns','karriere','karriere-steuerberater','karriere-steuerfachwirt','karriere-steuerfachangestellte','karriere-bilanzbuchhalter','karriere-initiativbewerbung','kanzleinachfolge','kontakt','impressum','datenschutz','steuerberater-berlin','steuerberater-koeln'];
     return validPages.includes(h) ? h : 'home';
   });
   const setPage = (p) => { setPageState(p); window.location.hash = p === 'home' ? '' : p; };
@@ -5201,8 +5385,14 @@ function App() {
   const t = T[lang];
 
   useEffect(() => { window.scrollTo(0, 0); }, [page]);
+  // Auf Hash-Änderungen reagieren (interne #route-Links, Zurück/Vor-Button des Browsers)
+  useEffect(() => {
+    const onHash = () => { const h = window.location.hash.replace('#',''); setPageState(h || 'home'); };
+    window.addEventListener('hashchange', onHash);
+    return () => window.removeEventListener('hashchange', onHash);
+  }, []);
   useEffect(() => { document.documentElement.lang = lang.toLowerCase(); }, [lang]);
-  const pageTitles = {'home':'NSBB – Steuerberatung Berlin & Köln | Modern. Digital. Persönlich.', 'leistungen':'Leistungen | NSBB Steuerberatung', 'leistungen-unternehmen':'Steuerberatung für Unternehmen | NSBB', 'leistungen-international':'Internationales Steuerrecht | NSBB', 'leistungen-privat':'Steuerberatung für Privatpersonen | NSBB', 'digital':'Digitale Kanzlei | NSBB Steuerberatung', 'tgs':'TGS International Netzwerk | NSBB', 'faq':'Häufige Fragen | NSBB Steuerberatung', 'ueber-uns':'Über uns & Team | NSBB Steuerberatung', 'kontakt':'Kontakt aufnehmen | NSBB Steuerberatung Berlin & Köln', 'karriere':'Karriere bei NSBB | Steuerberater gesucht', 'kanzleinachfolge':'Kanzleinachfolge | NSBB Steuerberatung', 'impressum':'Impressum | NSBB Steuerberatung', 'datenschutz':'Datenschutz | NSBB Steuerberatung'};
+  const pageTitles = {'home':'NSBB – Steuerberatung Berlin & Köln | Modern. Digital. Persönlich.', 'leistungen':'Leistungen | NSBB Steuerberatung', 'leistungen-unternehmen':'Steuerberatung für Unternehmen | NSBB', 'leistungen-international':'Internationales Steuerrecht | NSBB', 'leistungen-privat':'Steuerberatung für Privatpersonen | NSBB', 'digital':'Digitale Kanzlei | NSBB Steuerberatung', 'tgs':'TGS International Netzwerk | NSBB', 'faq':'Häufige Fragen | NSBB Steuerberatung', 'ueber-uns':'Über uns & Team | NSBB Steuerberatung', 'kontakt':'Kontakt aufnehmen | NSBB Steuerberatung Berlin & Köln', 'karriere':'Karriere bei NSBB | Steuerberater gesucht', 'kanzleinachfolge':'Kanzleinachfolge | NSBB Steuerberatung', 'impressum':'Impressum | NSBB Steuerberatung', 'datenschutz':'Datenschutz | NSBB Steuerberatung', 'steuerberater-berlin':'Steuerberater Berlin – digital & persönlich | NSBB', 'steuerberater-koeln':'Steuerberater Köln – digital & persönlich | NSBB'};
   useEffect(() => { const t = pageTitles[page] || 'NSBB – Steuerberatung Berlin & Köln'; document.title = t; }, [page, lang]);
 
   const props = { setPage, lang, t, kontaktPreset, setKontaktPreset };
@@ -5249,6 +5439,8 @@ function App() {
     impressum: e(ImpressumPage, props),
     datenschutz: e(DatenschutzPage, props),
     faq: e(FAQPage, props),
+    'steuerberater-berlin': e(SteuerberaterBerlinPage, props),
+    'steuerberater-koeln': e(SteuerberaterKoelnPage, props),
   };
 
   return e('div', null,

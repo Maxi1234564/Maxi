@@ -15,6 +15,50 @@ Format: neueste Einträge oben. Aufbau eines Eintrags siehe Vorlage am Ende.
 
 ---
 
+## [2026-07-24] Standortseiten als echte SPA-Seiten (identischer Header + Hero, In-App)
+
+**Bearbeiter:** Claude (Claude Code, Opus 4.8) · beauftragt durch Kunde
+**Grund:** Auf den (bisher rein statischen) Standortseiten waren Header und
+Hero **nicht 100 % identisch** zum Rest der Website, und beim Klick auf einen
+Menüpunkt wurde man per Vollreload „aus der Website rausgeleitet". Vom Kunden so
+entschieden: die Standortseiten **in die SPA integrieren**.
+
+Cache-Version `app.js`: `?v=20260729` → `?v=20260731` in `index.html`.
+`node --check assets/js/app.js`: fehlerfrei.
+
+### Neu (`assets/js/app.js`)
+* Zwei echte SPA-Seiten **`#steuerberater-berlin`** und **`#steuerberater-koeln`**
+  (`StandortPage` + `SteuerberaterBerlinPage`/`SteuerberaterKoelnPage`,
+  Daten in `STANDORT_DATA`). Sie nutzen die **originale Nav** (Header damit
+  automatisch identisch, inkl. Dropdowns) und die **originale `PageHero`**
+  (Hero damit identisch: Serifen-Titel + grüne Akzentzeile „Berlin."/„Köln.",
+  Eyebrow, Off-White). Inhalt: Intro, drei Leistungs-Karten, Ansprechpartner
+  (Fotos/Positionen aus dem `team`-Datensatz) mit einem „Team kennenlernen"-Link,
+  digitale Zusammenarbeit (Köln ohne eSign), Anfahrt, FAQ-Accordion, Kontakt-CTA.
+  DE + EN.
+* Menü „Über uns" → Berlin/Köln, **Footer**, **Startseiten-Leiste** und die
+  **Kontaktseiten-Karten** verlinken jetzt auf die **In-App-Routen**
+  (`#steuerberater-berlin`/`#steuerberater-koeln`) statt auf die statischen
+  Dateien → **kein Rausleiten**, Navigation bleibt in der App.
+* Neuer `hashchange`-Listener: interne `#route`-Links **und** der Zurück/Vor-Button
+  des Browsers navigieren jetzt korrekt. Routen in `validPages`, Dispatch-Map und
+  `pageTitles` registriert.
+
+### SEO / statische Dateien
+* Die statischen Dateien `steuerberater-berlin/` u. `steuerberater-koeln/` (DE+EN)
+  **bleiben unverändert bestehen** (crawlbar, in `sitemap.xml`, eigener
+  `canonical`/JSON-LD) – sie sind weiter die SEO-Landingpages für Google. Neu ist
+  nur die zusätzliche, optisch identische In-App-Ansicht für Website-Besucher.
+
+### Geprüft (Chromium)
+* `#steuerberater-berlin` direkt geladen: identischer Header (7 Menüpunkte inkl.
+  Dropdown-Pfeile), identische Hero, 3 Leistungen, 2 Profile, FAQ öffnet.
+* In-App-Navigation „Über uns → Steuerberater Köln" ohne Reload; Footer- und
+  Startseiten-Links sowie EN geprüft (Titel „Tax Advisor in Berlin./Cologne.").
+  Keine Konsolenfehler.
+
+---
+
 ## [2026-07-24] Standortseiten: Menüleiste jetzt fest fixiert (position:fixed) wie überall
 
 **Bearbeiter:** Claude (Claude Code, Opus 4.8) · beauftragt durch Kunde
