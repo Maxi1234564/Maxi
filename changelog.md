@@ -15,6 +15,40 @@ Format: neueste Einträge oben. Aufbau eines Eintrags siehe Vorlage am Ende.
 
 ---
 
+## [2026-07-24] Standortseiten: kompakter Hero, ein Team-Link, kein eSign (Köln)
+
+**Bearbeiter:** Claude (Claude Code, Opus 4.8) · beauftragt durch Kunde
+**Grund:** Feinschliff an den vier Standortseiten nach Kundenrückmeldung.
+
+Cache-Version `landing.css`: `?v=20260727` → `?v=20260728` (alle vier Seiten).
+`app.js`/`style.css`/`index.html` unverändert.
+
+### Geändert
+* **Hero kompakter – wie die übrigen Hauptseiten.** In `landing.css` `.lp-hero`
+  von großzügig (Padding 96/112 px, H1 bis 4 rem) auf kompakt reduziert
+  (Padding 56/72 px, H1 `clamp(1.9rem,4.2vw,2.9rem)`). Hero-Höhe jetzt einheitlich
+  ~275 px statt eines großen Blocks.
+* **Hero-Text deutlich gekürzt und in die Seite verlagert.** Der lange Einleitungs­
+  absatz im Hero wurde durch **einen** kurzen Untertitel ersetzt; der ausführlichere
+  Text steht jetzt als Fließtext-Absatz am Anfang des Leistungs-Abschnitts (bleibt
+  so für SEO erhalten, ohne den Hero zu überladen). DE **und** EN.
+* **„Team kennenlernen" nur noch einmal.** Der Link steht jetzt **einmal mittig
+  unter beiden Personen-Boxen** statt je Karte. Die Personen-Karten sind dadurch
+  reine Info-Karten (rundes Foto, Position, Name, Berufstitel) und nicht mehr selbst
+  verlinkt. Neuer Stil `.people-more` (zentrierter Pillen-Link) in `landing.css`;
+  `.person`-Hover-Lift entfernt (nicht mehr klickbar).
+* **Köln: „eSign" entfernt.** Im Abschnitt „Digitale Zusammenarbeit" der Köln-Seiten
+  (DE + EN Cologne) wurde die Erwähnung von eSign gestrichen und der Satz neu
+  formuliert. Die **Berlin**-Seiten erwähnen eSign weiterhin (wie gewünscht).
+* **FAQ** bleibt standardmäßig zugeklappt (unverändert).
+
+### Geprüft (Chromium, 1280 px)
+* Alle vier Seiten: Hero-Höhe einheitlich ~275 px, kurzer Untertitel, Intro-Absatz
+  im Body vorhanden, genau **ein** Team-Link unter den Boxen, Karten nicht mehr
+  verlinkt, je ein `<h1>`. eSign nur noch auf den Berlin-Seiten. Keine Fehler.
+
+---
+
 ## [2026-07-24] Standortseiten: Profile als kompakte Karten (statt Vollprofil-Popup)
 
 **Bearbeiter:** Claude (Claude Code, Opus 4.8) · beauftragt durch Kunde
