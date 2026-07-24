@@ -33,7 +33,7 @@
 <link rel="preload" href="../../assets/fonts/cormorant-garamond-normal-latin.woff2" as="font" type="font/woff2" crossorigin/>
 <link rel="preload" href="../../assets/fonts/dm-sans-normal-latin.woff2" as="font" type="font/woff2" crossorigin/>
 <link rel="stylesheet" href="../../assets/css/fonts.css?v=20260724"/>
-<link rel="stylesheet" href="../../assets/css/landing.css?v=20260725"/>
+<link rel="stylesheet" href="../../assets/css/landing.css?v=20260726"/>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@graph":[
 {"@type":"AccountingService","@id":"https://www.nsbb.de/en/tax-advisor-berlin/#localbusiness","name":"NSBB Steuerberatungsgesellschaft mbH – Berlin","url":"https://www.nsbb.de/en/tax-advisor-berlin/","telephone":"+493081580930","email":"info@nsbb.de","image":"https://www.nsbb.de/assets/images/og-steuerberater-berlin.jpg","priceRange":"$$","address":{"@type":"PostalAddress","streetAddress":"Berlepschstr. 1","postalCode":"14165","addressLocality":"Berlin","addressCountry":"DE"},"geo":{"@type":"GeoCoordinates","latitude":52.42941,"longitude":13.25650},"areaServed":["Berlin","Brandenburg"],"parentOrganization":{"@id":"https://www.nsbb.de/#organization"}},
@@ -105,12 +105,118 @@
     </div>
   </section>
 
-  <section>
+  <section id="ansprechpartner">
     <div class="wrap">
-      <div class="lp-section-head"><h2>Your Contacts in Berlin</h2></div>
-      <p style="max-width:760px;color:var(--muted)">At our Berlin office, <strong style="color:var(--text)">Guido Siebert</strong> (auditor and tax advisor) and <strong style="color:var(--text)">Isabell Schramm</strong> (tax advisor) are your dedicated contacts. A qualified professional is personally present at every initial meeting – no call centre, no constant change of contact. <a href="/#ueber-uns" style="color:var(--accent);font-weight:600">Meet the whole team →</a></p>
+      <div class="lp-section-head">
+        <h2>Your Contacts in Berlin</h2>
+        <p>A qualified professional is personally present at every initial meeting – no call centre, no constant change of contact. Click on a profile for details.</p>
+      </div>
+      <div class="people">
+        <a class="person" href="#profil-gs">
+          <span class="person-photo"><img src="../../assets/images/team-guido-siebert.webp" alt="Guido H. Siebert" loading="lazy" style="object-position:center 20%"/></span>
+          <span class="person-role">Managing Director</span>
+          <span class="person-name">Dipl.-Kfm. Guido H. Siebert</span>
+          <span class="person-prof">Auditor · Tax Advisor</span>
+          <span class="person-cta">View profile →</span>
+        </a>
+        <a class="person" href="#profil-is">
+          <span class="person-photo"><img src="../../assets/images/team-isabell-schramm.webp" alt="Isabell Schramm" loading="lazy" style="object-position:center 8%"/></span>
+          <span class="person-role">Authorized Signatory</span>
+          <span class="person-name">Isabell Schramm</span>
+          <span class="person-prof">Tax Advisor</span>
+          <span class="person-cta">View profile →</span>
+        </a>
+      </div>
+      <p class="people-more"><a href="/#ueber-uns">Meet the whole team →</a></p>
     </div>
   </section>
+
+  <!-- PROFILE OVERLAYS (pure CSS via :target) -->
+  <div class="pmodal" id="profil-gs" role="dialog" aria-modal="true" aria-labelledby="profil-gs-name">
+    <a class="pmodal-backdrop" href="#ansprechpartner" aria-label="Close profile"></a>
+    <div class="pmodal-box">
+      <a class="pmodal-x" href="#ansprechpartner" aria-label="Close profile">×</a>
+      <div class="pmodal-head">
+        <span class="pmodal-photo"><img src="../../assets/images/team-guido-siebert.webp" alt="Guido H. Siebert" style="object-position:center 20%"/></span>
+        <h3 id="profil-gs-name">Dipl.-Kfm. Guido H. Siebert</h3>
+        <p class="pmodal-role">Managing Director</p>
+        <p class="pmodal-loc">Auditor · Tax Advisor · Berlin</p>
+      </div>
+      <div class="pmodal-body">
+        <p class="pmodal-quote">“Good decisions arise where experience, financial acumen and entrepreneurial vision come together.”</p>
+        <div class="pmodal-sec">
+          <h4>Focus areas</h4>
+          <ul class="pmodal-focus">
+            <li>Strategic business advisory</li>
+            <li>Inheritance &amp; gift tax</li>
+            <li>International tax law</li>
+            <li>Corporate &amp; group structures</li>
+          </ul>
+        </div>
+        <div class="pmodal-sec">
+          <h4>Career</h4>
+          <ul class="pmodal-cv">
+            <li>Degree in Business Administration (Dipl.-Kfm.), University of Cologne</li>
+            <li>Professional examination as Tax Advisor</li>
+            <li>Professional examination as Auditor</li>
+            <li>Contributor to working groups of the Institute of Public Auditors and the German Accounting Standards Committee</li>
+            <li>Partner at a large, internationally active auditing firm</li>
+            <li>Managing partner of NSBB Steuerberatungsgesellschaft mbH since 2014</li>
+          </ul>
+        </div>
+        <div class="pmodal-sec">
+          <h4>Languages</h4>
+          <p class="pmodal-langs">German, English</p>
+        </div>
+        <div class="pmodal-contact">
+          <a href="mailto:siebert@nsbb.de">siebert@nsbb.de</a>
+          <a href="tel:+493081580930">+49 (0) 30 815 80 93</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pmodal" id="profil-is" role="dialog" aria-modal="true" aria-labelledby="profil-is-name">
+    <a class="pmodal-backdrop" href="#ansprechpartner" aria-label="Close profile"></a>
+    <div class="pmodal-box">
+      <a class="pmodal-x" href="#ansprechpartner" aria-label="Close profile">×</a>
+      <div class="pmodal-head">
+        <span class="pmodal-photo"><img src="../../assets/images/team-isabell-schramm.webp" alt="Isabell Schramm" style="object-position:center 8%"/></span>
+        <h3 id="profil-is-name">Isabell Schramm</h3>
+        <p class="pmodal-role">Authorized Signatory</p>
+        <p class="pmodal-loc">Tax Advisor · Berlin</p>
+      </div>
+      <div class="pmodal-body">
+        <p class="pmodal-quote">“I know tax practice from every perspective and support clients through their daily business with pragmatic solutions.”</p>
+        <div class="pmodal-sec">
+          <h4>Focus areas</h4>
+          <ul class="pmodal-focus">
+            <li>Tax return advisory</li>
+            <li>Balance sheet tax law</li>
+            <li>Payroll &amp; HR</li>
+          </ul>
+        </div>
+        <div class="pmodal-sec">
+          <h4>Career</h4>
+          <ul class="pmodal-cv">
+            <li>Training as a tax clerk</li>
+            <li>Further training as a tax specialist (Steuerfachwirtin)</li>
+            <li>Admission as Tax Advisor</li>
+            <li>Several years of experience in ongoing advisory for businesses and private individuals</li>
+            <li>Authorized signatory of NSBB Steuerberatungsgesellschaft mbH</li>
+          </ul>
+        </div>
+        <div class="pmodal-sec">
+          <h4>Languages</h4>
+          <p class="pmodal-langs">German</p>
+        </div>
+        <div class="pmodal-contact">
+          <a href="mailto:schramm@nsbb.de">schramm@nsbb.de</a>
+          <a href="tel:+493081580930">+49 (0) 30 815 80 93</a>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <section>
     <div class="wrap">

@@ -33,7 +33,7 @@
 <link rel="preload" href="../assets/fonts/cormorant-garamond-normal-latin.woff2" as="font" type="font/woff2" crossorigin/>
 <link rel="preload" href="../assets/fonts/dm-sans-normal-latin.woff2" as="font" type="font/woff2" crossorigin/>
 <link rel="stylesheet" href="../assets/css/fonts.css?v=20260724"/>
-<link rel="stylesheet" href="../assets/css/landing.css?v=20260725"/>
+<link rel="stylesheet" href="../assets/css/landing.css?v=20260726"/>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@graph":[
 {"@type":"AccountingService","@id":"https://www.nsbb.de/steuerberater-koeln/#localbusiness","name":"NSBB Steuerberatungsgesellschaft mbH – Köln","url":"https://www.nsbb.de/steuerberater-koeln/","telephone":"+492219730640","email":"info@nsbb.de","image":"https://www.nsbb.de/assets/images/og-steuerberater-koeln.jpg","priceRange":"$$","address":{"@type":"PostalAddress","streetAddress":"Holzmarkt 2/2A","postalCode":"50676","addressLocality":"Köln","addressCountry":"DE"},"geo":{"@type":"GeoCoordinates","latitude":50.92863,"longitude":6.96324},"areaServed":["Köln","Nordrhein-Westfalen"],"parentOrganization":{"@id":"https://www.nsbb.de/#organization"}},
@@ -105,12 +105,117 @@
     </div>
   </section>
 
-  <section>
+  <section id="ansprechpartner">
     <div class="wrap">
-      <div class="lp-section-head"><h2>Ihre Ansprechpartner in Köln</h2></div>
-      <p style="max-width:760px;color:var(--muted)">Am Standort Köln sind <strong style="color:var(--text)">Maximilian Siebert</strong> (Steuerberater) und <strong style="color:var(--text)">Hanna Richrath</strong> (Steuerberaterin) Ihre festen Ansprechpartner. Zuhören steht bei uns am Anfang – erst nach der genauen Klärung Ihres Anliegens bestimmen wir gemeinsam den passenden Leistungsumfang. <a href="/#ueber-uns" style="color:var(--accent);font-weight:600">Das gesamte Team kennenlernen →</a></p>
+      <div class="lp-section-head">
+        <h2>Ihre Ansprechpartner in Köln</h2>
+        <p>Zuhören steht bei uns am Anfang – erst nach der genauen Klärung Ihres Anliegens bestimmen wir gemeinsam den passenden Leistungsumfang. Klicken Sie auf ein Profil für Details.</p>
+      </div>
+      <div class="people">
+        <a class="person" href="#profil-ms">
+          <span class="person-photo"><img src="../assets/images/team-maximilian-siebert.webp" alt="Maximilian Siebert, M.Sc." loading="lazy" style="object-position:center 8%"/></span>
+          <span class="person-role">Prokurist</span>
+          <span class="person-name">Maximilian Siebert, M.Sc.</span>
+          <span class="person-prof">Steuerberater</span>
+          <span class="person-cta">Profil ansehen →</span>
+        </a>
+        <a class="person" href="#profil-hr">
+          <span class="person-photo"><img src="../assets/images/team-hanna-richrath.webp" alt="Hanna Richrath, M.A." loading="lazy" style="object-position:center 8%"/></span>
+          <span class="person-role">Prokuristin</span>
+          <span class="person-name">Hanna Richrath, M.A.</span>
+          <span class="person-prof">Steuerberaterin</span>
+          <span class="person-cta">Profil ansehen →</span>
+        </a>
+      </div>
+      <p class="people-more"><a href="/#ueber-uns">Das gesamte Team kennenlernen →</a></p>
     </div>
   </section>
+
+  <!-- PROFIL-OVERLAYS (reines CSS via :target) -->
+  <div class="pmodal" id="profil-ms" role="dialog" aria-modal="true" aria-labelledby="profil-ms-name">
+    <a class="pmodal-backdrop" href="#ansprechpartner" aria-label="Profil schließen"></a>
+    <div class="pmodal-box">
+      <a class="pmodal-x" href="#ansprechpartner" aria-label="Profil schließen">×</a>
+      <div class="pmodal-head">
+        <span class="pmodal-photo"><img src="../assets/images/team-maximilian-siebert.webp" alt="Maximilian Siebert, M.Sc." style="object-position:center 8%"/></span>
+        <h3 id="profil-ms-name">Maximilian Siebert, M.Sc.</h3>
+        <p class="pmodal-role">Prokurist</p>
+        <p class="pmodal-loc">Steuerberater · Köln</p>
+      </div>
+      <div class="pmodal-body">
+        <p class="pmodal-quote">„Moderne Steuerberatung bedeutet für mich, digitale Prozesse mit persönlicher Beratung zu verbinden und Unternehmen bei wichtigen Entscheidungen zu begleiten."</p>
+        <div class="pmodal-sec">
+          <h4>Schwerpunkte</h4>
+          <ul class="pmodal-focus">
+            <li>Deklarationsberatung</li>
+            <li>Umstrukturierungen</li>
+            <li>Internationales Steuerrecht</li>
+            <li>Digitalisierung &amp; Automatisierung / KI</li>
+          </ul>
+        </div>
+        <div class="pmodal-sec">
+          <h4>Werdegang</h4>
+          <ul class="pmodal-cv">
+            <li>B.Sc. Betriebswirtschaftslehre, Universität zu Köln</li>
+            <li>M.Sc. Betriebswirtschaftslehre, Universität zu Köln</li>
+            <li>Bestellung zum Steuerberater</li>
+            <li>Langjährige Tätigkeit mit Schwerpunkt auf laufender Beratung und Gestaltungsberatung</li>
+            <li>Prokurist der NSBB Steuerberatungsgesellschaft mbH</li>
+          </ul>
+        </div>
+        <div class="pmodal-sec">
+          <h4>Sprachen</h4>
+          <p class="pmodal-langs">Deutsch, Englisch</p>
+        </div>
+        <div class="pmodal-contact">
+          <a href="mailto:m.siebert@nsbb.de">m.siebert@nsbb.de</a>
+          <a href="tel:+492219730640">+49 (0) 221 973 064 0</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pmodal" id="profil-hr" role="dialog" aria-modal="true" aria-labelledby="profil-hr-name">
+    <a class="pmodal-backdrop" href="#ansprechpartner" aria-label="Profil schließen"></a>
+    <div class="pmodal-box">
+      <a class="pmodal-x" href="#ansprechpartner" aria-label="Profil schließen">×</a>
+      <div class="pmodal-head">
+        <span class="pmodal-photo"><img src="../assets/images/team-hanna-richrath.webp" alt="Hanna Richrath, M.A." style="object-position:center 8%"/></span>
+        <h3 id="profil-hr-name">Hanna Richrath, M.A.</h3>
+        <p class="pmodal-role">Prokuristin</p>
+        <p class="pmodal-loc">Steuerberaterin · Köln</p>
+      </div>
+      <div class="pmodal-body">
+        <p class="pmodal-quote">„Gute Beratung bedeutet für mich, komplexe Themen verständlich zu machen und gemeinsam tragfähige Lösungen zu entwickeln."</p>
+        <div class="pmodal-sec">
+          <h4>Schwerpunkte</h4>
+          <ul class="pmodal-focus">
+            <li>Deklarationsberatung</li>
+            <li>Umsatzsteuer</li>
+            <li>Internationales Steuerrecht</li>
+          </ul>
+        </div>
+        <div class="pmodal-sec">
+          <h4>Werdegang</h4>
+          <ul class="pmodal-cv">
+            <li>B.Sc. Volkswirtschaftslehre, Universität zu Köln</li>
+            <li>M.A. Taxation / Steuerrecht, FOM Hochschule</li>
+            <li>Bestellung zur Steuerberaterin</li>
+            <li>Langjährige Tätigkeit mit Schwerpunkt auf internationalen Sachverhalten</li>
+            <li>Prokuristin der NSBB Steuerberatungsgesellschaft mbH</li>
+          </ul>
+        </div>
+        <div class="pmodal-sec">
+          <h4>Sprachen</h4>
+          <p class="pmodal-langs">Deutsch, Englisch</p>
+        </div>
+        <div class="pmodal-contact">
+          <a href="mailto:richrath@nsbb.de">richrath@nsbb.de</a>
+          <a href="tel:+492219730640">+49 (0) 221 973 064 0</a>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <section>
     <div class="wrap">

@@ -33,7 +33,7 @@
 <link rel="preload" href="../../assets/fonts/cormorant-garamond-normal-latin.woff2" as="font" type="font/woff2" crossorigin/>
 <link rel="preload" href="../../assets/fonts/dm-sans-normal-latin.woff2" as="font" type="font/woff2" crossorigin/>
 <link rel="stylesheet" href="../../assets/css/fonts.css?v=20260724"/>
-<link rel="stylesheet" href="../../assets/css/landing.css?v=20260725"/>
+<link rel="stylesheet" href="../../assets/css/landing.css?v=20260726"/>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@graph":[
 {"@type":"AccountingService","@id":"https://www.nsbb.de/en/tax-advisor-cologne/#localbusiness","name":"NSBB Steuerberatungsgesellschaft mbH – Cologne","url":"https://www.nsbb.de/en/tax-advisor-cologne/","telephone":"+492219730640","email":"info@nsbb.de","image":"https://www.nsbb.de/assets/images/og-steuerberater-koeln.jpg","priceRange":"$$","address":{"@type":"PostalAddress","streetAddress":"Holzmarkt 2/2A","postalCode":"50676","addressLocality":"Köln","addressCountry":"DE"},"geo":{"@type":"GeoCoordinates","latitude":50.92863,"longitude":6.96324},"areaServed":["Köln","Cologne","Nordrhein-Westfalen"],"parentOrganization":{"@id":"https://www.nsbb.de/#organization"}},
@@ -105,12 +105,117 @@
     </div>
   </section>
 
-  <section>
+  <section id="ansprechpartner">
     <div class="wrap">
-      <div class="lp-section-head"><h2>Your Contacts in Cologne</h2></div>
-      <p style="max-width:760px;color:var(--muted)">At our Cologne office, <strong style="color:var(--text)">Maximilian Siebert</strong> (tax advisor) and <strong style="color:var(--text)">Hanna Richrath</strong> (tax advisor) are your dedicated contacts. Listening comes first – only once we fully understand your situation do we define the right scope of services together with you. <a href="/#ueber-uns" style="color:var(--accent);font-weight:600">Meet the whole team →</a></p>
+      <div class="lp-section-head">
+        <h2>Your Contacts in Cologne</h2>
+        <p>Listening comes first – only once we fully understand your situation do we define the right scope of services together with you. Click on a profile for details.</p>
+      </div>
+      <div class="people">
+        <a class="person" href="#profil-ms">
+          <span class="person-photo"><img src="../../assets/images/team-maximilian-siebert.webp" alt="Maximilian Siebert, M.Sc." loading="lazy" style="object-position:center 8%"/></span>
+          <span class="person-role">Authorized Signatory</span>
+          <span class="person-name">Maximilian Siebert, M.Sc.</span>
+          <span class="person-prof">Tax Advisor</span>
+          <span class="person-cta">View profile →</span>
+        </a>
+        <a class="person" href="#profil-hr">
+          <span class="person-photo"><img src="../../assets/images/team-hanna-richrath.webp" alt="Hanna Richrath, M.A." loading="lazy" style="object-position:center 8%"/></span>
+          <span class="person-role">Authorized Signatory</span>
+          <span class="person-name">Hanna Richrath, M.A.</span>
+          <span class="person-prof">Tax Advisor</span>
+          <span class="person-cta">View profile →</span>
+        </a>
+      </div>
+      <p class="people-more"><a href="/#ueber-uns">Meet the whole team →</a></p>
     </div>
   </section>
+
+  <!-- PROFILE OVERLAYS (pure CSS via :target) -->
+  <div class="pmodal" id="profil-ms" role="dialog" aria-modal="true" aria-labelledby="profil-ms-name">
+    <a class="pmodal-backdrop" href="#ansprechpartner" aria-label="Close profile"></a>
+    <div class="pmodal-box">
+      <a class="pmodal-x" href="#ansprechpartner" aria-label="Close profile">×</a>
+      <div class="pmodal-head">
+        <span class="pmodal-photo"><img src="../../assets/images/team-maximilian-siebert.webp" alt="Maximilian Siebert, M.Sc." style="object-position:center 8%"/></span>
+        <h3 id="profil-ms-name">Maximilian Siebert, M.Sc.</h3>
+        <p class="pmodal-role">Authorized Signatory</p>
+        <p class="pmodal-loc">Tax Advisor · Cologne</p>
+      </div>
+      <div class="pmodal-body">
+        <p class="pmodal-quote">“For me, modern tax advisory means combining digital processes with personal guidance and supporting businesses through important decisions.”</p>
+        <div class="pmodal-sec">
+          <h4>Focus areas</h4>
+          <ul class="pmodal-focus">
+            <li>Tax return advisory</li>
+            <li>Restructurings</li>
+            <li>International tax law</li>
+            <li>Digitalisation &amp; automation / AI</li>
+          </ul>
+        </div>
+        <div class="pmodal-sec">
+          <h4>Career</h4>
+          <ul class="pmodal-cv">
+            <li>B.Sc. Business Administration, University of Cologne</li>
+            <li>M.Sc. Business Administration, University of Cologne</li>
+            <li>Admission as Tax Advisor</li>
+            <li>Several years of experience focused on ongoing advisory and structuring</li>
+            <li>Authorized signatory of NSBB Steuerberatungsgesellschaft mbH</li>
+          </ul>
+        </div>
+        <div class="pmodal-sec">
+          <h4>Languages</h4>
+          <p class="pmodal-langs">German, English</p>
+        </div>
+        <div class="pmodal-contact">
+          <a href="mailto:m.siebert@nsbb.de">m.siebert@nsbb.de</a>
+          <a href="tel:+492219730640">+49 (0) 221 973 064 0</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pmodal" id="profil-hr" role="dialog" aria-modal="true" aria-labelledby="profil-hr-name">
+    <a class="pmodal-backdrop" href="#ansprechpartner" aria-label="Close profile"></a>
+    <div class="pmodal-box">
+      <a class="pmodal-x" href="#ansprechpartner" aria-label="Close profile">×</a>
+      <div class="pmodal-head">
+        <span class="pmodal-photo"><img src="../../assets/images/team-hanna-richrath.webp" alt="Hanna Richrath, M.A." style="object-position:center 8%"/></span>
+        <h3 id="profil-hr-name">Hanna Richrath, M.A.</h3>
+        <p class="pmodal-role">Authorized Signatory</p>
+        <p class="pmodal-loc">Tax Advisor · Cologne</p>
+      </div>
+      <div class="pmodal-body">
+        <p class="pmodal-quote">“For me, good advisory means making complex topics understandable and developing viable solutions together.”</p>
+        <div class="pmodal-sec">
+          <h4>Focus areas</h4>
+          <ul class="pmodal-focus">
+            <li>Tax return advisory</li>
+            <li>VAT</li>
+            <li>International tax law</li>
+          </ul>
+        </div>
+        <div class="pmodal-sec">
+          <h4>Career</h4>
+          <ul class="pmodal-cv">
+            <li>B.Sc. Economics, University of Cologne</li>
+            <li>M.A. Taxation, FOM University of Applied Sciences</li>
+            <li>Admission as Tax Advisor</li>
+            <li>Several years of experience with a focus on international matters</li>
+            <li>Authorized signatory of NSBB Steuerberatungsgesellschaft mbH</li>
+          </ul>
+        </div>
+        <div class="pmodal-sec">
+          <h4>Languages</h4>
+          <p class="pmodal-langs">German, English</p>
+        </div>
+        <div class="pmodal-contact">
+          <a href="mailto:richrath@nsbb.de">richrath@nsbb.de</a>
+          <a href="tel:+492219730640">+49 (0) 221 973 064 0</a>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <section>
     <div class="wrap">

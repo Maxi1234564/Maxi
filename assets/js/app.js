@@ -149,10 +149,14 @@ function MobileMenu({ nav, page, go, onClose, t, lang, setLang }) {
                 ),
                 openSub===item.key && e('div', { style:{ backgroundColor:'#F4F2EE',paddingTop:'4px',paddingBottom:'4px' } },
                   item.children.map(child =>
-                    e('button', { key:child.key,
-                      onClick:()=>handleNav(child.key),
-                      style:{ width:'100%',textAlign:'left',background:'none',border:'none',cursor:'pointer',padding:'10px 24px 10px 40px',fontSize:'14px',color:page===child.key?'var(--accent)':'#3D3830',fontFamily:"'DM Sans',sans-serif",display:'block' }
-                    }, child.label)
+                    child.href
+                      ? e('a', { key:child.href, href:child.href, onClick:onClose,
+                          style:{ width:'100%',textAlign:'left',padding:'10px 24px 10px 40px',fontSize:'14px',color:'#3D3830',fontFamily:"'DM Sans',sans-serif",display:'block',textDecoration:'none' }
+                        }, child.label)
+                      : e('button', { key:child.key,
+                          onClick:()=>handleNav(child.key),
+                          style:{ width:'100%',textAlign:'left',background:'none',border:'none',cursor:'pointer',padding:'10px 24px 10px 40px',fontSize:'14px',color:page===child.key?'var(--accent)':'#3D3830',fontFamily:"'DM Sans',sans-serif",display:'block' }
+                        }, child.label)
                   )
                 ),
               )
@@ -238,7 +242,11 @@ function Nav({ page, setPage, lang, setLang, t }) {
     ]},
     { label: 'TGS International', altLabel: 'TGS International', key: 'tgs' },
     { label: 'Insights', altLabel: 'Insights', key: 'insights' },
-    { label: lang==='DE'?'Über uns':'About us', altLabel: lang==='DE'?'About us':'Über uns', key: 'ueber-uns' },
+    { label: lang==='DE'?'Über uns':'About us', altLabel: lang==='DE'?'About us':'Über uns', key: 'ueber-uns', children: [
+      { label: lang==='DE'?'Team':'Team', key: 'ueber-uns' },
+      { label: lang==='DE'?'Steuerberater Berlin':'Tax Advisor Berlin', href: lang==='DE'?'/steuerberater-berlin/':'/en/tax-advisor-berlin/' },
+      { label: lang==='DE'?'Steuerberater Köln':'Tax Advisor Cologne', href: lang==='DE'?'/steuerberater-koeln/':'/en/tax-advisor-cologne/' },
+    ]},
     { label: lang==='DE'?'Karriere':'Careers', altLabel: lang==='DE'?'Careers':'Karriere', key: 'karriere' },
     { label: lang==='DE'?'Kanzleinachfolge':'Practice Succession', altLabel: lang==='DE'?'Practice Succession':'Kanzleinachfolge', key: 'kanzleinachfolge' },
   ];
@@ -296,11 +304,18 @@ function Nav({ page, setPage, lang, setLang, t }) {
                           onClick: () => go(sub.key),
                         }, sub.label))
                       )
-                    : e('button', {
-                        key: child.key,
-                        style:{ display:'block', width:'100%', textAlign:'left', padding:'10px 16px', fontSize:'14px', color: page===child.key ? 'var(--accent)' : 'var(--muted)', fontFamily:"'DM Sans',sans-serif", border:'none', background:'transparent', cursor:'pointer', borderRadius:'8px' },
-                        onClick: () => go(child.key),
-                      }, child.label)
+                    : child.href
+                      ? e('a', {
+                          key: child.href,
+                          href: child.href,
+                          style:{ display:'block', width:'100%', textAlign:'left', padding:'10px 16px', fontSize:'14px', color:'var(--muted)', fontFamily:"'DM Sans',sans-serif", textDecoration:'none', borderRadius:'8px' },
+                          onClick: () => setOpenDrop(null),
+                        }, child.label)
+                      : e('button', {
+                          key: child.key,
+                          style:{ display:'block', width:'100%', textAlign:'left', padding:'10px 16px', fontSize:'14px', color: page===child.key ? 'var(--accent)' : 'var(--muted)', fontFamily:"'DM Sans',sans-serif", border:'none', background:'transparent', cursor:'pointer', borderRadius:'8px' },
+                          onClick: () => go(child.key),
+                        }, child.label)
                 )
               ),
             )
@@ -548,20 +563,20 @@ function HomePage({ setPage, lang, t }) {
               e('button', { className: 'btn-p py-4 px-8 text-base', onClick: () => go('kontakt') }, e(Ico, { name: 'calendar', size: 17 }), t.heroCta1),
               e('button', { className: 'btn-s py-4 px-8 text-base', onClick: () => { const el = document.getElementById('unsere-leistungen'); if (el) el.scrollIntoView({ behavior: 'smooth' }); } }, t.heroCta2, e(Ico, { name: 'arrowRight', size: 16 })),
             ),
-            e('div', { className: 'flex flex-wrap gap-6 pt-6 border-t', style: { borderColor: 'var(--border)' } },
+            e('div', { className: 'flex flex-wrap items-end gap-6 pt-6 border-t', style: { borderColor: 'var(--border)' } },
               stats.map(s => e('div', { key: s.lbl },
                 e('div', { style:{ height:'36px', display:'flex', alignItems:'center', justifyContent:'flex-start' } },
                   e('span', { style:{ fontFamily:"'DM Sans',sans-serif", fontSize:'1.6rem', fontWeight:400, color:'var(--accent)', lineHeight:1, letterSpacing:'-.02em', display:'block' } }, s.val),
                 ),
                 e('p', { className: 'text-xs mt-0.5 font-medium', style: { color: 'var(--muted)', fontFamily: "'DM Sans',sans-serif" } }, s.lbl),
-              ))
-            ),
-            // Dezenter Verweis auf die lokalen Standort-Landingpages (SEO-Verlinkung)
-            e('div', { style:{ marginTop:'14px', fontSize:'13px', fontFamily:"'DM Sans',sans-serif", color:'var(--muted)' } },
-              (isDE?'Standorte: ':'Offices: '),
-              e('a', { href: isDE?'/steuerberater-berlin/':'/en/tax-advisor-berlin/', style:{ color:'var(--accent)', fontWeight:600, textDecoration:'none' } }, isDE?'Steuerberater Berlin':'Tax Advisor Berlin'),
-              ' · ',
-              e('a', { href: isDE?'/steuerberater-koeln/':'/en/tax-advisor-cologne/', style:{ color:'var(--accent)', fontWeight:600, textDecoration:'none' } }, isDE?'Steuerberater Köln':'Tax Advisor Cologne'),
+              )),
+              // Lokale Standort-Landingpages – Desktop rechts neben den Kennzahlen,
+              // Mobil in eigener Zeile darunter (SEO-Verlinkung).
+              e('div', { className:'hero-stats-locations', style:{ display:'flex', flexDirection:'column', gap:'3px' } },
+                e('p', { className: 'text-xs font-medium', style:{ color:'var(--subtle)', fontFamily:"'DM Sans',sans-serif", letterSpacing:'.02em', marginBottom:'2px' } }, isDE?'Standorte':'Offices'),
+                e('a', { href: isDE?'/steuerberater-berlin/':'/en/tax-advisor-berlin/', style:{ color:'var(--accent)', fontWeight:600, fontSize:'14px', textDecoration:'none', fontFamily:"'DM Sans',sans-serif" } }, isDE?'Steuerberater Berlin':'Tax Advisor Berlin'),
+                e('a', { href: isDE?'/steuerberater-koeln/':'/en/tax-advisor-cologne/', style:{ color:'var(--accent)', fontWeight:600, fontSize:'14px', textDecoration:'none', fontFamily:"'DM Sans',sans-serif" } }, isDE?'Steuerberater Köln':'Tax Advisor Cologne'),
+              ),
             ),
           ),
           // Visual card stack

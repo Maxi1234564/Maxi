@@ -139,3 +139,11 @@ img, iframe, video { max-width: 100%; height: auto; }
 @media(min-width:1024px){  }
 /* w-12/h-12 for smaller WA button */
 .w-12{width:3rem}.h-12{height:3rem}
+
+/* Startseite: Standort-Landingpage-Links in der Kennzahlen-Leiste.
+   Desktop: rechts neben den Kennzahlen (rechtsbündig). Mobil: eigene Zeile
+   darunter, volle Breite, linksbündig. */
+.hero-stats-locations{ margin-left:auto; align-items:flex-end; text-align:right; }
+@media (max-width:767px){
+  .hero-stats-locations{ margin-left:0; width:100%; align-items:flex-start; text-align:left; }
+}

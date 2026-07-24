@@ -15,6 +15,74 @@ Format: neueste Einträge oben. Aufbau eines Eintrags siehe Vorlage am Ende.
 
 ---
 
+## [2026-07-24] Standortseiten ins Menü „Über uns" integriert + Profile auf den Landingpages
+
+**Bearbeiter:** Claude (Claude Code, Opus 4.8) · beauftragt durch Kunde
+**Grund:** Die beiden Standort-Landingpages sollen über das Hauptmenü erreichbar
+sein. „Über uns" wird – analog zu „Leistungen" – zu einem Dropdown **ohne eigene
+Seite** mit drei Unterpunkten: **Team**, **Steuerberater Berlin**, **Steuerberater
+Köln**. Auf beiden Standortseiten werden die dort tätigen Berufsträger mit
+anklickbaren Kurzprofilen (wie auf der Team-Seite) aufgeführt. Auf der Startseite
+werden die Standort-Links in die Kennzahlen-Leiste geholt.
+
+Cache-Version: `app.js`/`style.css` `?v=20260724` → `?v=20260726`;
+`landing.css` `?v=20260725` → `?v=20260726` (in allen vier Standortseiten).
+`node --check assets/js/app.js`: fehlerfrei.
+
+### Architektur-Entscheidung (SEO bleibt erhalten)
+Die beiden Standortseiten bleiben **eigenständige, statische SEO-Seiten** an echten
+Pfaden. Das Menü **verlinkt** darauf (kurzer Vollseiten-Wechsel; dank identischem
+Header/Footer optisch integriert). Ein Umbau in SPA-Hash-Routen wurde bewusst
+**nicht** gemacht, weil er die lokale SEO/GEO-Wirkung zerstört hätte (Kern des
+Auftrags). Die `react-bundle.js` wurde **nicht** angefasst.
+
+### Menü „Über uns" → Dropdown (`assets/js/app.js`)
+* `nav`-Eintrag „Über uns" erhält `children`: **Team** (SPA-Route `#ueber-uns`,
+  Inhalt unverändert), **Steuerberater Berlin** und **Steuerberater Köln**
+  (echte Links auf die Standortseiten). Der Elternpunkt öffnet nur noch das
+  Dropdown – keine eigene Seite (wie „Leistungen").
+* Dropdown (Desktop) und mobiles Menü rendern für Kinder mit `href` jetzt echte
+  `<a>`-Links (statt SPA-Buttons) – sprachabhängig: DE → `/steuerberater-berlin/`
+  bzw. `/steuerberater-koeln/`, EN → `/en/tax-advisor-berlin/` bzw.
+  `/en/tax-advisor-cologne/`. Verifiziert in beiden Sprachen.
+
+### Startseite: Standort-Links in die Kennzahlen-Leiste (`app.js`)
+* Die beiden Links „Steuerberater Berlin/Köln" stehen jetzt **rechts neben** den
+  Kennzahlen (2 Standorte, 4 Berufsträger …). Auf **Mobil** rücken sie in eine
+  eigene Zeile **darunter** (neue Klasse `.hero-stats-locations` in `style.css`
+  mit `margin-left:auto` bzw. Media-Query < 768 px).
+
+### Profile auf beiden Standortseiten (statische Seiten + `landing.css`)
+* Neue **runde Personen-Karten** je Standort – Berlin: Guido H. Siebert &
+  Isabell Schramm; Köln: Maximilian Siebert & Hanna Richrath (Zuordnung aus dem
+  `standort`-Feld des Team-Datensatzes). Klick öffnet ein **Profil-Overlay** mit
+  vollem Inhalt wie im Team-Popup: Foto, Titel, Statement, Schwerpunkte,
+  Werdegang, Sprachen, E-Mail & Telefon (DE- und EN-Fassung).
+* Umsetzung **rein per HTML/CSS** über `:target` – **kein JavaScript**, damit die
+  strenge CSP (`script-src 'self'`) eingehalten wird und die Seiten statisch/
+  crawlbar bleiben. Schließen per „×", Backdrop oder ESC-freiem Rücksprung auf den
+  Abschnitts-Anker. Neue Stile: `.people`, `.person`, `.pmodal*` in `landing.css`.
+
+### FAQ
+* Die je 5 FAQ pro Standortseite enthalten bereits ausformulierte Antworten
+  (per Klick auf die Frage aufklappbar; zusätzlich als `FAQPage`-JSON-LD). **Nicht
+  verändert** – falls andere/aufgeklappte Antworten gewünscht sind, bitte melden.
+
+### Geprüft (Chromium/Playwright)
+* Dropdown „Über uns" Desktop **und** Mobil (DE + EN) zeigt Team/Berlin/Köln mit
+  korrekten, sprachrichtigen Links; Klick auf einen Standort lädt die richtige
+  statische Seite. Startseite: Standort-Links rechts (Desktop) bzw. darunter
+  (Mobil). Profil-Overlays öffnen/schließen auf allen vier Seiten (DE + EN).
+  **Keine** Konsolen-/Seitenfehler.
+
+### Offen / bewusst nicht geändert
+* Klick aus einer EN-Standortseite in die SPA landet weiterhin auf **DE**
+  (Sprache wird nicht aus der URL gelesen – offener Punkt #7, Projektleitung).
+* Kontaktformular verschickt weiterhin nichts (#2/#3) → CTA bleibt telefon-/
+  e-mail-zuerst.
+
+---
+
 ## [2026-07-23] Landingpages: Look an die Hauptseite angeglichen + SEO/GEO-Feinschliff
 
 **Bearbeiter:** Claude (Claude Code, Opus 4.8) · beauftragt durch Kunde
