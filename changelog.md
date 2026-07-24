@@ -15,6 +15,31 @@ Format: neueste Einträge oben. Aufbau eines Eintrags siehe Vorlage am Ende.
 
 ---
 
+## [2026-07-24] Fix: FAQ-Seite (#faq) direkt aufrufbar / Footer-Link funktioniert
+
+**Bearbeiter:** Claude (Claude Code, Opus 4.8) · beauftragt durch Kunde
+**Grund:** Der Footer-Link „Häufige Fragen zur Zusammenarbeit →" führt auf die
+FAQ-Seite (`#faq`). Die Seite (Komponente `FAQPage`) existiert und ist im
+Seiten-Dispatch registriert, **`'faq'` fehlte aber in der `validPages`-Liste**.
+Folge: Beim **direkten Aufruf/Neuladen/Teilen** von `…/#faq` fiel die Seite auf
+die Startseite zurück (der Klick im laufenden Betrieb funktionierte, die URL war
+aber nicht reload-fest).
+
+Cache-Version `app.js`: `?v=20260726` → `?v=20260729` in `index.html`.
+`node --check assets/js/app.js`: fehlerfrei.
+
+### Geändert (`assets/js/app.js`)
+* `'faq'` in die `validPages`-Liste aufgenommen → `#faq` ist jetzt direkt
+  aufrufbar, neuladbar und teilbar.
+* Seitentitel ergänzt: `'faq' → 'Häufige Fragen | NSBB Steuerberatung'`.
+
+### Geprüft (Chromium)
+* Direktaufruf `…/#faq` (frisch geladen) zeigt jetzt die FAQ-Seite
+  (H1 „Häufige Fragen zur Zusammenarbeit.", Titel gesetzt) statt der Startseite.
+* Footer-Link „Häufige Fragen …" öffnet die FAQ-Seite. Keine Konsolenfehler.
+
+---
+
 ## [2026-07-24] Standortseiten: Menüleiste bleibt oben fixiert (Sticky-Fix)
 
 **Bearbeiter:** Claude (Claude Code, Opus 4.8) · beauftragt durch Kunde
