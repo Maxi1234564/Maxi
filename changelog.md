@@ -15,6 +15,27 @@ Format: neueste Einträge oben. Aufbau eines Eintrags siehe Vorlage am Ende.
 
 ---
 
+## [2026-07-24] Standortseiten: Menüleiste bleibt oben fixiert (Sticky-Fix)
+
+**Bearbeiter:** Claude (Claude Code, Opus 4.8) · beauftragt durch Kunde
+**Grund:** Die obere Menüleiste (`.lp-header`) der Standortseiten blieb in
+manchen Browsern (v. a. Safari/Firefox) beim Scrollen nicht oben fixiert, sondern
+rutschte mitten in den Text.
+
+Cache-Version `landing.css`: `?v=20260728` → `?v=20260729` (alle vier Seiten).
+
+### Ursache & Fix
+* Ursache: `body` hatte `overflow-x:hidden`. Das macht den `body` zu einem
+  eigenen Scroll-Container – dadurch verliert `position:sticky` des Headers seinen
+  Bezug zum Viewport und „klebt" nicht mehr oben (klassischer Safari/Firefox-Bug).
+* Fix: In `landing.css` `body{overflow-x:hidden}` → **`overflow-x:clip`**. `clip`
+  verhindert horizontales Scrollen genauso, erzeugt aber **keinen** Scroll-Container,
+  sodass der sticky Header in **allen** Browsern zuverlässig oben fixiert bleibt.
+* Geprüft (Chromium, Desktop 1280 + Mobil 390): Header bleibt nach dem Scrollen bei
+  `top:0`, kein horizontaler Überlauf. Der Header selbst wurde nicht verändert.
+
+---
+
 ## [2026-07-24] Standortseiten: kompakter Hero, ein Team-Link, kein eSign (Köln)
 
 **Bearbeiter:** Claude (Claude Code, Opus 4.8) · beauftragt durch Kunde
