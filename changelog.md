@@ -15,6 +15,33 @@ Format: neueste Einträge oben. Aufbau eines Eintrags siehe Vorlage am Ende.
 
 ---
 
+## [2026-07-24] Standortseiten: Menüleiste jetzt fest fixiert (position:fixed) wie überall
+
+**Bearbeiter:** Claude (Claude Code, Opus 4.8) · beauftragt durch Kunde
+**Grund:** Die Menüleiste soll oben über der Hero-Section fest stehen bleiben –
+genau wie auf allen übrigen Seiten der Website (die Hauptseite nutzt ebenfalls
+`position:fixed`). `position:sticky` reichte dem Kunden nicht bzw. verhielt sich
+je nach Browser nicht durchgängig.
+
+Cache-Version `landing.css`: `?v=20260729` → `?v=20260730` (alle vier Seiten).
+
+### Geändert (`assets/css/landing.css`)
+* `.lp-header` von `position:sticky` auf **`position:fixed`** (top/left/right:0)
+  umgestellt – die Leiste steht damit in **jedem** Browser dauerhaft oben, über
+  der Hero-Section (identisch zum Verhalten der Hauptseite).
+* `.lp-hero` oben mehr Platz gegeben (`padding-top` 116 px mobil / 108 px ab
+  768 px), damit der fixierte Header die Hero-Inhalte nicht überdeckt. Der
+  Off-White-Hero reicht bis unter die Leiste – kein weißer Spalt, sauberer
+  Übergang Header→Hero.
+
+### Geprüft (Chromium, 390 / 768 / 1280 px)
+* Header `position:fixed`, bleibt beim Scrollen bei `top:0`; Eyebrow/Titel sitzen
+  darunter, **keine Überdeckung**. Header-Höhe 72 px (ab 480 px) bzw. 92 px
+  (schmales Mobil, Button umbricht) – Hero-Abstand deckt beide Fälle ab.
+  Kein horizontaler Überlauf, keine Konsolenfehler.
+
+---
+
 ## [2026-07-24] Fix: FAQ-Seite (#faq) direkt aufrufbar / Footer-Link funktioniert
 
 **Bearbeiter:** Claude (Claude Code, Opus 4.8) · beauftragt durch Kunde

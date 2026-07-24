@@ -33,7 +33,10 @@ strong{color:var(--text);font-weight:600}
 .btn-ghost:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-1px)}
 
 /* ── Header (wie die SPA-Nav: weiß, sticky, Logo + Links + DE/EN-Flaggen + grüner CTA) ── */
-.lp-header{position:sticky;top:0;z-index:50;background:#fff;box-shadow:0 1px 0 rgba(0,0,0,.06)}
+/* Menüleiste oben fest fixiert – wie auf allen übrigen Seiten (Hauptseite nutzt
+   ebenfalls position:fixed). Der Hero bekommt entsprechend oben Platz, damit die
+   Leiste über der Hero-Section sitzt und nichts verdeckt. */
+.lp-header{position:fixed;top:0;left:0;right:0;z-index:50;background:#fff;box-shadow:0 1px 0 rgba(0,0,0,.06)}
 .lp-header .wrap{display:flex;align-items:center;gap:14px;padding-top:14px;padding-bottom:14px}
 .lp-logo img{height:44px;width:auto;display:block}
 .lp-nav{display:none;align-items:center;gap:2px;margin-left:8px}
@@ -48,8 +51,8 @@ strong{color:var(--text);font-weight:600}
 .lp-header .btn-primary{padding:10px 20px;font-size:13px}
 
 /* ── Hero (wie PageHero: flaches Off-White, Eyebrow + Serifen-Titel + Untertitel) ── */
-.lp-hero{background:var(--offwhite);padding:56px 0 40px}
-@media(min-width:768px){.lp-hero{padding:72px 0 52px}}
+.lp-hero{background:var(--offwhite);padding:116px 0 40px}
+@media(min-width:768px){.lp-hero{padding:108px 0 52px}}
 .lp-hero h1{font-size:clamp(1.9rem,4.2vw,2.9rem);letter-spacing:-.02em;line-height:1.12;margin:10px 0 14px;color:var(--ink);text-wrap:balance;max-width:820px}
 .lp-hero p.lead{font-size:1rem;color:var(--muted);line-height:1.7;max-width:660px}
 
