@@ -15,6 +15,35 @@ Format: neueste Einträge oben. Aufbau eines Eintrags siehe Vorlage am Ende.
 
 ---
 
+## [2026-07-24] Standortseiten: Profile als kompakte Karten (statt Vollprofil-Popup)
+
+**Bearbeiter:** Claude (Claude Code, Opus 4.8) · beauftragt durch Kunde
+**Grund:** Auf Kundenwunsch werden die Ansprechpartner auf den Standortseiten
+**kompakter** dargestellt: rundes Foto, interne Position (Geschäftsführer/
+Prokurist:in) und Berufstitel, dazu ein Link **„Team kennenlernen"**, der auf die
+Team-Seite (`/#ueber-uns`) führt. Die zuvor eingebauten Klick-Overlays mit dem
+vollen Profil (Statement, Werdegang, Kontakt) wurden **wieder entfernt**.
+
+Cache-Version `landing.css`: `?v=20260726` → `?v=20260727` (in allen vier Seiten).
+`app.js`/`style.css` unverändert.
+
+### Geändert (alle vier Standortseiten, DE + EN)
+* Personen-Karte zeigt jetzt nur noch: **rundes Foto**, **Position** (GESCHÄFTS­FÜHRER
+  / PROKURIST:IN), **Name**, **Berufstitel** (z. B. „Wirtschaftsprüfer · Steuer­berater")
+  und den Link **„Team kennenlernen →"** (EN „Meet the team →") auf `/#ueber-uns`.
+* Die CSS-`:target`-Profil-Overlays (`.pmodal*`) und der separate
+  „Das gesamte Team kennenlernen"-Link (`.people-more`) wurden aus HTML **und**
+  `landing.css` entfernt (kein toter Code). Die runden Karten (`.person*`) bleiben.
+* **FAQ:** bleibt wie gewünscht **standardmäßig zugeklappt** (unverändert –
+  Antworten öffnen sich per Klick auf die Frage).
+
+### Geprüft (Chromium)
+* Berlin/Köln (DE) und Tax Advisor Berlin/Cologne (EN): je zwei kompakte Karten
+  mit rundem Foto, Position, Name, Titel; Klick führt auf die Team-Seite
+  (`/#ueber-uns`). Keine Overlays mehr, keine Konsolen-/Seitenfehler.
+
+---
+
 ## [2026-07-24] Standortseiten ins Menü „Über uns" integriert + Profile auf den Landingpages
 
 **Bearbeiter:** Claude (Claude Code, Opus 4.8) · beauftragt durch Kunde

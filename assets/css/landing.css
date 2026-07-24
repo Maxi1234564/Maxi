@@ -119,31 +119,3 @@ p+p{margin-top:14px}
 .person-prof{font-size:.85rem;color:var(--muted);margin-top:4px}
 .person-cta{display:inline-flex;align-items:center;gap:.4rem;font-size:.82rem;font-weight:600;color:var(--accent);margin-top:14px;padding:6px 14px;border-radius:8px;background:var(--accent-subtle);transition:gap .25s}
 .person:hover .person-cta{gap:.7rem}
-.people-more{margin-top:24px}
-.people-more a{color:var(--accent);font-weight:600}
-
-/* ── Profil-Overlay – reines CSS via :target (keine Skripte, CSP-konform) ── */
-.pmodal{position:fixed;inset:0;z-index:1000;display:none;align-items:center;justify-content:center;padding:16px}
-.pmodal:target{display:flex}
-.pmodal-backdrop{position:absolute;inset:0;background:rgba(26,25,23,.5);backdrop-filter:blur(6px)}
-.pmodal-box{position:relative;background:#fff;border-radius:24px;width:100%;max-width:520px;max-height:92vh;overflow-y:auto;box-shadow:0 32px 80px rgba(0,0,0,.2)}
-.pmodal-x{position:absolute;top:16px;right:16px;width:34px;height:34px;border-radius:50%;background:rgba(0,0,0,.06);display:flex;align-items:center;justify-content:center;font-size:22px;line-height:1;color:var(--text);text-decoration:none;z-index:2}
-.pmodal-x:hover{background:rgba(0,0,0,.12)}
-.pmodal-head{padding:40px 32px 24px;text-align:center;border-bottom:1px solid var(--border)}
-.pmodal-photo{display:block;width:132px;height:132px;border-radius:50%;overflow:hidden;margin:0 auto 18px;border:3px solid var(--accent-subtle);box-shadow:0 4px 16px rgba(0,0,0,.08)}
-.pmodal-photo img{width:100%;height:100%;object-fit:cover}
-.pmodal-head h3{font-family:'Cormorant Garamond',serif;font-size:1.6rem;color:var(--ink);margin-bottom:4px;font-weight:500}
-.pmodal-role{font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
-.pmodal-loc{font-size:.8rem;color:var(--subtle);margin-top:2px}
-.pmodal-body{padding:24px 32px 34px}
-.pmodal-quote{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.12rem;line-height:1.7;color:var(--ink);margin-bottom:22px}
-.pmodal-sec{margin-bottom:20px}
-.pmodal-sec h4{font-family:'DM Sans',sans-serif;font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--subtle);margin-bottom:10px}
-.pmodal-focus{list-style:none;display:flex;flex-wrap:wrap;gap:8px}
-.pmodal-focus li{font-size:.85rem;color:var(--accent-dark);background:var(--accent-subtle);border-radius:999px;padding:5px 12px}
-.pmodal-cv{list-style:none;display:flex;flex-direction:column;gap:8px}
-.pmodal-cv li{position:relative;padding-left:18px;font-size:.9rem;color:var(--muted);line-height:1.5}
-.pmodal-cv li::before{content:"";position:absolute;left:0;top:.55em;width:6px;height:6px;border-radius:50%;background:var(--accent)}
-.pmodal-langs{font-size:.9rem;color:var(--text)}
-.pmodal-contact{display:flex;flex-wrap:wrap;gap:10px 20px;border-top:1px solid var(--border);padding-top:18px;margin-top:4px}
-.pmodal-contact a{color:var(--accent);font-weight:600;font-size:.9rem}
