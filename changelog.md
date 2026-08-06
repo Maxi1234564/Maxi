@@ -15,6 +15,63 @@ Format: neueste Einträge oben. Aufbau eines Eintrags siehe Vorlage am Ende.
 
 ---
 
+## [2026-08-06] SEO/GEO/KI-Optimierung der beiden Standortseiten Berlin & Köln
+
+**Bearbeiter:** Claude (Claude Code, Opus 4.8)
+**Grund:** Kundenwunsch – die beiden Standortseiten „Steuerberater Berlin" und
+„Steuerberater Köln" vollumfänglich für klassisches SEO **und** GEO (generative
+Suche / KI-Systeme wie ChatGPT, Perplexity, Google AI Overviews) optimieren.
+
+### Geändert (nur `assets/js/app.js`, `llms.txt`, `index.html`)
+* **Strukturierte Daten je Standortseite** (`app.js`, `StandortPage`): Beim
+  Öffnen wird ein `application/ld+json`-Block ins `<head>` gespielt und beim
+  Verlassen wieder entfernt (reversibel, keine Nebenwirkung auf andere Seiten).
+  Inhalt als `@graph`:
+  - `AccountingService`/`LocalBusiness` mit Name, eigener `@id`,
+    `parentOrganization` → `https://nsbb.de/#kanzlei`, Anschrift, `geo`
+    (Berlin 52.4294067,13.2565013 · Köln 50.9286278,6.9632448), Telefon,
+    E-Mail, `areaServed` (Stadtteile + Umland), `knowsLanguage` de/en,
+    Öffnungszeiten (Mo–Do 08–17:30, Fr 08–16:30).
+  - `BreadcrumbList` (Startseite → Über uns → Steuerberater Berlin/Köln).
+  - `FAQPage` aus den Seiten-FAQ (aktualisiert sich beim DE/EN-Wechsel mit).
+* **Seitengenaue Meta-Beschreibung** (`app.js`): je Standort und Sprache wird
+  `meta[name=description]` gesetzt und beim Verlassen auf den Ausgangswert
+  zurückgestellt.
+* **Faktenkarte „Auf einen Blick"** (`app.js`): kompakte `dl`-Liste mit
+  Anschrift, Telefon, E-Mail, Öffnungszeiten, Sprachen, Schwerpunkten und
+  Beratungsregion – für Menschen schnell erfassbar, für KI sauber extrahierbar.
+* **Lokale Reichweite** (`app.js`): neuer Abschnitt „Wen wir in Berlin/Köln und
+  Umgebung beraten" mit Fließtext und Stadtteil-/Umland-Chips (Berlin: Zehlendorf,
+  Steglitz, Dahlem, Wannsee, Grunewald, Potsdam · Köln: Altstadt-Süd, Deutz,
+  Lindenthal, Bonn, Leverkusen, Bergisch Gladbach). Stärkt Local SEO und liefert
+  KI klare Ortssignale.
+* **FAQ erweitert** (`app.js`): je Standort von 5 auf 9 Fragen (neue Intents:
+  Branchen, Erreichbarkeit/Öffnungszeiten, regionale Reichweite, Beratung auf
+  Englisch) – gut für Featured Snippets und KI-Antworten.
+* **`llms.txt`**: beide Standortseiten mit URL, Anschrift, betreuten Regionen und
+  den Berufsträgern vor Ort ergänzt (Zusammenfassung für KI-Systeme).
+* **`index.html`**: `?v=20260806` → `?v=20260806b`.
+
+### Geprüft
+* `node --check assets/js/app.js` – fehlerfrei.
+* Browser (Playwright, DE + EN): JSON-LD wird injiziert und ist valide
+  (`AccountingService`+`LocalBusiness` / `BreadcrumbList` / `FAQPage` mit je 9
+  Fragen); Geo/Adresse/Öffnungszeiten korrekt; Meta-Beschreibung wechselt mit der
+  Sprache; Faktenkarte und Regionen-Chips rendern; Köln weiterhin **ohne** eSign;
+  beim Verlassen der Seite wird das JSON-LD entfernt und die Meta-Beschreibung
+  zurückgesetzt; keine Konsolenfehler.
+
+### Offen / Achtung
+* Die strukturierten Daten werden zur Laufzeit ins `<head>` geschrieben – Google
+  rendert JS und liest sie; falls das Vorrender-Verfahren der Projektleitung
+  Head-Änderungen zur Laufzeit **nicht** serialisiert, sollte der JSON-LD-Block
+  (und die Meta-Beschreibung) je Seite fest ins vorgerenderte HTML übernommen
+  werden. Vorlagen stehen oben bzw. ergeben sich aus `STANDORT_DATA` in `app.js`.
+* `robots.txt` blockiert keine KI-Crawler (GPTBot, Google-Extended,
+  PerplexityBot etc. sind über `Allow: /` zugelassen) – bewusst so belassen.
+
+---
+
 ## [2026-08-06] Zwei Standortseiten „Steuerberater Berlin" & „Steuerberater Köln" (DE + EN)
 
 **Bearbeiter:** Claude (Claude Code, Opus 4.8)

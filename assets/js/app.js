@@ -5923,17 +5923,37 @@ const STANDORT_DATA = {
     phoneDisp: '+49 30 8158093-0', phoneTel: '+493081580930',
     anfahrtNote: { de:'Gut erreichbar in der Nähe des S-Bahnhofs Zehlendorf, mit Parkmöglichkeiten vor Ort. Rufen Sie uns an oder vereinbaren Sie ein unverbindliches Erstgespräch.', en:'Conveniently located near Zehlendorf S-Bahn station, with parking on site. Call us or arrange a no-obligation initial consultation.' },
     mapsUrl: 'https://www.google.com/maps/place/NSBB+Steuerberatungsgesellschaft+mbH/@52.4293359,13.2562634,19z',
+    url: 'https://nsbb.de/steuerberater-berlin',
+    plz: '14165', ort: 'Berlin', strasse: 'Berlepschstraße 1',
+    geoLat: 52.4294067, geoLng: 13.2565013,
+    hours: { de:'Mo–Do 08:00–17:30 Uhr · Fr 08:00–16:30 Uhr', en:'Mon–Thu 8:00 am–5:30 pm · Fri 8:00 am–4:30 pm' },
+    sprachenDisp: { de:'Deutsch, Englisch', en:'German, English' },
+    schwerpunkteDisp: { de:'Unternehmen · Internationales Steuerrecht · Privatpersonen', en:'Companies · International tax law · Private individuals' },
+    areaServed: ['Berlin','Zehlendorf','Steglitz','Dahlem','Wannsee','Nikolassee','Grunewald','Potsdam','Brandenburg'],
+    blickHead: { de:'Steuerberater Berlin – auf einen Blick', en:'Tax Advisor Berlin – at a Glance' },
+    regionDisp: { de:'Berlin & Umland (Zehlendorf, Steglitz, Dahlem, Potsdam)', en:'Berlin & surrounding area (Zehlendorf, Steglitz, Dahlem, Potsdam)' },
+    regionenHead: { de:'Wen wir in Berlin und Umgebung beraten', en:'Who We Advise in Berlin and the Surrounding Area' },
+    regionenText: { de:'Von Berlin-Zehlendorf aus beraten wir Mandanten in ganz Berlin und im Berliner Umland – darunter Steglitz, Dahlem, Wannsee, Nikolassee und Grunewald sowie Potsdam und Brandenburg. Dank vollständig digitaler Zusammenarbeit betreuen wir Unternehmen und Privatpersonen darüber hinaus bundesweit und international.', en:'From Berlin-Zehlendorf we advise clients across Berlin and the surrounding region – including Steglitz, Dahlem, Wannsee, Nikolassee and Grunewald, as well as Potsdam and Brandenburg. Thanks to fully digital collaboration, we also support companies and private individuals nationwide and internationally.' },
+    metaDesc: { de:'Steuerberater in Berlin-Zehlendorf: NSBB berät Unternehmen, Privatpersonen und internationale Mandanten – digital, persönlich und über das weltweite TGS-Netzwerk. Telefon +49 30 8158093-0.', en:'Tax advisor in Berlin-Zehlendorf: NSBB advises companies, private individuals and international clients – digital, personal and connected worldwide via the TGS network. Phone +49 30 8158093-0.' },
     faq: { de:[
       { q:'Was kostet ein Steuerberater in Berlin?', a:'Die Vergütung richtet sich nach der Steuerberatervergütungsverordnung (StBVV). Nach einem kurzen Erstgespräch erhalten Sie von uns ein transparentes, auf Ihren Bedarf zugeschnittenes Angebot.' },
       { q:'Kann ich problemlos von meinem bisherigen Steuerberater zu NSBB wechseln?', a:'Ja. Ein Wechsel ist jederzeit möglich; die Übernahme Ihrer Unterlagen und Daten koordinieren wir für Sie.' },
       { q:'Muss ich vor Ort sein oder geht alles digital?', a:'Die Zusammenarbeit ist vollständig digital möglich. Persönliche Termine in unserem Büro in Zehlendorf sind selbstverständlich ebenso möglich.' },
-      { q:'Betreuen Sie auch internationale Sachverhalte aus Berlin?', a:'Ja. Grenzüberschreitende Fragestellungen begleiten wir eigenständig und bei Bedarf gemeinsam mit unserem weltweiten TGS-Netzwerk.' },
+      { q:'Betreuen Sie auch internationale Sachverhalte aus Berlin?', a:'Ja. Grenzüberschreitende Fragestellungen begleiten wir eigenständig und bei Bedarf gemeinsam mit unserem weltweiten TGS-Netzwerk in 58 Ländern.' },
+      { q:'Welche Branchen betreut NSBB in Berlin?', a:'Wir beraten unter anderem Unternehmen aus E-Commerce, Bau und Handwerk, Immobilienwirtschaft, international tätige Unternehmen, Start-ups sowie Heilberufe – jeweils mit branchenspezifischer steuerlicher Gestaltung.' },
+      { q:'Wann ist NSBB in Berlin erreichbar?', a:'Unsere Öffnungszeiten sind montags bis donnerstags 08:00–17:30 Uhr und freitags 08:00–16:30 Uhr. Termine vereinbaren Sie telefonisch unter +49 30 8158093-0 oder per E-Mail an info@nsbb.de.' },
+      { q:'Welche Regionen um Berlin betreut NSBB?', a:'Neben Berlin-Zehlendorf beraten wir Mandanten in ganz Berlin sowie im Umland, etwa in Steglitz, Dahlem, Potsdam und Brandenburg – und über digitale Prozesse bundesweit.' },
+      { q:'Berät NSBB in Berlin auch auf Englisch?', a:'Ja. Wir beraten deutsch- und englischsprachige Mandanten und begleiten internationale Sachverhalte über das weltweite TGS-Netzwerk.' },
       { q:'Für wen arbeiten Sie in Berlin?', a:'Für Unternehmen und Unternehmensgruppen, Freiberufler sowie Privatpersonen mit anspruchsvollen steuerlichen Fragestellungen – national wie international.' },
     ], en:[
       { q:'How much does a tax advisor in Berlin cost?', a:'Fees are based on the German Tax Advisor Remuneration Regulation (StBVV). After a short initial conversation, we provide a transparent quote tailored to your needs.' },
       { q:'Can I switch from my current tax advisor to NSBB easily?', a:'Yes. You can switch at any time; we coordinate the handover of your documents and data for you.' },
       { q:'Do I have to come in person, or can everything be done digitally?', a:'Collaboration can be fully digital. In-person meetings at our Zehlendorf office are of course also possible.' },
-      { q:'Do you handle international matters from Berlin?', a:'Yes. We manage cross-border questions independently and, where required, together with our worldwide TGS network.' },
+      { q:'Do you handle international matters from Berlin?', a:'Yes. We manage cross-border questions independently and, where required, together with our worldwide TGS network across 58 countries.' },
+      { q:'Which industries does NSBB serve in Berlin?', a:'We advise companies in e-commerce, construction and trades, real estate, internationally active businesses, start-ups and the medical professions, among others – each with industry-specific tax structuring.' },
+      { q:'When can I reach NSBB in Berlin?', a:'Our opening hours are Monday to Thursday 8:00 am–5:30 pm and Friday 8:00 am–4:30 pm. Arrange an appointment by phone on +49 30 8158093-0 or by email to info@nsbb.de.' },
+      { q:'Which regions around Berlin does NSBB serve?', a:'Besides Berlin-Zehlendorf we advise clients across Berlin and the surrounding area, such as Steglitz, Dahlem, Potsdam and Brandenburg – and nationwide via digital processes.' },
+      { q:'Does NSBB advise in English in Berlin?', a:'Yes. We advise German- and English-speaking clients and handle international matters through the worldwide TGS network.' },
       { q:'Who do you work with in Berlin?', a:'Companies and corporate groups, freelancers and private individuals with demanding tax questions – both national and international.' },
     ] },
   },
@@ -5959,17 +5979,37 @@ const STANDORT_DATA = {
     phoneDisp: '+49 221 973064-0', phoneTel: '+492219730640',
     anfahrtNote: { de:'Zentral gelegen und gut mit öffentlichen Verkehrsmitteln erreichbar. Rufen Sie uns an oder vereinbaren Sie ein unverbindliches Erstgespräch.', en:'Centrally located and easy to reach by public transport. Call us or arrange a no-obligation initial consultation.' },
     mapsUrl: 'https://www.google.com/maps/place/NSBB+Steuerberatungsgesellschaft+mbH/@50.9286295,6.9619573,18z',
+    url: 'https://nsbb.de/steuerberater-koeln',
+    plz: '50676', ort: 'Köln', strasse: 'Holzmarkt 2/2A',
+    geoLat: 50.9286278, geoLng: 6.9632448,
+    hours: { de:'Mo–Do 08:00–17:30 Uhr · Fr 08:00–16:30 Uhr', en:'Mon–Thu 8:00 am–5:30 pm · Fri 8:00 am–4:30 pm' },
+    sprachenDisp: { de:'Deutsch, Englisch', en:'German, English' },
+    schwerpunkteDisp: { de:'Unternehmen · Internationales Steuerrecht · Privatpersonen', en:'Companies · International tax law · Private individuals' },
+    areaServed: ['Köln','Altstadt-Süd','Rheinauhafen','Deutz','Lindenthal','Rheinland','Bonn','Leverkusen','Bergisch Gladbach'],
+    blickHead: { de:'Steuerberater Köln – auf einen Blick', en:'Tax Advisor Cologne – at a Glance' },
+    regionDisp: { de:'Köln & Rheinland (Altstadt-Süd, Deutz, Bonn, Leverkusen)', en:'Cologne & Rhineland (Altstadt-Süd, Deutz, Bonn, Leverkusen)' },
+    regionenHead: { de:'Wen wir in Köln und im Rheinland beraten', en:'Who We Advise in Cologne and the Rhineland' },
+    regionenText: { de:'Vom Rheinauhafen aus beraten wir Mandanten in ganz Köln – von der Altstadt-Süd über Deutz bis Lindenthal – sowie im gesamten Rheinland, darunter Bonn, Leverkusen und Bergisch Gladbach. Über vollständig digitale Prozesse betreuen wir Unternehmen und Privatpersonen darüber hinaus bundesweit und international.', en:'From the Rheinauhafen we advise clients throughout Cologne – from Altstadt-Süd and Deutz to Lindenthal – and across the wider Rhineland, including Bonn, Leverkusen and Bergisch Gladbach. Through fully digital processes, we also support companies and private individuals nationwide and internationally.' },
+    metaDesc: { de:'Steuerberater in Köln am Rheinauhafen: NSBB berät Unternehmen, Freiberufler und Privatpersonen – digital, persönlich und international vernetzt über das TGS-Netzwerk. Telefon +49 221 973064-0.', en:'Tax advisor in Cologne on the Rheinauhafen: NSBB advises companies, freelancers and private individuals – digital, personal and internationally connected via the TGS network. Phone +49 221 973064-0.' },
     faq: { de:[
       { q:'Was kostet ein Steuerberater in Köln?', a:'Unsere Vergütung richtet sich nach der Steuerberatervergütungsverordnung (StBVV). Im Erstgespräch klären wir Ihren Bedarf und erstellen Ihnen ein transparentes Angebot.' },
       { q:'Ist ein Wechsel meines Steuerberaters aufwendig?', a:'Nein. Wir übernehmen die Abstimmung mit Ihrem bisherigen Berater und die Übernahme Ihrer Daten, sodass der Wechsel für Sie reibungslos verläuft.' },
       { q:'Kann die Beratung vollständig digital ablaufen?', a:'Ja. Sie können vollständig digital mit uns arbeiten – persönliche Termine am Rheinauhafen sind jederzeit möglich.' },
-      { q:'Beraten Sie auch bei internationalen Steuerfragen?', a:'Ja. Auslandssachverhalte begleiten wir eigenständig und bei Bedarf gemeinsam mit unseren TGS-Partnern weltweit.' },
+      { q:'Beraten Sie auch bei internationalen Steuerfragen?', a:'Ja. Auslandssachverhalte begleiten wir eigenständig und bei Bedarf gemeinsam mit unseren TGS-Partnern weltweit in 58 Ländern.' },
+      { q:'Welche Branchen betreut NSBB in Köln?', a:'Wir beraten Unternehmen aller Rechtsformen und Größen – unter anderem aus Handel und E-Commerce, Bau, Immobilienwirtschaft, dem Mittelstand, bei Start-ups und in Heilberufen – sowie Freiberufler und Privatpersonen.' },
+      { q:'Wann ist NSBB in Köln erreichbar?', a:'Unsere Öffnungszeiten sind montags bis donnerstags 08:00–17:30 Uhr und freitags 08:00–16:30 Uhr. Termine vereinbaren Sie telefonisch unter +49 221 973064-0 oder per E-Mail an info@nsbb.de.' },
+      { q:'Beraten Sie auch Mandanten im Rheinland außerhalb Kölns?', a:'Ja. Vom Rheinauhafen aus betreuen wir Mandanten im gesamten Rheinland – darunter Bonn, Leverkusen und Bergisch Gladbach – sowie über digitale Prozesse bundesweit.' },
+      { q:'Berät NSBB in Köln auch auf Englisch?', a:'Ja. Wir beraten deutsch- und englischsprachige Mandanten und begleiten internationale Sachverhalte über das weltweite TGS-Netzwerk.' },
       { q:'Welche Mandanten betreuen Sie in Köln?', a:'Unternehmen aller Rechtsformen und Größen, Freiberufler sowie Privatpersonen mit anspruchsvollen steuerlichen Fragestellungen.' },
     ], en:[
       { q:'How much does a tax advisor in Cologne cost?', a:'Our fees are based on the German Tax Advisor Remuneration Regulation (StBVV). In an initial meeting we clarify your needs and provide a transparent quote.' },
       { q:'Is switching tax advisors complicated?', a:'No. We handle the coordination with your previous advisor and the transfer of your data, so the switch is smooth for you.' },
       { q:'Can the advice be handled entirely digitally?', a:'Yes. You can work with us fully digitally – in-person meetings at the Rheinauhafen are always possible.' },
-      { q:'Do you also advise on international tax matters?', a:'Yes. We handle international matters independently and, where needed, together with our TGS partners worldwide.' },
+      { q:'Do you also advise on international tax matters?', a:'Yes. We handle international matters independently and, where needed, together with our TGS partners worldwide across 58 countries.' },
+      { q:'Which industries does NSBB serve in Cologne?', a:'We advise companies of all legal forms and sizes – including retail and e-commerce, construction, real estate, mid-sized businesses, start-ups and the medical professions – as well as freelancers and private individuals.' },
+      { q:'When can I reach NSBB in Cologne?', a:'Our opening hours are Monday to Thursday 8:00 am–5:30 pm and Friday 8:00 am–4:30 pm. Arrange an appointment by phone on +49 221 973064-0 or by email to info@nsbb.de.' },
+      { q:'Do you also advise clients in the Rhineland outside Cologne?', a:'Yes. From the Rheinauhafen we support clients throughout the Rhineland – including Bonn, Leverkusen and Bergisch Gladbach – and nationwide through digital processes.' },
+      { q:'Does NSBB advise in English in Cologne?', a:'Yes. We advise German- and English-speaking clients and handle international matters through the worldwide TGS network.' },
       { q:'Which clients do you support in Cologne?', a:'Companies of all legal forms and sizes, freelancers and private individuals with demanding tax questions.' },
     ] },
   },
@@ -6001,12 +6041,99 @@ function StandortPage({ setPage, lang, t, setKontaktPreset, city }) {
     { key:'leistungen-international', h:{de:'Internationales Steuerrecht',en:'International tax law'}, p:d.svcIntl, more:{de:'Mehr zum internationalen Steuerrecht',en:'More on international tax law'} },
     { key:'leistungen-privat', h:{de:'Für Privatpersonen',en:'For private individuals'}, p:d.svcPrivat, more:{de:'Mehr zur Beratung für Privatpersonen',en:'More on advice for private individuals'} },
   ];
+
+  // SEO/GEO: strukturierte Daten (LocalBusiness + Breadcrumb + FAQ) und eine
+  // seitengenaue Meta-Beschreibung ins <head> spielen. Google rendert JS und
+  // liest beides; KI-Systeme (GPTBot, PerplexityBot, Google-Extended) bevorzugen
+  // klar ausgezeichnete Fakten und Frage-Antwort-Blöcke. Beim Verlassen der Seite
+  // wird alles wieder entfernt/zurückgesetzt, damit andere Seiten sauber bleiben.
+  // (Der identische JSON-LD-Text steht zusätzlich im Changelog, falls die
+  // Projektleitung ihn beim Vorrendern fest ins HTML aufnehmen möchte.)
+  React.useEffect(() => {
+    const faqNow = isDE ? d.faq.de : d.faq.en;
+    const titel = L(d.title) + ' ' + (isDE ? d.accentDe : d.accentEn);
+    const graph = {
+      '@context': 'https://schema.org',
+      '@graph': [
+        {
+          '@type': ['AccountingService', 'LocalBusiness'],
+          '@id': d.url + '#standort',
+          'name': 'NSBB Steuerberatung – ' + d.ort,
+          'url': d.url,
+          'parentOrganization': { '@id': 'https://nsbb.de/#kanzlei' },
+          'telephone': d.phoneTel,
+          'email': 'info@nsbb.de',
+          'image': 'https://nsbb.de/assets/images/og-image.jpg',
+          'priceRange': '€€',
+          'address': { '@type': 'PostalAddress', 'streetAddress': d.strasse, 'postalCode': d.plz, 'addressLocality': d.ort, 'addressCountry': 'DE' },
+          'geo': { '@type': 'GeoCoordinates', 'latitude': d.geoLat, 'longitude': d.geoLng },
+          'areaServed': d.areaServed.map(function (n) { return { '@type': 'City', 'name': n }; }),
+          'knowsLanguage': ['de', 'en'],
+          'openingHoursSpecification': [
+            { '@type': 'OpeningHoursSpecification', 'dayOfWeek': ['Monday', 'Tuesday', 'Wednesday', 'Thursday'], 'opens': '08:00', 'closes': '17:30' },
+            { '@type': 'OpeningHoursSpecification', 'dayOfWeek': 'Friday', 'opens': '08:00', 'closes': '16:30' }
+          ]
+        },
+        {
+          '@type': 'BreadcrumbList',
+          'itemListElement': [
+            { '@type': 'ListItem', 'position': 1, 'name': isDE ? 'Startseite' : 'Home', 'item': 'https://nsbb.de/' },
+            { '@type': 'ListItem', 'position': 2, 'name': isDE ? 'Über uns' : 'About us', 'item': 'https://nsbb.de/ueber-uns' },
+            { '@type': 'ListItem', 'position': 3, 'name': titel, 'item': d.url }
+          ]
+        },
+        {
+          '@type': 'FAQPage',
+          'mainEntity': faqNow.map(function (f) { return { '@type': 'Question', 'name': f.q, 'acceptedAnswer': { '@type': 'Answer', 'text': f.a } }; })
+        }
+      ]
+    };
+    const s = document.createElement('script');
+    s.type = 'application/ld+json';
+    s.setAttribute('data-nsbb-standort', city);
+    s.text = JSON.stringify(graph);
+    document.head.appendChild(s);
+
+    const meta = document.querySelector('meta[name="description"]');
+    const prevDesc = meta ? meta.getAttribute('content') : null;
+    if (meta) meta.setAttribute('content', isDE ? d.metaDesc.de : d.metaDesc.en);
+
+    return function () {
+      s.remove();
+      if (meta && prevDesc !== null) meta.setAttribute('content', prevDesc);
+    };
+  }, [city, lang]);
+
   return e('div', { className:'page-enter' },
     e(PageHero, { label:L(d.eyebrow), fit:true, title:L(d.title), accent:isDE?d.accentDe:d.accentEn, subtitle:isDE?d.sub.de:d.sub.en }),
 
     e('section', { style:{ backgroundColor:'white', paddingTop:'40px', paddingBottom:'80px' } },
       e('div', { className:'max-w-site mx-auto px-5 md:px-8' },
-        e('p', { className:'fade-up', style:{ maxWidth:'760px', color:'var(--muted)', lineHeight:1.8, marginBottom:'44px' } }, L(d.intro)),
+        e('p', { className:'fade-up', style:{ maxWidth:'760px', color:'var(--muted)', lineHeight:1.8, marginBottom:'36px' } }, L(d.intro)),
+
+        // „Auf einen Blick" – kompakte Faktenkarte. Klar ausgezeichnete Eckdaten
+        // (Anschrift, Telefon, Öffnungszeiten, Sprachen, Region), die Menschen
+        // schnell erfassen und KI-Systeme sauber extrahieren können.
+        e('div', { className:'fade-up', style:{ border:'1px solid var(--border)', borderRadius:'1.25rem', padding:'1.75rem', maxWidth:'760px', marginBottom:'48px', background:'var(--offwhite)' } },
+          e('h2', { className:'font-display', style:{ ...secH2, fontSize:'1.35rem', marginBottom:'14px' } }, L(d.blickHead)),
+          e('dl', { style:{ margin:0 } },
+            [
+              { k:isDE?'Anschrift':'Address', v:d.strasse + ', ' + d.plz + ' ' + d.ort },
+              { k:isDE?'Telefon':'Phone', v:e('a', { href:'tel:'+d.phoneTel, style:{ color:'var(--accent)', textDecoration:'none', fontWeight:600 } }, d.phoneDisp) },
+              { k:'E-Mail', v:e('a', { href:'mailto:info@nsbb.de', style:{ color:'var(--accent)', textDecoration:'none', fontWeight:600 } }, 'info@nsbb.de') },
+              { k:isDE?'Öffnungszeiten':'Opening hours', v:L(d.hours) },
+              { k:isDE?'Sprachen':'Languages', v:L(d.sprachenDisp) },
+              { k:isDE?'Schwerpunkte':'Focus areas', v:L(d.schwerpunkteDisp) },
+              { k:isDE?'Beratungsregion':'Area served', v:L(d.regionDisp) },
+            ].map(function (row, i, arr) {
+              return e('div', { key:row.k, style:{ display:'grid', gridTemplateColumns:'minmax(120px,170px) 1fr', gap:'12px', padding:'11px 0', borderBottom: i < arr.length - 1 ? '1px solid var(--border)' : 'none' } },
+                e('dt', { style:{ fontSize:'.68rem', fontWeight:600, letterSpacing:'.08em', textTransform:'uppercase', color:'var(--accent)', fontFamily:"'DM Sans',sans-serif", paddingTop:'2px' } }, row.k),
+                e('dd', { style:{ margin:0, color:'#1A1917', fontSize:'.95rem', lineHeight:1.6, fontFamily:"'DM Sans',sans-serif" } }, row.v)
+              );
+            })
+          )
+        ),
+
         e('div', { className:'max-w-2xl', style:{ marginBottom:'32px' } },
           e('h2', { className:'font-display', style:{ ...secH2, marginBottom:'10px' } }, L(d.servicesHead)),
           e('p', { style:{ color:'var(--muted)' } }, L(d.servicesSub))
@@ -6061,6 +6188,17 @@ function StandortPage({ setPage, lang, t, setKontaktPreset, city }) {
           ),
           e('p', { style:{ color:'var(--muted)', marginTop:'12px', lineHeight:1.7 } }, L(d.anfahrtNote)),
           e('a', { href:d.mapsUrl, target:'_blank', rel:'noopener noreferrer', style:{ display:'inline-flex', alignItems:'center', gap:'6px', marginTop:'14px', color:'var(--accent)', fontWeight:600, textDecoration:'none', fontFamily:"'DM Sans',sans-serif" } }, (isDE?'Auf Google Maps ansehen':'View on Google Maps')+' →')
+        ),
+
+        // Lokale Reichweite: benennt betreute Stadtteile und Umlandorte. Stärkt
+        // die lokale Auffindbarkeit (Local SEO) und liefert KI-Systemen klare
+        // Orts-Signale zu „Steuerberater in <Ort/Region>".
+        e('div', { className:'fade-up', style:{ maxWidth:'760px', marginTop:'32px' } },
+          e('h3', { style:{ fontFamily:"'Cormorant Garamond',serif", fontSize:'1.35rem', color:'#1A1917', marginBottom:'10px' } }, L(d.regionenHead)),
+          e('p', { style:{ color:'var(--muted)', lineHeight:1.8, marginBottom:'16px' } }, L(d.regionenText)),
+          e('div', { style:{ display:'flex', flexWrap:'wrap', gap:'8px' } },
+            d.areaServed.map(function (n) { return e('span', { key:n, style:{ fontSize:'.8rem', color:'var(--accent-dark)', background:'var(--accent-subtle)', borderRadius:'999px', padding:'6px 13px', fontFamily:"'DM Sans',sans-serif" } }, n); })
+          )
         )
       )
     ),

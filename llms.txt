@@ -25,10 +25,22 @@ Rechtsanwälte in 58 Ländern).
 
 ## Standorte
 
-**Berlin** — Berlepschstr. 1, 14165 Berlin · Tel. +49 30 8158093-0
-**Köln** — Holzmarkt 2/2A, 50676 Köln · Tel. +49 221 973064-0
+**Steuerberater Berlin** (https://nsbb.de/steuerberater-berlin) — Berlepschstr. 1,
+14165 Berlin (Zehlendorf) · Tel. +49 30 8158093-0. Steuerberatung für Unternehmen,
+Privatpersonen und international tätige Mandanten in Berlin und Umland (Zehlendorf,
+Steglitz, Dahlem, Wannsee, Grunewald, Potsdam). Berufsträger vor Ort:
+Guido H. Siebert (Wirtschaftsprüfer, Steuerberater) und Isabell Schramm
+(Steuerberaterin).
+
+**Steuerberater Köln** (https://nsbb.de/steuerberater-koeln) — Holzmarkt 2/2A,
+50676 Köln (Rheinauhafen / Altstadt-Süd) · Tel. +49 221 973064-0. Steuerberatung
+für Unternehmen, Freiberufler und Privatpersonen in Köln und im Rheinland
+(Altstadt-Süd, Deutz, Lindenthal, Bonn, Leverkusen, Bergisch Gladbach).
+Berufsträger vor Ort: Maximilian Siebert (Steuerberater) und Hanna Richrath
+(Steuerberaterin).
 
 Öffnungszeiten (beide Standorte): Mo–Do 08:00–17:30 Uhr, Fr 08:00–16:30 Uhr.
+Englische Fassung jeder Standortseite über den Parameter `?lang=en`.
 
 ## Leistungen
 
