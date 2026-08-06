@@ -15,6 +15,85 @@ Format: neueste Einträge oben. Aufbau eines Eintrags siehe Vorlage am Ende.
 
 ---
 
+## [2026-08-06] Standortseiten Berlin & Köln optisch neu aufgebaut (nutzerfreundlicher, mehr Inhalt)
+
+**Bearbeiter:** Claude (Claude Code, Opus 5)
+**Grund:** Kundenmeldung – die beiden Standortseiten gefielen optisch nicht: zu
+textlastig, zu flach, zu wenig ansprechend. Gewünscht war eine deutlich
+hochwertigere, nutzerfreundlichere Oberfläche mit mehr nützlichen Informationen –
+**ohne** die erreichte SEO-/GEO-/KI-Optimierung zu verlieren.
+
+**Wichtig:** Es wurde **kein** neues Design erfunden. Alles ist mit den
+vorhandenen Mitteln der Website gebaut (Akzentgrün `--accent`, Cormorant Garamond
+für Überschriften, DM Sans für Text, die bestehenden `Ico`-Icons, `card-hover`,
+`btn-p`/`btn-s`, `fade-up`). Geändert wurde ausschließlich die Seiten-Komponente
+`StandortPage` (und das zugehörige `StandortAccordion`) – kein Eingriff in andere
+Seiten oder Bausteine.
+
+### Geändert (nur `assets/js/app.js`, `index.html`)
+* **Einstieg mit echtem Standortfoto (neu):** Zweispaltiger Auftakt aus Text und
+  dem bereits im Projekt vorhandenen, bisher auf diesen Seiten **ungenutzten**
+  Standortbild (`assets/images/standort-berlin.webp` / `-koeln.webp`, WebP, mit
+  `width`/`height` und beschreibendem `alt`). Über dem Bildfuß liegt eine
+  Adresskarte. Links: Kurzüberschrift, Intro, drei Vertrauenspunkte mit Haken und
+  zwei Handlungsknöpfe – **„Anrufen: <Durchwahl>"** (Telefon ist der zuverlässig
+  funktionierende Weg) und „Erstgespräch vereinbaren".
+* **„Auf einen Blick" als Kachelraster:** Die frühere graue Liste ist jetzt ein
+  Raster aus acht Karten mit Icon (Anschrift, Telefon, E-Mail, Öffnungszeiten,
+  Sprachen, Schwerpunkte, Beratungsregion, **Berufsträger vor Ort** – neu).
+  Deutlich schneller erfassbar, gleiche maschinelle Auswertbarkeit.
+* **Leistungskarten mit Icons** (Unternehmen/International/Privat) und
+  `card-hover`; die ganze Karte ist klickbar – wie auf der Startseite.
+* **Neuer Abschnitt „Warum NSBB in Berlin/Köln?"** auf ruhiger Akzentfläche:
+  vier Karten (Feste Ansprechpartner · Digital & papierlos · International
+  vernetzt · Verbindlich & vertraulich). Gibt der Seite einen optischen Anker und
+  beantwortet die Auswahlfrage der Besucher.
+* **Ansprechpartner mit Direktkontakt:** Karten mit rundem Foto, Position, Name,
+  Berufstitel – **neu**: Durchwahl und persönliche E-Mail direkt anklickbar.
+  Darunter weiterhin **ein** Link zum Team.
+* **Digitale Zusammenarbeit als Checkliste:** Text links, rechts eine Karte
+  „So läuft es konkret ab" mit vier Punkten. **Kölner Fassung weiterhin ohne
+  eSign** (wie abgestimmt). Dazu ein Link auf „Digitale Kanzlei".
+* **Anfahrt konkret (neu):** Zwei Karten – „Adresse & Kontakt" (Anschrift,
+  Telefon, E-Mail, Öffnungszeiten mit Icons, Google-Maps-Knopf) und „So erreichen
+  Sie uns" mit **echten Wegbeschreibungen**: Berlin S1/Zehlendorf, Bus M48/X10,
+  kostenfreie Parkplätze · Köln Linie 3/4 Heumarkt, Hauptbahnhof, Tiefgarage.
+  Diese Angaben lagen bereits auf der Kontaktseite und fehlten hier – sie sind
+  zugleich ein starkes lokales Suchsignal.
+* **FAQ in Karte, klareres Aufklappen:** rundes Plus/Minus statt freistehendem
+  Zeichen, aktive Frage in Akzentfarbe.
+* **`StandortAccordion`:** Optik nachgezogen (rundes Plus/Minus, letzte Zeile
+  ohne Trennlinie, größere Zeilenhöhe in den Antworten).
+* `index.html`: `?v=20260806b` → `?v=20260806c`.
+
+### Nicht angetastet (SEO/GEO bleibt vollständig erhalten)
+Strukturierte Daten (`AccountingService`/`LocalBusiness` + `BreadcrumbList` +
+`FAQPage`), die seitengenauen Meta-Beschreibungen, die neun FAQ je Standort, der
+Abschnitt zur lokalen Reichweite samt Orts-Chips und `llms.txt` sind unverändert.
+Durch den Umbau kamen zusätzliche Inhalte **hinzu** (Anfahrtswege, Berufsträger
+vor Ort, Warum-Abschnitt), was Local SEO und KI-Auswertbarkeit eher stärkt.
+
+### Geprüft
+* `node --check assets/js/app.js` – fehlerfrei.
+* Browser (Playwright, 1280 px und 390 px, DE + EN): beide Seiten vollständig,
+  neun `h2`-Ebenen (saubere Gliederung), alle Bilder laden, Abschnitte schließen
+  lückenlos an (kein Layout-Loch), mobil sauber einspaltig; FAQ klappt auf;
+  Leistungskarte führt korrekt zu „Steuerberatung für Unternehmen"; Telefon- und
+  E-Mail-Links gesetzt; JSON-LD weiterhin mit allen drei Typen und je neun
+  Fragen; **Köln ohne eSign**; keine Konsolenfehler.
+
+### Offen / Achtung
+* **Beobachtung, nicht geändert:** Nach Klick auf „Alle akzeptieren" im
+  Cookie-Banner lädt die Website den **Google Tag Manager**
+  (`googletagmanager.com/gtm.js?id=GTM-NNQTHD76`). Das ist Bestandteil der
+  gelieferten Designer-Fassung und lädt korrekt erst nach Einwilligung. In der
+  abgeschotteten Testumgebung schlägt dieser Aufruf fehl (kein Internetzugang) –
+  live ist das unauffällig. Hinweis nur, weil `CLAUDE.md` „keine externen
+  Dienste" vorgibt: bitte gegen die Datenschutzerklärung prüfen (dort ist
+  bislang nur All-Inkl als Dienstleister genannt).
+
+---
+
 ## [2026-08-06] SEO/GEO/KI-Optimierung der beiden Standortseiten Berlin & Köln
 
 **Bearbeiter:** Claude (Claude Code, Opus 4.8)

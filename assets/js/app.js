@@ -5935,6 +5935,30 @@ const STANDORT_DATA = {
     regionenHead: { de:'Wen wir in Berlin und Umgebung beraten', en:'Who We Advise in Berlin and the Surrounding Area' },
     regionenText: { de:'Von Berlin-Zehlendorf aus beraten wir Mandanten in ganz Berlin und im Berliner Umland – darunter Steglitz, Dahlem, Wannsee, Nikolassee und Grunewald sowie Potsdam und Brandenburg. Dank vollständig digitaler Zusammenarbeit betreuen wir Unternehmen und Privatpersonen darüber hinaus bundesweit und international.', en:'From Berlin-Zehlendorf we advise clients across Berlin and the surrounding region – including Steglitz, Dahlem, Wannsee, Nikolassee and Grunewald, as well as Potsdam and Brandenburg. Thanks to fully digital collaboration, we also support companies and private individuals nationwide and internationally.' },
     metaDesc: { de:'Steuerberater in Berlin-Zehlendorf: NSBB berät Unternehmen, Privatpersonen und internationale Mandanten – digital, persönlich und über das weltweite TGS-Netzwerk. Telefon +49 30 8158093-0.', en:'Tax advisor in Berlin-Zehlendorf: NSBB advises companies, private individuals and international clients – digital, personal and connected worldwide via the TGS network. Phone +49 30 8158093-0.' },
+    img: 'assets/images/standort-berlin.webp',
+    imgAlt: { de:'Büro der NSBB Steuerberatung in der Berlepschstraße 1 in Berlin-Zehlendorf', en:'NSBB tax advisory office at Berlepschstraße 1 in Berlin-Zehlendorf' },
+    stadtteil: 'Zehlendorf',
+    trustPoints: { de:['Im Erstgespräch ist immer ein Berufsträger persönlich dabei','Zusammenarbeit vollständig digital möglich – oder klassisch vor Ort','International über das TGS-Netzwerk in 58 Ländern'], en:['A qualified professional is always personally present at the first meeting','Collaboration fully digital – or traditionally on site','International reach via the TGS network in 58 countries'] },
+    anfahrtWege: { de:[
+      { icon:'refresh', t:'S-Bahn', v:'Linie S1 bis Zehlendorf, ca. 5 Minuten Fußweg' },
+      { icon:'arrowRight', t:'Bus', v:'M48 / X10 bis Haltestelle Berlepschstraße' },
+      { icon:'home', t:'Parken', v:'Kostenfreie Parkplätze direkt vor dem Gebäude' },
+    ], en:[
+      { icon:'refresh', t:'S-Bahn', v:'Line S1 to Zehlendorf, approx. 5 minutes on foot' },
+      { icon:'arrowRight', t:'Bus', v:'M48 / X10 to Berlepschstraße stop' },
+      { icon:'home', t:'Parking', v:'Free parking spaces directly in front of the building' },
+    ] },
+    digitalPoints: { de:[
+      'Belege digital übermitteln – per App, Scan oder DATEV Unternehmen online',
+      'Dokumente per eSign unterschreiben – ohne Ausdruck und Postweg',
+      'Feste Ansprechpartner statt wechselnder Zuständigkeiten',
+      'Auswertungen jederzeit abrufbar – Sie behalten den Überblick',
+    ], en:[
+      'Submit records digitally – via app, scan or DATEV Unternehmen online',
+      'Sign documents via eSign – no printing, no postal service',
+      'Dedicated contacts instead of changing responsibilities',
+      'Reports available at any time – you stay in control',
+    ] },
     faq: { de:[
       { q:'Was kostet ein Steuerberater in Berlin?', a:'Die Vergütung richtet sich nach der Steuerberatervergütungsverordnung (StBVV). Nach einem kurzen Erstgespräch erhalten Sie von uns ein transparentes, auf Ihren Bedarf zugeschnittenes Angebot.' },
       { q:'Kann ich problemlos von meinem bisherigen Steuerberater zu NSBB wechseln?', a:'Ja. Ein Wechsel ist jederzeit möglich; die Übernahme Ihrer Unterlagen und Daten koordinieren wir für Sie.' },
@@ -5991,6 +6015,30 @@ const STANDORT_DATA = {
     regionenHead: { de:'Wen wir in Köln und im Rheinland beraten', en:'Who We Advise in Cologne and the Rhineland' },
     regionenText: { de:'Vom Rheinauhafen aus beraten wir Mandanten in ganz Köln – von der Altstadt-Süd über Deutz bis Lindenthal – sowie im gesamten Rheinland, darunter Bonn, Leverkusen und Bergisch Gladbach. Über vollständig digitale Prozesse betreuen wir Unternehmen und Privatpersonen darüber hinaus bundesweit und international.', en:'From the Rheinauhafen we advise clients throughout Cologne – from Altstadt-Süd and Deutz to Lindenthal – and across the wider Rhineland, including Bonn, Leverkusen and Bergisch Gladbach. Through fully digital processes, we also support companies and private individuals nationwide and internationally.' },
     metaDesc: { de:'Steuerberater in Köln am Rheinauhafen: NSBB berät Unternehmen, Freiberufler und Privatpersonen – digital, persönlich und international vernetzt über das TGS-Netzwerk. Telefon +49 221 973064-0.', en:'Tax advisor in Cologne on the Rheinauhafen: NSBB advises companies, freelancers and private individuals – digital, personal and internationally connected via the TGS network. Phone +49 221 973064-0.' },
+    img: 'assets/images/standort-koeln.webp',
+    imgAlt: { de:'Büro der NSBB Steuerberatung am Holzmarkt 2/2A im Kölner Rheinauhafen', en:'NSBB tax advisory office at Holzmarkt 2/2A in the Cologne Rheinauhafen' },
+    stadtteil: 'Rheinauhafen',
+    trustPoints: { de:['Wir hören zuerst zu – der Leistungsumfang entsteht gemeinsam','Zusammenarbeit vollständig digital möglich – oder klassisch vor Ort','International über das TGS-Netzwerk in 58 Ländern'], en:['We listen first – the scope of services is defined together','Collaboration fully digital – or traditionally on site','International reach via the TGS network in 58 countries'] },
+    anfahrtWege: { de:[
+      { icon:'refresh', t:'U-Bahn', v:'Linie 3 / 4 bis Heumarkt, ca. 8 Minuten Fußweg' },
+      { icon:'arrowRight', t:'S-Bahn', v:'Köln Hauptbahnhof, ca. 10 Minuten Fußweg' },
+      { icon:'home', t:'Parken', v:'Tiefgaragenstellplätze direkt unter dem Gebäude' },
+    ], en:[
+      { icon:'refresh', t:'Metro', v:'Line 3 / 4 to Heumarkt, approx. 8 minutes on foot' },
+      { icon:'arrowRight', t:'S-Bahn', v:'Cologne Central Station, approx. 10 minutes on foot' },
+      { icon:'home', t:'Parking', v:'Underground parking directly below the building' },
+    ] },
+    digitalPoints: { de:[
+      'Belege digital übermitteln – per App, Scan oder DATEV Unternehmen online',
+      'Sichere Cloud-Wege für Unterlagen, Abschlüsse und Auswertungen',
+      'Feste Ansprechpartner statt wechselnder Zuständigkeiten',
+      'Kurze Wege und schnelle Antworten – ortsunabhängig',
+    ], en:[
+      'Submit records digitally – via app, scan or DATEV Unternehmen online',
+      'Secure cloud channels for documents, statements and reports',
+      'Dedicated contacts instead of changing responsibilities',
+      'Short paths and fast answers – regardless of location',
+    ] },
     faq: { de:[
       { q:'Was kostet ein Steuerberater in Köln?', a:'Unsere Vergütung richtet sich nach der Steuerberatervergütungsverordnung (StBVV). Im Erstgespräch klären wir Ihren Bedarf und erstellen Ihnen ein transparentes Angebot.' },
       { q:'Ist ein Wechsel meines Steuerberaters aufwendig?', a:'Nein. Wir übernehmen die Abstimmung mit Ihrem bisherigen Berater und die Übernahme Ihrer Daten, sodass der Wechsel für Sie reibungslos verläuft.' },
@@ -6017,13 +6065,15 @@ const STANDORT_DATA = {
 
 function StandortAccordion({ items }) {
   const [open, setOpen] = React.useState(null);
-  return e('div', { style:{ maxWidth:'720px' } },
-    items.map((it, i) => e('div', { key:i, style:{ borderBottom:'1px solid var(--border)' } },
+  return e('div', null,
+    items.map((it, i) => e('div', { key:i, style:{ borderBottom: i < items.length - 1 ? '1px solid var(--border)' : 'none' } },
       e('button', { onClick:()=>setOpen(open===i?null:i), 'aria-expanded': open===i, style:{ width:'100%', textAlign:'left', background:'none', border:'none', cursor:'pointer', padding:'20px 0', display:'flex', justifyContent:'space-between', alignItems:'center', gap:'16px' } },
-        e('span', { style:{ fontFamily:"'Cormorant Garamond',serif", fontSize:'1.3rem', color:'#1A1917', lineHeight:1.25 } }, it.q),
-        e('span', { 'aria-hidden':'true', style:{ color:'var(--accent)', fontSize:'1.5rem', flexShrink:0, fontFamily:"'DM Sans',sans-serif", lineHeight:1 } }, open===i ? '–' : '+')
+        e('span', { style:{ fontFamily:"'Cormorant Garamond',serif", fontSize:'1.24rem', color: open===i ? 'var(--accent-dark)' : '#1A1917', lineHeight:1.3, transition:'color .2s' } }, it.q),
+        // Rundes Plus/Minus – deutlicher als das freistehende Zeichen und
+        // signalisiert klarer, dass die Frage aufklappbar ist.
+        e('span', { 'aria-hidden':'true', style:{ width:'28px', height:'28px', borderRadius:'50%', background: open===i ? 'var(--accent)' : 'var(--accent-subtle)', color: open===i ? '#fff' : 'var(--accent)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, fontFamily:"'DM Sans',sans-serif", fontSize:'1.15rem', lineHeight:1, transition:'background .2s, color .2s' } }, open===i ? '–' : '+')
       ),
-      open===i && e('p', { style:{ padding:'0 0 20px', color:'var(--muted)', lineHeight:1.7, maxWidth:'660px' } }, it.a)
+      open===i && e('p', { style:{ padding:'0 0 22px', color:'var(--muted)', lineHeight:1.8, maxWidth:'700px', fontFamily:"'DM Sans',sans-serif", fontSize:'.94rem' } }, it.a)
     ))
   );
 }
@@ -6037,9 +6087,9 @@ function StandortPage({ setPage, lang, t, setKontaktPreset, city }) {
   const people = team.filter(p => p.standort === d.teamStandort);
   const secH2 = { fontSize:'clamp(1.6rem,3vw,2.2rem)', color:'#1A1917', fontFamily:"'Cormorant Garamond',serif", lineHeight:1.15 };
   const services = [
-    { key:'leistungen-unternehmen', h:{de:'Für Unternehmen',en:'For companies'}, p:d.svcUnternehmen, more:{de:'Mehr zur Beratung für Unternehmen',en:'More on advice for companies'} },
-    { key:'leistungen-international', h:{de:'Internationales Steuerrecht',en:'International tax law'}, p:d.svcIntl, more:{de:'Mehr zum internationalen Steuerrecht',en:'More on international tax law'} },
-    { key:'leistungen-privat', h:{de:'Für Privatpersonen',en:'For private individuals'}, p:d.svcPrivat, more:{de:'Mehr zur Beratung für Privatpersonen',en:'More on advice for private individuals'} },
+    { key:'leistungen-unternehmen', icon:'building', h:{de:'Für Unternehmen',en:'For companies'}, p:d.svcUnternehmen, more:{de:'Mehr zur Beratung für Unternehmen',en:'More on advice for companies'} },
+    { key:'leistungen-international', icon:'globe', h:{de:'Internationales Steuerrecht',en:'International tax law'}, p:d.svcIntl, more:{de:'Mehr zum internationalen Steuerrecht',en:'More on international tax law'} },
+    { key:'leistungen-privat', icon:'user', h:{de:'Für Privatpersonen',en:'For private individuals'}, p:d.svcPrivat, more:{de:'Mehr zur Beratung für Privatpersonen',en:'More on advice for private individuals'} },
   ];
 
   // SEO/GEO: strukturierte Daten (LocalBusiness + Breadcrumb + FAQ) und eine
@@ -6104,109 +6154,277 @@ function StandortPage({ setPage, lang, t, setKontaktPreset, city }) {
     };
   }, [city, lang]);
 
+  // ── Optik-Bausteine der Standortseiten ────────────────────────────────
+  // Bewusst mit den vorhandenen Mitteln der Website gebaut (Akzentgrün,
+  // Cormorant Garamond fuer Ueberschriften, DM Sans fuer Text, Icons aus `Ico`,
+  // Karten mit weichem Rand und Schatten) – die Seiten sollen wie ein
+  // selbstverstaendlicher Teil der Website wirken, nur reicher gestaltet.
+  const cityName = (isDE ? d.accentDe : d.accentEn).replace(/\.$/, '');
+  const card = { background:'#fff', border:'1px solid var(--border)', borderRadius:'1.25rem', boxShadow:'0 1px 3px rgba(0,0,0,.05)' };
+  const iconBox = { width:'40px', height:'40px', borderRadius:'11px', background:'var(--accent-subtle)', color:'var(--accent)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 };
+  const eyebrowSt = { fontSize:'.68rem', fontWeight:600, letterSpacing:'.11em', textTransform:'uppercase', color:'var(--accent)', fontFamily:"'DM Sans',sans-serif", margin:0 };
+  const bodySt = { color:'var(--muted)', lineHeight:1.8, fontFamily:"'DM Sans',sans-serif" };
+  const accentLink = { color:'var(--accent)', textDecoration:'none', fontWeight:600 };
+
+  // Eckdaten als Kachelraster – schnell erfassbar und maschinell gut auslesbar.
+  const blickItems = [
+    { icon:'mapPin',   k:isDE?'Anschrift':'Address',                    v:d.strasse + ', ' + d.plz + ' ' + d.ort },
+    { icon:'phone',    k:isDE?'Telefon':'Phone',                        v:e('a',{ href:'tel:'+d.phoneTel, style:accentLink }, d.phoneDisp) },
+    { icon:'mail',     k:'E-Mail',                                      v:e('a',{ href:'mailto:info@nsbb.de', style:accentLink }, 'info@nsbb.de') },
+    { icon:'clock',    k:isDE?'Öffnungszeiten':'Opening hours',         v:L(d.hours) },
+    { icon:'globe',    k:isDE?'Sprachen':'Languages',                   v:L(d.sprachenDisp) },
+    { icon:'target',   k:isDE?'Schwerpunkte':'Focus areas',             v:L(d.schwerpunkteDisp) },
+    { icon:'users',    k:isDE?'Beratungsregion':'Area served',          v:L(d.regionDisp) },
+    { icon:'building', k:isDE?'Berufsträger vor Ort':'Professionals on site', v:people.map(function(p){ return p.name.split(',')[0]; }).join(' · ') },
+  ];
+
+  const whyItems = [
+    { icon:'users',  h:isDE?'Feste Ansprechpartner':'Dedicated contacts',        p:isDE?'Sie sprechen immer mit denselben Personen – kein Callcenter, kein ständiger Wechsel der Zuständigkeit.':'You always speak to the same people – no call centre, no constant change of responsibility.' },
+    { icon:'laptop', h:isDE?'Digital & papierlos':'Digital & paperless',         p:isDE?'DATEV, digitale Belege und gesicherte Cloud-Wege – die Zusammenarbeit funktioniert ortsunabhängig.':'DATEV, digital records and secure cloud channels – collaboration works regardless of location.' },
+    { icon:'globe',  h:isDE?'International vernetzt':'Internationally connected', p:isDE?'Über das TGS-Netzwerk begleiten wir grenzüberschreitende Sachverhalte in 58 Ländern.':'Through the TGS network we handle cross-border matters in 58 countries.' },
+    { icon:'shield', h:isDE?'Verbindlich & vertraulich':'Reliable & confidential', p:isDE?'Berufsrechtlich gebunden und verschwiegen – mit klaren Absprachen zu Umfang und Honorar.':'Bound by professional rules and discreet – with clear agreements on scope and fees.' },
+  ];
+
   return e('div', { className:'page-enter' },
     e(PageHero, { label:L(d.eyebrow), fit:true, title:L(d.title), accent:isDE?d.accentDe:d.accentEn, subtitle:isDE?d.sub.de:d.sub.en }),
 
-    e('section', { style:{ backgroundColor:'white', paddingTop:'40px', paddingBottom:'80px' } },
+    // ── 1. Einstieg: Text + echtes Standortfoto ───────────────────────────
+    e('section', { style:{ backgroundColor:'#ffffff', paddingTop:'64px', paddingBottom:'72px' } },
       e('div', { className:'max-w-site mx-auto px-5 md:px-8' },
-        e('p', { className:'fade-up', style:{ maxWidth:'760px', color:'var(--muted)', lineHeight:1.8, marginBottom:'36px' } }, L(d.intro)),
+        e('div', { className:'grid grid-cols-1 lg:grid-cols-2', style:{ gap:'52px', alignItems:'center' } },
 
-        // „Auf einen Blick" – kompakte Faktenkarte. Klar ausgezeichnete Eckdaten
-        // (Anschrift, Telefon, Öffnungszeiten, Sprachen, Region), die Menschen
-        // schnell erfassen und KI-Systeme sauber extrahieren können.
-        e('div', { className:'fade-up', style:{ border:'1px solid var(--border)', borderRadius:'1.25rem', padding:'1.75rem', maxWidth:'760px', marginBottom:'48px', background:'var(--offwhite)' } },
-          e('h2', { className:'font-display', style:{ ...secH2, fontSize:'1.35rem', marginBottom:'14px' } }, L(d.blickHead)),
-          e('dl', { style:{ margin:0 } },
-            [
-              { k:isDE?'Anschrift':'Address', v:d.strasse + ', ' + d.plz + ' ' + d.ort },
-              { k:isDE?'Telefon':'Phone', v:e('a', { href:'tel:'+d.phoneTel, style:{ color:'var(--accent)', textDecoration:'none', fontWeight:600 } }, d.phoneDisp) },
-              { k:'E-Mail', v:e('a', { href:'mailto:info@nsbb.de', style:{ color:'var(--accent)', textDecoration:'none', fontWeight:600 } }, 'info@nsbb.de') },
-              { k:isDE?'Öffnungszeiten':'Opening hours', v:L(d.hours) },
-              { k:isDE?'Sprachen':'Languages', v:L(d.sprachenDisp) },
-              { k:isDE?'Schwerpunkte':'Focus areas', v:L(d.schwerpunkteDisp) },
-              { k:isDE?'Beratungsregion':'Area served', v:L(d.regionDisp) },
-            ].map(function (row, i, arr) {
-              return e('div', { key:row.k, style:{ display:'grid', gridTemplateColumns:'minmax(120px,170px) 1fr', gap:'12px', padding:'11px 0', borderBottom: i < arr.length - 1 ? '1px solid var(--border)' : 'none' } },
-                e('dt', { style:{ fontSize:'.68rem', fontWeight:600, letterSpacing:'.08em', textTransform:'uppercase', color:'var(--accent)', fontFamily:"'DM Sans',sans-serif", paddingTop:'2px' } }, row.k),
-                e('dd', { style:{ margin:0, color:'#1A1917', fontSize:'.95rem', lineHeight:1.6, fontFamily:"'DM Sans',sans-serif" } }, row.v)
-              );
-            })
+          e('div', { className:'fade-up' },
+            e('p', { style:{ ...eyebrowSt, marginBottom:'14px' } }, isDE?'Ihre Kanzlei vor Ort':'Your local firm'),
+            e('h2', { className:'font-display', style:{ ...secH2, marginBottom:'18px' } },
+              isDE ? 'Steuerberatung in ' : 'Tax advisory in ',
+              e('span', { style:{ color:'var(--accent)' } }, cityName + '.')
+            ),
+            e('p', { style:{ ...bodySt, marginBottom:'26px' } }, L(d.intro)),
+            e('ul', { style:{ listStyle:'none', padding:0, margin:'0 0 30px', display:'flex', flexDirection:'column', gap:'12px' } },
+              (isDE ? d.trustPoints.de : d.trustPoints.en).map(function (tp) {
+                return e('li', { key:tp, style:{ display:'flex', alignItems:'flex-start', gap:'11px', color:'#1A1917', fontSize:'.95rem', lineHeight:1.6, fontFamily:"'DM Sans',sans-serif" } },
+                  e('span', { style:{ color:'var(--accent)', display:'flex', flexShrink:0, marginTop:'2px' } }, e(Ico, { name:'checkCircle', size:17 })),
+                  tp
+                );
+              })
+            ),
+            e('div', { style:{ display:'flex', flexWrap:'wrap', gap:'12px' } },
+              e('a', { href:'tel:'+d.phoneTel, className:'btn-p', style:{ textDecoration:'none' } },
+                e(Ico, { name:'phone', size:16 }), (isDE?'Anrufen: ':'Call: ') + d.phoneDisp
+              ),
+              e('button', { className:'btn-s', onClick:()=>go('kontakt') },
+                (isDE?'Erstgespräch vereinbaren':'Arrange a first meeting'), e(Ico, { name:'arrowRight', size:15 })
+              )
+            )
+          ),
+
+          e('div', { className:'fade-up', style:{ position:'relative', maxWidth:'430px', width:'100%', margin:'0 auto' } },
+            e('div', { style:{ position:'relative', borderRadius:'1.5rem', overflow:'hidden', boxShadow:'0 18px 48px rgba(0,0,0,.14)' } },
+              e('img', { src:d.img, alt:L(d.imgAlt), loading:'lazy', width:360, height:540,
+                style:{ display:'block', width:'100%', height:'auto', objectFit:'cover' } }),
+              e('div', { style:{ position:'absolute', left:0, right:0, bottom:0, background:'rgba(255,255,255,.94)', padding:'14px 18px', display:'flex', alignItems:'center', gap:'11px' } },
+                e('span', { style:{ color:'var(--accent)', display:'flex', flexShrink:0 } }, e(Ico, { name:'mapPin', size:17 })),
+                e('span', { style:{ fontSize:'.85rem', lineHeight:1.45, color:'#1A1917', fontFamily:"'DM Sans',sans-serif" } },
+                  e('strong', null, d.ort + ' · ' + d.stadtteil), e('br', null), d.strasse + ', ' + d.plz + ' ' + d.ort
+                )
+              )
+            )
           )
-        ),
 
-        e('div', { className:'max-w-2xl', style:{ marginBottom:'32px' } },
-          e('h2', { className:'font-display', style:{ ...secH2, marginBottom:'10px' } }, L(d.servicesHead)),
-          e('p', { style:{ color:'var(--muted)' } }, L(d.servicesSub))
+        )
+      )
+    ),
+
+    // ── 2. Auf einen Blick – Eckdaten als Kachelraster ────────────────────
+    e('section', { style:{ backgroundColor:'var(--offwhite)', paddingTop:'64px', paddingBottom:'64px' } },
+      e('div', { className:'max-w-site mx-auto px-5 md:px-8' },
+        e('h2', { className:'font-display fade-up', style:{ ...secH2, marginBottom:'26px' } }, L(d.blickHead)),
+        e('div', { className:'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4', style:{ gap:'16px' } },
+          blickItems.map(function (it) {
+            return e('div', { key:it.k, className:'fade-up', style:{ ...card, padding:'1.4rem 1.3rem', display:'flex', flexDirection:'column', gap:'12px' } },
+              e('div', { style:iconBox }, e(Ico, { name:it.icon, size:18 })),
+              e('div', null,
+                e('p', { style:{ ...eyebrowSt, marginBottom:'5px' } }, it.k),
+                e('p', { style:{ margin:0, color:'#1A1917', fontSize:'.93rem', lineHeight:1.55, fontFamily:"'DM Sans',sans-serif" } }, it.v)
+              )
+            );
+          })
+        )
+      )
+    ),
+
+    // ── 3. Leistungen am Standort ─────────────────────────────────────────
+    e('section', { style:{ backgroundColor:'#ffffff', paddingTop:'76px', paddingBottom:'76px' } },
+      e('div', { className:'max-w-site mx-auto px-5 md:px-8' },
+        e('div', { className:'max-w-2xl fade-up', style:{ marginBottom:'34px' } },
+          e('h2', { className:'font-display', style:{ ...secH2, marginBottom:'12px' } }, L(d.servicesHead)),
+          e('p', { style:bodySt }, L(d.servicesSub))
         ),
         e('div', { className:'grid grid-cols-1 md:grid-cols-3', style:{ gap:'24px' } },
-          services.map(s => e('div', { key:s.key, className:'fade-up', style:{ background:'#fff', border:'1px solid var(--border)', borderRadius:'1.5rem', padding:'2.25rem', boxShadow:'0 1px 3px rgba(0,0,0,.05)' } },
-            e('h3', { style:{ fontFamily:"'Cormorant Garamond',serif", fontSize:'1.4rem', color:'#1A1917', marginBottom:'12px' } }, L(s.h)),
-            e('p', { style:{ color:'var(--muted)', fontSize:'.95rem', lineHeight:1.7, marginBottom:'18px' } }, L(s.p)),
-            e('button', { onClick:()=>go(s.key), style:{ background:'none', border:'none', cursor:'pointer', color:'var(--accent)', fontWeight:600, fontSize:'.9rem', fontFamily:"'DM Sans',sans-serif", padding:0 } }, L(s.more)+' →')
-          ))
+          services.map(function (s, i) {
+            return e('div', { key:s.key, className:'fade-up card-hover', onClick:()=>go(s.key),
+              style:{ ...card, padding:'2.1rem 1.9rem', cursor:'pointer', display:'flex', flexDirection:'column', transitionDelay:(i*80)+'ms' } },
+              e('div', { style:{ ...iconBox, width:'46px', height:'46px', borderRadius:'13px', marginBottom:'18px' } }, e(Ico, { name:s.icon, size:20 })),
+              e('h3', { style:{ fontFamily:"'Cormorant Garamond',serif", fontSize:'1.42rem', color:'#1A1917', marginBottom:'12px', lineHeight:1.2 } }, L(s.h)),
+              e('p', { style:{ ...bodySt, fontSize:'.94rem', lineHeight:1.75, marginBottom:'20px', flex:1 } }, L(s.p)),
+              e('span', { style:{ ...accentLink, fontSize:'.9rem', display:'inline-flex', alignItems:'center', gap:'6px', fontFamily:"'DM Sans',sans-serif" } },
+                L(s.more), e(Ico, { name:'arrowRight', size:15 })
+              )
+            );
+          })
         )
       )
     ),
 
-    e('section', { style:{ backgroundColor:'var(--offwhite)', paddingTop:'72px', paddingBottom:'72px' } },
+    // ── 4. Warum NSBB – ruhige Akzentflaeche als optischer Anker ──────────
+    e('section', { style:{ backgroundColor:'var(--accent-subtle)', paddingTop:'70px', paddingBottom:'70px' } },
       e('div', { className:'max-w-site mx-auto px-5 md:px-8' },
-        e('div', { className:'max-w-2xl', style:{ marginBottom:'28px' } },
-          e('h2', { className:'font-display', style:{ ...secH2, marginBottom:'10px' } }, L(d.ansprechHead)),
-          e('p', { style:{ color:'var(--muted)' } }, L(d.ansprechSub))
+        e('h2', { className:'font-display fade-up', style:{ ...secH2, marginBottom:'28px' } },
+          isDE ? ('Warum NSBB in ' + cityName + '?') : ('Why NSBB in ' + cityName + '?')
         ),
-        e('div', { className:'grid grid-cols-1 sm:grid-cols-2', style:{ gap:'22px', maxWidth:'760px' } },
-          people.map(p => e('div', { key:p.name, style:{ background:'#fff', border:'1px solid var(--border)', borderRadius:'1.25rem', padding:'2rem 1.5rem', textAlign:'center', boxShadow:'0 1px 3px rgba(0,0,0,.05)' } },
-            e('div', { style:{ width:'120px', height:'120px', borderRadius:'50%', overflow:'hidden', margin:'0 auto 16px', border:'3px solid var(--accent-subtle)', boxShadow:'0 4px 16px rgba(0,0,0,.08)' } },
-              e('img', { src:p.photo, alt:p.name, loading:'lazy', style:{ width:'100%', height:'100%', objectFit:'cover', objectPosition:p.imgPos||'center 10%' } })
-            ),
-            e('p', { style:{ fontSize:'.7rem', fontWeight:600, letterSpacing:'.1em', textTransform:'uppercase', color:'var(--accent)', fontFamily:"'DM Sans',sans-serif" } }, isDE?p.title:(p.titleEN||p.title)),
-            e('h3', { style:{ fontFamily:"'Cormorant Garamond',serif", fontSize:'1.35rem', color:'#1A1917', marginTop:'4px', lineHeight:1.15 } }, p.name),
-            e('p', { style:{ fontSize:'.85rem', color:'var(--muted)', marginTop:'4px', fontFamily:"'DM Sans',sans-serif" } }, isDE?p.profession:(p.professionEN||p.profession))
-          ))
-        ),
-        e('div', { style:{ marginTop:'26px', textAlign:'center', maxWidth:'760px' } },
-          e('button', { onClick:()=>go('ueber-uns'), style:{ display:'inline-flex', alignItems:'center', gap:'.45rem', background:'var(--accent-subtle)', color:'var(--accent)', border:'none', borderRadius:'8px', padding:'9px 18px', fontSize:'.9rem', fontWeight:600, cursor:'pointer', fontFamily:"'DM Sans',sans-serif" } }, (isDE?'Team kennenlernen':'Meet the team')+' →')
+        e('div', { className:'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4', style:{ gap:'18px' } },
+          whyItems.map(function (w) {
+            return e('div', { key:w.h, className:'fade-up', style:{ ...card, padding:'1.7rem 1.5rem' } },
+              e('div', { style:{ ...iconBox, marginBottom:'15px' } }, e(Ico, { name:w.icon, size:19 })),
+              e('h3', { style:{ fontFamily:"'Cormorant Garamond',serif", fontSize:'1.24rem', color:'#1A1917', marginBottom:'9px', lineHeight:1.25 } }, w.h),
+              e('p', { style:{ ...bodySt, fontSize:'.88rem', lineHeight:1.7, margin:0 } }, w.p)
+            );
+          })
         )
       )
     ),
 
-    e('section', { style:{ backgroundColor:'white', paddingTop:'72px', paddingBottom:'72px' } },
+    // ── 5. Ansprechpartner am Standort ───────────────────────────────────
+    e('section', { style:{ backgroundColor:'#ffffff', paddingTop:'76px', paddingBottom:'76px' } },
       e('div', { className:'max-w-site mx-auto px-5 md:px-8' },
-        e('h2', { className:'font-display', style:{ ...secH2, marginBottom:'16px' } }, L(d.digitalHead)),
-        e('p', { style:{ maxWidth:'760px', color:'var(--muted)', lineHeight:1.8 } }, L(d.digitalText))
-      )
-    ),
-
-    e('section', { style:{ backgroundColor:'var(--offwhite)', paddingTop:'72px', paddingBottom:'72px' } },
-      e('div', { className:'max-w-site mx-auto px-5 md:px-8' },
-        e('h2', { className:'font-display', style:{ ...secH2, marginBottom:'20px' } }, L(d.anfahrtHead)),
-        e('div', { style:{ background:'#fff', border:'1px solid var(--border)', borderRadius:'1.25rem', padding:'2rem', maxWidth:'720px', boxShadow:'0 1px 3px rgba(0,0,0,.05)' } },
-          e('p', { style:{ color:'#1A1917', lineHeight:1.9, fontFamily:"'DM Sans',sans-serif" } },
-            e('strong', null, d.addr[0]), e('br', null),
-            d.addr[1], e('br', null), d.addr[2], e('br', null),
-            (isDE?'Telefon: ':'Phone: '), e('a', { href:'tel:'+d.phoneTel, style:{ color:'var(--accent)', fontWeight:600, textDecoration:'none' } }, d.phoneDisp)
-          ),
-          e('p', { style:{ color:'var(--muted)', marginTop:'12px', lineHeight:1.7 } }, L(d.anfahrtNote)),
-          e('a', { href:d.mapsUrl, target:'_blank', rel:'noopener noreferrer', style:{ display:'inline-flex', alignItems:'center', gap:'6px', marginTop:'14px', color:'var(--accent)', fontWeight:600, textDecoration:'none', fontFamily:"'DM Sans',sans-serif" } }, (isDE?'Auf Google Maps ansehen':'View on Google Maps')+' →')
+        e('div', { className:'max-w-2xl fade-up', style:{ marginBottom:'32px' } },
+          e('h2', { className:'font-display', style:{ ...secH2, marginBottom:'12px' } }, L(d.ansprechHead)),
+          e('p', { style:bodySt }, L(d.ansprechSub))
         ),
-
-        // Lokale Reichweite: benennt betreute Stadtteile und Umlandorte. Stärkt
-        // die lokale Auffindbarkeit (Local SEO) und liefert KI-Systemen klare
-        // Orts-Signale zu „Steuerberater in <Ort/Region>".
-        e('div', { className:'fade-up', style:{ maxWidth:'760px', marginTop:'32px' } },
-          e('h3', { style:{ fontFamily:"'Cormorant Garamond',serif", fontSize:'1.35rem', color:'#1A1917', marginBottom:'10px' } }, L(d.regionenHead)),
-          e('p', { style:{ color:'var(--muted)', lineHeight:1.8, marginBottom:'16px' } }, L(d.regionenText)),
-          e('div', { style:{ display:'flex', flexWrap:'wrap', gap:'8px' } },
-            d.areaServed.map(function (n) { return e('span', { key:n, style:{ fontSize:'.8rem', color:'var(--accent-dark)', background:'var(--accent-subtle)', borderRadius:'999px', padding:'6px 13px', fontFamily:"'DM Sans',sans-serif" } }, n); })
+        e('div', { className:'grid grid-cols-1 sm:grid-cols-2', style:{ gap:'24px', maxWidth:'800px' } },
+          people.map(function (p) {
+            return e('div', { key:p.name, className:'fade-up', style:{ ...card, padding:'2.2rem 1.7rem', textAlign:'center' } },
+              e('div', { style:{ width:'124px', height:'124px', borderRadius:'50%', overflow:'hidden', margin:'0 auto 18px', border:'3px solid var(--accent-subtle)', boxShadow:'0 6px 20px rgba(0,0,0,.10)' } },
+                e('img', { src:p.photo, alt:(isDE?'Foto von ':'Photo of ')+p.name, loading:'lazy', width:124, height:124, style:{ width:'100%', height:'100%', objectFit:'cover', objectPosition:p.imgPos||'center 10%' } })
+              ),
+              e('p', { style:{ ...eyebrowSt, marginBottom:'6px' } }, isDE?p.title:(p.titleEN||p.title)),
+              e('h3', { style:{ fontFamily:"'Cormorant Garamond',serif", fontSize:'1.38rem', color:'#1A1917', lineHeight:1.2, marginBottom:'4px' } }, p.name),
+              e('p', { style:{ fontSize:'.87rem', color:'var(--muted)', fontFamily:"'DM Sans',sans-serif", marginBottom:'16px' } }, isDE?p.profession:(p.professionEN||p.profession)),
+              e('div', { style:{ borderTop:'1px solid var(--border)', paddingTop:'14px', display:'flex', flexDirection:'column', gap:'8px', alignItems:'center' } },
+                e('a', { href:'tel:'+d.phoneTel, style:{ ...accentLink, fontSize:'.87rem', display:'inline-flex', alignItems:'center', gap:'7px', fontFamily:"'DM Sans',sans-serif" } },
+                  e(Ico, { name:'phone', size:14 }), d.phoneDisp),
+                e('a', { href:'mailto:'+p.email, style:{ ...accentLink, fontSize:'.87rem', display:'inline-flex', alignItems:'center', gap:'7px', fontFamily:"'DM Sans',sans-serif" } },
+                  e(Ico, { name:'mail', size:14 }), p.email)
+              )
+            );
+          })
+        ),
+        e('div', { className:'fade-up', style:{ marginTop:'28px', maxWidth:'800px', textAlign:'center' } },
+          e('button', { onClick:()=>go('ueber-uns'), style:{ display:'inline-flex', alignItems:'center', gap:'.5rem', background:'var(--accent-subtle)', color:'var(--accent)', border:'none', borderRadius:'999px', padding:'11px 22px', fontSize:'.9rem', fontWeight:600, cursor:'pointer', fontFamily:"'DM Sans',sans-serif" } },
+            (isDE?'Das gesamte Team kennenlernen':'Meet the whole team'), e(Ico, { name:'arrowRight', size:15 })
           )
         )
       )
     ),
 
-    e('section', { style:{ backgroundColor:'white', paddingTop:'72px', paddingBottom:'80px' } },
+    // ── 6. Digitale Zusammenarbeit: Text + Checkliste ────────────────────
+    e('section', { style:{ backgroundColor:'var(--offwhite)', paddingTop:'76px', paddingBottom:'76px' } },
       e('div', { className:'max-w-site mx-auto px-5 md:px-8' },
-        e('h2', { className:'font-display', style:{ ...secH2, marginBottom:'20px' } }, isDE?'Häufige Fragen':'Frequently Asked Questions'),
-        e(StandortAccordion, { items: isDE ? d.faq.de : d.faq.en })
+        e('div', { className:'grid grid-cols-1 lg:grid-cols-2', style:{ gap:'44px', alignItems:'center' } },
+          e('div', { className:'fade-up' },
+            e('p', { style:{ ...eyebrowSt, marginBottom:'13px' } }, isDE?'Zusammenarbeit':'Working together'),
+            e('h2', { className:'font-display', style:{ ...secH2, marginBottom:'16px' } }, L(d.digitalHead)),
+            e('p', { style:{ ...bodySt, marginBottom:'22px' } }, L(d.digitalText)),
+            e('button', { className:'btn-s', onClick:()=>go('digital') },
+              (isDE?'Mehr zur digitalen Kanzlei':'More on our digital practice'), e(Ico, { name:'arrowRight', size:15 })
+            )
+          ),
+          e('div', { className:'fade-up', style:{ ...card, padding:'2rem 1.8rem' } },
+            e('p', { style:{ ...eyebrowSt, marginBottom:'16px' } }, isDE?'So läuft es konkret ab':'How it works in practice'),
+            e('ul', { style:{ listStyle:'none', padding:0, margin:0, display:'flex', flexDirection:'column', gap:'15px' } },
+              (isDE ? d.digitalPoints.de : d.digitalPoints.en).map(function (dp) {
+                return e('li', { key:dp, style:{ display:'flex', alignItems:'flex-start', gap:'12px', color:'#1A1917', fontSize:'.93rem', lineHeight:1.65, fontFamily:"'DM Sans',sans-serif" } },
+                  e('span', { style:{ color:'var(--accent)', display:'flex', flexShrink:0, marginTop:'2px' } }, e(Ico, { name:'check', size:17 })),
+                  dp
+                );
+              })
+            )
+          )
+        )
+      )
+    ),
+
+    // ── 7. Anfahrt: Adresse + konkrete Wege (OePNV, Parken) ──────────────
+    e('section', { style:{ backgroundColor:'#ffffff', paddingTop:'76px', paddingBottom:'76px' } },
+      e('div', { className:'max-w-site mx-auto px-5 md:px-8' },
+        e('h2', { className:'font-display fade-up', style:{ ...secH2, marginBottom:'26px' } }, L(d.anfahrtHead)),
+        e('div', { className:'grid grid-cols-1 lg:grid-cols-2', style:{ gap:'24px' } },
+
+          e('div', { className:'fade-up', style:{ ...card, padding:'2rem 1.8rem' } },
+            e('p', { style:{ ...eyebrowSt, marginBottom:'16px' } }, isDE?'Adresse & Kontakt':'Address & contact'),
+            e('div', { style:{ display:'flex', flexDirection:'column', gap:'16px' } },
+              [
+                { icon:'mapPin', v:e('span', null, e('strong', null, d.addr[0]), e('br', null), d.addr[1], e('br', null), d.addr[2]) },
+                { icon:'phone',  v:e('a', { href:'tel:'+d.phoneTel, style:accentLink }, d.phoneDisp) },
+                { icon:'mail',   v:e('a', { href:'mailto:info@nsbb.de', style:accentLink }, 'info@nsbb.de') },
+                { icon:'clock',  v:L(d.hours) },
+              ].map(function (row, i) {
+                return e('div', { key:i, style:{ display:'flex', alignItems:'flex-start', gap:'13px' } },
+                  e('span', { style:{ color:'var(--accent)', display:'flex', flexShrink:0, marginTop:'2px' } }, e(Ico, { name:row.icon, size:17 })),
+                  e('span', { style:{ color:'#1A1917', fontSize:'.93rem', lineHeight:1.7, fontFamily:"'DM Sans',sans-serif" } }, row.v)
+                );
+              })
+            ),
+            e('a', { href:d.mapsUrl, target:'_blank', rel:'noopener noreferrer', className:'btn-s', style:{ marginTop:'22px', textDecoration:'none' } },
+              e(Ico, { name:'mapPin', size:15 }), (isDE?'Auf Google Maps ansehen':'View on Google Maps')
+            )
+          ),
+
+          e('div', { className:'fade-up', style:{ ...card, padding:'2rem 1.8rem' } },
+            e('p', { style:{ ...eyebrowSt, marginBottom:'16px' } }, isDE?'So erreichen Sie uns':'How to get here'),
+            e('div', { style:{ display:'flex', flexDirection:'column', gap:'17px' } },
+              (isDE ? d.anfahrtWege.de : d.anfahrtWege.en).map(function (w) {
+                return e('div', { key:w.t, style:{ display:'flex', alignItems:'flex-start', gap:'13px' } },
+                  e('span', { style:{ ...iconBox, width:'34px', height:'34px', borderRadius:'9px' } }, e(Ico, { name:w.icon, size:16 })),
+                  e('div', null,
+                    e('p', { style:{ margin:'0 0 3px', fontSize:'.87rem', fontWeight:600, color:'#1A1917', fontFamily:"'DM Sans',sans-serif" } }, w.t),
+                    e('p', { style:{ margin:0, fontSize:'.88rem', color:'var(--muted)', lineHeight:1.6, fontFamily:"'DM Sans',sans-serif" } }, w.v)
+                  )
+                );
+              })
+            ),
+            e('p', { style:{ ...bodySt, fontSize:'.88rem', marginTop:'18px', paddingTop:'16px', borderTop:'1px solid var(--border)' } }, L(d.anfahrtNote))
+          )
+
+        ),
+
+        // Lokale Reichweite: benennt betreute Stadtteile und Umlandorte. Staerkt
+        // die lokale Auffindbarkeit (Local SEO) und liefert KI-Systemen klare
+        // Orts-Signale zu „Steuerberater in <Ort/Region>".
+        e('div', { className:'fade-up', style:{ marginTop:'40px', paddingTop:'34px', borderTop:'1px solid var(--border)' } },
+          e('h3', { style:{ fontFamily:"'Cormorant Garamond',serif", fontSize:'1.45rem', color:'#1A1917', marginBottom:'12px' } }, L(d.regionenHead)),
+          e('p', { style:{ ...bodySt, maxWidth:'760px', marginBottom:'18px' } }, L(d.regionenText)),
+          e('div', { style:{ display:'flex', flexWrap:'wrap', gap:'9px' } },
+            d.areaServed.map(function (n) {
+              return e('span', { key:n, style:{ fontSize:'.82rem', color:'var(--accent-dark)', background:'var(--accent-subtle)', borderRadius:'999px', padding:'7px 15px', fontFamily:"'DM Sans',sans-serif" } }, n);
+            })
+          )
+        )
+      )
+    ),
+
+    // ── 8. Haeufige Fragen ───────────────────────────────────────────────
+    e('section', { style:{ backgroundColor:'var(--offwhite)', paddingTop:'76px', paddingBottom:'84px' } },
+      e('div', { className:'max-w-site mx-auto px-5 md:px-8' },
+        e('div', { className:'max-w-2xl fade-up', style:{ marginBottom:'26px' } },
+          e('h2', { className:'font-display', style:{ ...secH2, marginBottom:'12px' } }, isDE?'Häufige Fragen':'Frequently Asked Questions'),
+          e('p', { style:bodySt }, isDE
+            ? ('Antworten auf die Fragen, die uns in ' + cityName + ' am häufigsten gestellt werden.')
+            : ('Answers to the questions we are asked most often in ' + cityName + '.'))
+        ),
+        e('div', { className:'fade-up', style:{ ...card, padding:'.5rem 1.8rem', maxWidth:'860px' } },
+          e(StandortAccordion, { items: isDE ? d.faq.de : d.faq.en })
+        )
       )
     ),
 
