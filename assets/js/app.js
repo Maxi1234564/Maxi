@@ -662,8 +662,8 @@ function HomePage({ setPage, lang, t }) {
               // Standort-Schnellzugriff – auf Desktop rechts daneben, mobil darunter
               e('div', { style:{ display:'flex', flexDirection:'column', gap:'8px' } },
                 [
-                  { key:'steuerberater-berlin', label: isDE?'Steuerberater Berlin':'Tax Advisor Berlin' },
-                  { key:'steuerberater-koeln',  label: isDE?'Steuerberater Köln':'Tax Advisor Cologne' },
+                  { key:'steuerberater-berlin', label: isDE?'Standort Berlin':'Berlin office' },
+                  { key:'steuerberater-koeln',  label: isDE?'Standort Köln':'Cologne office' },
                 ].map(loc => e('button', {
                     key: loc.key,
                     onClick: () => go(loc.key),

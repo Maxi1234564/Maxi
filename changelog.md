@@ -15,6 +15,39 @@ Format: neueste Einträge oben. Aufbau eines Eintrags siehe Vorlage am Ende.
 
 ---
 
+## [2026-08-06] Startseite: Standort-Verlinkung heißt jetzt „Standort Berlin" / „Standort Köln"
+
+**Bearbeiter:** Claude (Claude Code, Opus 5)
+**Grund:** Kundenwunsch – die beiden Verweise in der Kennzahlenleiste der
+Startseite sollen „Standort Berlin" und „Standort Köln" heißen (vorher
+„Steuerberater Berlin" / „Steuerberater Köln"). Sonst bleibt alles unverändert.
+
+### Geändert
+* `assets/js/app.js`, `HomePage` (Standort-Schnellzugriff in der
+  Kennzahlenleiste): Beschriftung der beiden Knöpfe
+  „Steuerberater Berlin/Köln" → **„Standort Berlin" / „Standort Köln"**,
+  englisch „Tax Advisor Berlin/Cologne" → **„Berlin office" / „Cologne office"**
+  (passend zum Eyebrow der Standortseiten). Ziel-Adressen unverändert
+  (`steuerberater-berlin` / `steuerberater-koeln`).
+* `index.html`: `?v=20260806c` → `?v=20260806d`.
+
+### Bewusst NICHT geändert
+* **Menü** („Über uns" → Dropdown) und **Footer**-Seitenliste behalten den
+  Ankertext „Steuerberater Berlin" / „Steuerberater Köln". Interner Ankertext ist
+  ein Rankingsignal – so bleibt das Keyword für die Suche erhalten, während die
+  Startseite die vom Kunden gewünschte Beschriftung trägt.
+* Die beiden Standortseiten selbst, ihre Adressen, Inhalte und die strukturierten
+  Daten bleiben unangetastet.
+
+### Geprüft
+* `node --check assets/js/app.js` – fehlerfrei.
+* Browser (Playwright, DE + EN): beide Knöpfe tragen die neue Beschriftung, die
+  alte Beschriftung kommt auf der Startseite nicht mehr vor, Klick führt korrekt
+  auf „Steuerberater in Berlin." bzw. „Tax Advisor in Berlin."; keine
+  Konsolenfehler.
+
+---
+
 ## [2026-08-06] Standortseiten Berlin & Köln optisch neu aufgebaut (nutzerfreundlicher, mehr Inhalt)
 
 **Bearbeiter:** Claude (Claude Code, Opus 5)
