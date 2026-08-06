@@ -1,0 +1,106 @@
+# NSBB Steuerberatung
+
+> NSBB Steuerberatungsgesellschaft mbH ist eine moderne, digital arbeitende
+> Steuerberatungskanzlei mit Standorten in **Berlin** und **Köln**. Schwerpunkt:
+> **internationales Steuerrecht** für Unternehmer, Unternehmensgruppen, Investoren
+> und vermögende Privatpersonen. Beratung auf Deutsch und Englisch.
+
+Diese Datei fasst die Kanzlei für KI-Systeme und Suchmaschinen zusammen. Der
+verbindliche Stand steht auf https://nsbb.de. Englische Fassung jeder Seite über
+den Parameter `?lang=en`.
+
+## Über die Kanzlei
+
+NSBB begleitet Unternehmer, Unternehmen und Privatpersonen bei Wachstum,
+Strukturierung und steuerlichen Entscheidungen – von der laufenden Beratung bis
+zu komplexen nationalen und internationalen Fragestellungen. Die Zusammenarbeit
+erfolgt vollständig digital, bundesweit und international. NSBB ist Teil des
+weltweiten Netzwerks **TGS International** (Steuerberater, Wirtschaftsprüfer und
+Rechtsanwälte in 58 Ländern).
+
+- Firmierung: NSBB Steuerberatungsgesellschaft mbH
+- Sprachen: Deutsch, Englisch
+- Website: https://nsbb.de
+- E-Mail: info@nsbb.de
+
+## Standorte
+
+**Berlin** — Berlepschstr. 1, 14165 Berlin · Tel. +49 30 8158093-0
+**Köln** — Holzmarkt 2/2A, 50676 Köln · Tel. +49 221 973064-0
+
+Öffnungszeiten (beide Standorte): Mo–Do 08:00–17:30 Uhr, Fr 08:00–16:30 Uhr.
+
+## Leistungen
+
+- **Für Unternehmen** (https://nsbb.de/leistungen-unternehmen): laufende
+  Steuerberatung, Finanzbuchhaltung, Lohnabrechnung, Jahresabschluss,
+  steuerliche Gestaltungsberatung (Rechtsform, Holding, Umwandlung),
+  betriebswirtschaftliche Beratung, Branchenlösungen (E-Commerce, Bau,
+  Immobilien, international tätige Unternehmen, Start-ups, Heilberufe).
+- **Internationales Steuerrecht** (https://nsbb.de/leistungen-international):
+  Wegzugsbesteuerung, Doppelbesteuerungsabkommen, ausländische Einkünfte,
+  Grenzgänger, Auslandsimmobilien, Erbschaft und Schenkung mit Auslandsbezug,
+  Wohnsitz und Rückkehr, internationale Vermögensstrukturierung.
+- **Für Privatpersonen** (https://nsbb.de/leistungen-privat):
+  Einkommensteuererklärung, Vermietung, Kapitalanlagen, Vermögensnachfolge.
+- **Digitale Kanzlei** (https://nsbb.de/digital): DATEV-Anbindung, digitale
+  Belegverarbeitung, papierlose Zusammenarbeit.
+- **Kanzleinachfolge** (https://nsbb.de/kanzleinachfolge): vertrauliche
+  Begleitung der Übergabe von Steuerkanzleien.
+
+## Schwerpunktthemen – kurze Antworten
+
+**Wegzugsbesteuerung** (https://nsbb.de/intl-wegzug): Sie entsteht, wenn eine
+natürliche Person, die in den letzten zwölf Jahren mindestens sieben Jahre in
+Deutschland unbeschränkt steuerpflichtig war, Anteile an Kapitalgesellschaften
+von mindestens 1 % hält und ihren Wohnsitz ins Ausland verlegt. Besteuert werden
+die stillen Reserven – auch ohne tatsächlichen Verkauf. Bei Wegzug in EU-/EWR-
+Staaten ist eine zinslose Stundung möglich; bei Drittstaaten (z. B. Schweiz,
+Dubai) grundsätzlich nur gegen Sicherheitsleistung und mit Zinsen. Kehrt die
+Person innerhalb von sieben Jahren zurück und hält die Anteile noch, kann die
+Steuer rückgängig gemacht werden (ab 2022 verschärfte Regeln).
+
+**Doppelbesteuerungsabkommen (DBA)** (https://nsbb.de/intl-dba): DBA gelten
+zwischen zwei Staaten und regeln, welcher Staat welche Einkünfte besteuern darf.
+Sie verhindern, dass dieselben Einkünfte in zwei Ländern vollständig besteuert
+werden.
+
+**Grenzgänger** (https://nsbb.de/intl-grenzgaenger): Wo das Einkommen zu
+versteuern ist, wenn Wohnsitz und Arbeitsort in verschiedenen Ländern liegen,
+richtet sich nach dem jeweiligen DBA und besonderen Grenzgängerregelungen.
+
+**Erbschaft und Schenkung mit Auslandsbezug**
+(https://nsbb.de/intl-erbschaft, https://nsbb.de/intl-schenkung): Welches Land
+besteuert und wie sich Doppelbesteuerung vermeiden lässt, hängt von Wohnsitz,
+Staatsangehörigkeit und Lage des Vermögens ab.
+
+**Wohnsitz, Rückkehr, Auslandsimmobilien**
+(https://nsbb.de/intl-wohnsitz, https://nsbb.de/intl-rueckkehr,
+https://nsbb.de/intl-immobilien): Beratung zu fortbestehender Steuerpflicht,
+Weichenstellungen vor dem Zuzug und der Behandlung ausländischer Immobilien.
+
+## Häufige Fragen
+
+- **Betreut NSBB internationale Unternehmensgruppen?** Ja – international tätige
+  Gruppen, Holdingstrukturen und Konzerne bei laufender Beratung, Strukturierung
+  und Gestaltung.
+- **Unterstützt NSBB Privatpersonen?** Ja – vermögende Privatpersonen,
+  Unternehmer und Investoren bei Wohnsitz, Wegzug, Auslandsimmobilien,
+  Erbschaften und Schenkungen mit internationalem Bezug.
+- **Kann die Zusammenarbeit vollständig digital erfolgen?** Ja – vollständig
+  digital, bundesweit und international über sichere digitale Prozesse.
+
+Weitere Fragen: https://nsbb.de/faq
+
+## Kontakt & weitere Seiten
+
+- Kontakt: https://nsbb.de/kontakt
+- Über uns / Team: https://nsbb.de/ueber-uns
+- Aktuelles (monatliche Mandanteninformation als PDF + Fachbeiträge): https://nsbb.de/aktuelles
+- Karriere: https://nsbb.de/karriere
+- Impressum: https://nsbb.de/impressum
+- Datenschutz: https://nsbb.de/datenschutz
+
+*Hinweis: Diese Zusammenfassung dient der maschinellen Auffindbarkeit. Sie ersetzt
+keine steuerliche Beratung; verbindlich ist ausschließlich die individuelle
+Beratung durch NSBB.*

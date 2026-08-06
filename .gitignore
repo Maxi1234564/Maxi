@@ -12,3 +12,20 @@
 *.zip
 *.orig
 *.bak
+
+# Laufzeitdaten von contact.php
+.formlimit/
+
+# Redaktionsinhalte des Kunden (Beiträge, Bilder, Mandanteninfo-PDFs).
+# Quelle der Wahrheit ist der SERVER; lokal nur eine Arbeitskopie fürs
+# Vorrendern (holen mit tools/daten-holen.sh).
+daten/
+
+# Zugangsdaten und Server-Momentaufnahmen
+tools/deploy.conf
+server-abbild/
+
+# Von tools/seiten-generator.js erzeugte Seiten + sitemap.xml (Build-Artefakte).
+# Sie landen im build/-Ordner und werden bei jedem Paketbau neu erzeugt.
+# Die Wurzel-index.html ist die Vorlage und bleibt getrackt.
+/build/

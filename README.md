@@ -93,16 +93,28 @@ Eintrag in die `changelog.md` schreiben.
 
 ```
 Website_Relaunch_2026/
-├── index.html                    ← Grundgerüst: Head, Ladebildschirm, Verweise
+├── index.html                    ← VORLAGE (Head, Ladebildschirm, Verweise) und Startseite
+├── contact.php                   ← Formularversand (Kontakt + Bewerbungen)
 ├── .htaccess                     ← Serverkonfiguration (Kompression, Cache, Sicherheit)
 ├── robots.txt
-├── sitemap.xml
+├── sitemap.xml                   ← wird von seiten-generator.js erzeugt
+├── TODO.md                       ← zentrale Arbeitsliste (offene Punkte)
+├── ROADMAP.md                    ← zurückgestellte Vorhaben (nach Livegang)
 ├── changelog.md                  ← Änderungsprotokoll (siehe oben)
 ├── README.md                     ← diese Datei
 ├── PROMPT-FUER-CLAUDE.md         ← Einstiegstext für den Kunden
 ├── CLAUDE.md                     ← Regeln, die Claude Code automatisch lädt
 │
+├── build/                        ← erzeugte Seiten (kontakt.html, intl-wegzug.html …)
+│                                   Build-Artefakt, NICHT eingecheckt, entsteht neu
+│                                   bei jedem Paketbau. Die Adressen bleiben flach:
+│                                   die Paket-Skripte legen den Inhalt ins Server-Root.
+│
 ├── tools/                        ← Hilfsskripte (nicht hochladen)
+│   ├── seiten-generator.js       ← baut die 41 Seiten nach build/ + sitemap.xml
+│   ├── vorrendern.js             ← rendert die Seiten vor (Chrome, für Crawler/KI)
+│   ├── vorrender-aktuell.js      ← prüft beim Paketbau, ob der Cache aktuell ist
+│   ├── prerender-cache/          ← vorgerenderter Seiteninhalt (eingecheckt)
 │   ├── zip-fuer-kunden.sh
 │   └── kundenstand-importieren.sh
 │
@@ -115,7 +127,7 @@ Website_Relaunch_2026/
 │   └── js/
 │       ├── app.js                ← DIE WEBSITE: alle Seiten, Texte, Logik
 │       └── vendor/
-│           └── react-bundle.js   ← React-18-Laufzeit (nicht bearbeiten)
+│           └── react-bundle.js   ← React-19-Laufzeit (nicht bearbeiten)
 │
 └── _source/
     └── images/                   ← Bild-Originale (JPG/PNG), NICHT hochladen
@@ -134,10 +146,16 @@ Website_Relaunch_2026/
 
 1. Per FTP (z. B. FileZilla) in das Verzeichnis der Domain hochladen –
    bei All-Inkl üblicherweise `/www/htdocs/<Kundennummer>/`.
-2. **Hochladen:** `index.html`, `.htaccess`, `robots.txt`, `sitemap.xml`
-   und den kompletten `assets/`-Ordner mit unveränderter Ordnerstruktur.
-3. **Nicht hochladen:** `_source/`, `README.md`, `changelog.md`.
+2. **Hochladen:** `index.html`, `contact.php`, `.htaccess`, `robots.txt`,
+   `sitemap.xml` und den kompletten `assets/`-Ordner mit unveränderter
+   Ordnerstruktur.
+3. **Nicht hochladen:** `_source/`, `tools/`, `dokumente/`, `README.md`,
+   `changelog.md`, `CLAUDE.md`, `PROMPT-FUER-CLAUDE.md`.
    (Falls doch mit hochgeladen: die `.htaccess` sperrt den Zugriff darauf.)
+
+**Am einfachsten:** Das fertige Upload-Paket `NSBB_Upload_<Datum>.zip` verwenden
+(erzeugt mit `tools/upload-paket.sh`). Darin ist genau das enthalten, was auf den
+Server gehört – einfach entpacken und den Inhalt hochladen.
 
 ### Wichtig: `.htaccess` wird oft übersehen
 
@@ -156,19 +174,34 @@ spürbar langsamer.
 
 ---
 
-## Kontaktformular (`contact.php`)
+## Formulare (`contact.php`)
 
-Das **Karriereformular** sendet per `fetch()` an eine Datei **`contact.php`** im
-selben Verzeichnis wie die `index.html`. Diese Datei ist **nicht Teil dieses
-Ordners** und muss serverseitig ergänzt werden (Absender `mail@nsbb.de`,
-Empfänger `m.siebert@nsbb.de`, Reply-To auf die Adresse des Absenders).
-Fehlt sie, läuft jede Bewerbung in den Fehlerzweig.
+**Beide** Formulare – Kontakt und Karriere – senden per `fetch()` an
+**`contact.php`** im selben Verzeichnis wie die `index.html`. Die Datei liegt
+diesem Ordner bei und muss mit hochgeladen werden.
 
-> ⚠️ **Das allgemeine Kontaktformular nutzt `contact.php` nicht.** Es öffnet
-> stattdessen einen `mailto:`-Link und meldet danach „Vielen Dank" – auch dann,
-> wenn gar nichts versendet wurde. Besucher ohne eingerichtetes Mailprogramm
-> (Web-Mail im Browser) lösen damit nichts aus, die Anfrage geht verloren.
-> Siehe `changelog.md`, „Offene Punkte" Nr. 2.
+| Formular | Empfänger |
+|---|---|
+| Kontaktanfragen | `mandant@nsbb.de` |
+| Bewerbungen | `karriere@nsbb.de` |
+
+Absender aller Mails ist `mail@nsbb.de`, Reply-To die Adresse des Absenders –
+ein Klick auf „Antworten" geht also direkt an den Interessenten. Zusätzlich
+erhält der Absender eine Eingangsbestätigung.
+
+### ⚠️ Vor dem Livegang zwingend prüfen
+
+1. **`mail@nsbb.de` muss im KAS existieren** (Postfach oder Alias). Verschickt
+   der Server Mails mit einem Absender, den es nicht gibt, landen sie bei vielen
+   Empfängern im Spam-Ordner.
+2. **PHP-Version im KAS auf 8.1 oder neuer** stellen.
+3. **Testlauf machen:** einmal das Kontaktformular und einmal eine Bewerbung
+   abschicken und prüfen, ob beide Mails ankommen – auch im Spam-Ordner
+   nachsehen.
+
+Die Datei legt beim ersten Aufruf ein Verzeichnis `.formlimit/` an. Darin steht
+pro Absender-IP ein Zeitstempel (als Hashwert, nicht im Klartext), um Spam-Wellen
+zu bremsen. Das Verzeichnis darf nicht gelöscht werden und braucht Schreibrechte.
 
 ---
 
@@ -179,8 +212,8 @@ Fehlt sie, läuft jede Bewerbung in den Fehlerzweig.
 In der `index.html` stehen die Verweise mit einem Anhängsel:
 
 ```html
-<link rel="stylesheet" href="assets/css/style.css?v=20260717"/>
-<script src="assets/js/app.js?v=20260717" defer></script>
+<link rel="stylesheet" href="assets/css/style.css?v=20260720d"/>
+<script src="assets/js/app.js?v=20260720d" defer></script>
 ```
 
 Der Server liefert diese Dateien mit **einem Jahr Cache** aus. Das `?v=...` ist
@@ -190,6 +223,28 @@ das Einzige, was Browser dazu bringt, eine neue Fassung zu holen.
 > die Nummer nicht hochzählt, dessen Änderung sieht bei wiederkehrenden Besuchern
 > bis zu ein Jahr lang niemand.** Einfach das Datum der Änderung eintragen,
 > überall gleich (z. B. `?v=20260801`).
+
+### Nach inhaltlichen Änderungen an `app.js`: neu vorrendern
+
+Damit Suchmaschinen und KI-Systeme den Seitentext ohne JavaScript sehen, liegt
+für jede Seite eine **vorgerenderte Fassung** in `tools/prerender-cache/`. Wurde
+an Texten oder am Aufbau in `app.js` etwas geändert, muss dieser Cache neu erzeugt
+werden:
+
+```bash
+node tools/vorrendern.js            # rendert alle 41 Seiten in kopflosem Chrome vor
+node tools/seiten-generator.js "/"  # setzt den Inhalt in die Seiten-Dateien ein
+```
+
+Voraussetzung ist ein installiertes Google Chrome (Pfad notfalls über
+`CHROME_BIN` setzen). Die Paket-Skripte (`tools/staging-paket.sh`,
+`tools/upload-paket.sh`) **brechen ab**, wenn der Cache nicht zum aktuellen
+`app.js` passt – so kann kein veralteter Inhalt ausgeliefert werden. Der Cache
+wird **eingecheckt** (nicht hochgeladen); der fertige Inhalt steckt danach in den
+`<slug>.html`-Dateien des Pakets.
+
+> Wer nur Aussehen (`style.css`) ändert, muss **nicht** neu vorrendern – der
+> Seiteninhalt bleibt gleich. Nur bei Änderungen am Text/Aufbau in `app.js`.
 
 ### Bilder austauschen
 
@@ -228,18 +283,26 @@ node --check assets/js/app.js
 
 ## Technischer Hintergrund
 
-Die Website ist eine **Single-Page-Application auf Basis von React 18**. React
+Die Website ist eine **Single-Page-Application auf Basis von React 19**. React
 ist lokal eingebunden (`assets/js/vendor/react-bundle.js`), es wird **kein
 externer CDN** benötigt. Auch die Schriften liegen lokal – die Seite lädt im
 Normalbetrieb **von keinem fremden Server** nach.
 
-Einzige Ausnahme: die **Google-Maps-Karten** auf der Kontaktseite. Sie laden
-beim Aufruf der Seite und übertragen dabei die IP-Adresse des Besuchers an
-Google. Siehe `changelog.md`, „Offene Punkte" Nr. 4.
+Google Maps auf der Kontaktseite ist inzwischen **datenschutzkonform entfernt**
+(siehe `changelog.md`) – im Normalbetrieb lädt die Seite von keinem fremden
+Server nach.
 
-**Alle Unterseiten teilen sich eine einzige URL** (Navigation über `#kontakt`,
-`#leistungen` …). Das hat spürbare Folgen für die Auffindbarkeit bei Google und
-ist in der `changelog.md` unter „Offene Punkte" Nr. 6 beschrieben.
+**Jede Seite hat eine eigene, echte Adresse** (`/leistungen`, `/kontakt`,
+`/digital`, `/aktuelles`, einzelne Beiträge unter `/beitrag/<name>` …). Die
+frühere reine Hash-Navigation (`#kontakt` …) ist abgelöst: Der Router in
+`assets/js/app.js` bildet aus der Adresse die Seite und schreibt sie per
+`pushState` mit; für Suchmaschinen/KI wird jede Seite zusätzlich **vorgerendert**
+(statisches HTML, `tools/vorrendern.js` + `tools/seiten-generator.js`).
+
+Seit dem Relaunch gibt es außerdem die Rubrik **„Aktuelles"** (monatliche
+Mandanteninformation als PDF + Fachbeiträge) und einen zugangsgeschützten
+**Redaktionsbereich** unter `/redaktion/`, über den der Kunde Beiträge und PDFs
+selbst pflegt. **Neue Inhaltsseiten schreiben:** siehe `README-INHALTSSEITEN.md`.
 
 ## Sprachen
 

@@ -17172,7 +17172,14 @@ exports.version = "19.2.5";
   });
 
   window.React = __require__('react');
+  // window.ReactDOM muss BEIDE Module vereinen:
+  //   'react-dom'        -> createPortal, flushSync, ...
+  //   'react-dom-client' -> createRoot, hydrateRoot
+  // Vorher wurde nur 'react-dom-client' zugewiesen. Dadurch war
+  // ReactDOM.createPortal undefined und jeder Klick auf das mobile
+  // Menue bzw. ein Team-Profil hat die gesamte Seite zerstoert
+  // (weisser Bildschirm). Siehe changelog.md, 2026-07-17.
   var RDC = __require__('react-dom-client');
-  window.ReactDOM = RDC;
+  window.ReactDOM = Object.assign({}, __require__('react-dom'), RDC);
 })();
 

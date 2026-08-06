@@ -4,41 +4,149 @@
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>NSBB – Steuerberatung Berlin &amp; Köln | Modern. Digital. Persönlich.</title>
 <meta name="description" content="Wir begleiten Unternehmer, Unternehmen und Privatpersonen bei Wachstum, Strukturierung und steuerlichen Entscheidungen – von der laufenden Beratung bis zu komplexen nationalen und internationalen Fragestellungen."/>
-<meta name="robots" content="index, follow"/><meta name="theme-color" content="#4A7C59"/>
-<link rel="canonical" href="https://www.nsbb.de"/><link rel="alternate" hreflang="de" href="https://www.nsbb.de/"/><link rel="alternate" hreflang="en" href="https://www.nsbb.de/?lang=en"/><link rel="alternate" hreflang="x-default" href="https://www.nsbb.de/"/>
-<meta property="og:type" content="website"/><meta property="og:title" content="NSBB – Steuerberatung Berlin &amp; Köln"/>
-<meta property="og:description" content="Persönliche Steuerberatung für Unternehmen, Privatpersonen und internationale Mandanten."/>
+<meta name="robots" content="index, follow"/>
+<!-- Basis-Pfad der Anwendung. Live "/", auf der Testadresse "/2026/".
+     Wird von tools/staging-paket.sh automatisch umgesetzt. Der Router in
+     app.js liest diesen Wert, um echte Adressen korrekt zu bilden. -->
+<meta name="app-base" content="/"/><meta name="theme-color" content="#4A7C59"/>
+<link rel="canonical" href="https://nsbb.de/"/><link rel="alternate" hreflang="de" href="https://nsbb.de/"/><link rel="alternate" hreflang="en" href="https://nsbb.de/?lang=en"/><link rel="alternate" hreflang="x-default" href="https://nsbb.de/"/>
+<meta property="og:type" content="website"/><meta property="og:url" content="https://nsbb.de/"/><meta property="og:title" content="NSBB – Steuerberatung Berlin &amp; Köln | Modern. Digital. Persönlich."/>
+<meta property="og:description" content="Wir begleiten Unternehmer, Unternehmen und Privatpersonen bei Wachstum, Strukturierung und steuerlichen Entscheidungen – von der laufenden Beratung bis zu komplexen nationalen und internationalen Fragestellungen."/>
 <meta name="twitter:card" content="summary_large_image"/>
+<!-- Vorschaubild für geteilte Links (LinkedIn, WhatsApp, Slack …).
+     1200×630, aus dem Logo aufgebaut. Absolute URL – die Paket-Skripte setzen
+     die richtige Basis (live "/", Test "/2026/"). Als JPG statt WebP, weil
+     einige Plattformen WebP als Vorschaubild nicht zuverlässig darstellen. -->
+<meta property="og:image" content="https://nsbb.de/assets/images/og-image.jpg"/>
+<meta property="og:image:width" content="1200"/>
+<meta property="og:image:height" content="630"/>
+<meta property="og:image:alt" content="NSBB – Die Steuerberaterkanzlei · Berlin & Köln"/>
+<meta name="twitter:image" content="https://nsbb.de/assets/images/og-image.jpg"/>
+<!-- Strukturierte Daten (schema.org). Sagen Suchmaschinen und KI-Systemen, wer
+     NSBB ist und wo die beiden Standorte liegen – Grundlage für die lokale
+     Auffindbarkeit in Berlin und Köln und für die Darstellung als Wissenskarte.
+
+     Aufbau: eine Organisation (die Kanzlei) und zwei Standorte, über @id
+     miteinander verknüpft. Öffnungszeiten laut Kunde (20.07.2026), für beide
+     Standorte gleich: Mo–Do 08:00–17:30, Fr 08:00–16:30, Sa/So geschlossen
+     (nicht aufgeführte Tage gelten als geschlossen). -->
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"ProfessionalService","@id":"https://www.nsbb.de/#organization","name":"NSBB Steuerberatungsgesellschaft mbH","url":"https://www.nsbb.de","logo":"https://www.nsbb.de/assets/images/logo-nav.webp","telephone":["+493081580930","+492219730640"],"email":"info@nsbb.de"}
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": ["Organization", "AccountingService"],
+      "@id": "https://nsbb.de/#kanzlei",
+      "name": "NSBB Steuerberatungsgesellschaft mbH",
+      "url": "https://nsbb.de",
+      "email": "info@nsbb.de",
+      "description": "Steuerberatung für Unternehmen, Privatpersonen und internationale Mandanten – Berlin und Köln.",
+      "logo": "https://nsbb.de/assets/images/logo-nav.webp",
+      "founder": { "@type": "Person", "name": "Guido Siebert" },
+      "areaServed": { "@type": "Country", "name": "Deutschland" },
+      "knowsLanguage": ["de", "en"],
+      "slogan": "Modern. Digital. Persönlich.",
+      "knowsAbout": [
+        "Internationales Steuerrecht",
+        "Wegzugsbesteuerung",
+        "Doppelbesteuerungsabkommen",
+        "Grenzgängerbesteuerung",
+        "Erbschaft- und Schenkungsteuer mit Auslandsbezug",
+        "Unternehmensbesteuerung",
+        "Steuerliche Gestaltungsberatung",
+        "Kanzleinachfolge",
+        "Digitale Buchhaltung und DATEV"
+      ],
+      "location": [
+        { "@id": "https://nsbb.de/#standort-berlin" },
+        { "@id": "https://nsbb.de/#standort-koeln" }
+      ]
+    },
+    {
+      "@type": "AccountingService",
+      "@id": "https://nsbb.de/#standort-berlin",
+      "name": "NSBB Steuerberatung – Berlin",
+      "parentOrganization": { "@id": "https://nsbb.de/#kanzlei" },
+      "url": "https://nsbb.de",
+      "telephone": "+49 30 8158093-0",
+      "email": "info@nsbb.de",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Berlepschstr. 1",
+        "postalCode": "14165",
+        "addressLocality": "Berlin",
+        "addressCountry": "DE"
+      },
+      "geo": { "@type": "GeoCoordinates", "latitude": 52.4294067, "longitude": 13.2565013 },
+      "areaServed": { "@type": "City", "name": "Berlin" },
+      "sameAs": ["https://share.google/x3HqmATL5PqAqlRVX"],
+      "openingHoursSpecification": [
+        { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday"], "opens": "08:00", "closes": "17:30" },
+        { "@type": "OpeningHoursSpecification", "dayOfWeek": "Friday", "opens": "08:00", "closes": "16:30" }
+      ]
+    },
+    {
+      "@type": "AccountingService",
+      "@id": "https://nsbb.de/#standort-koeln",
+      "name": "NSBB Steuerberatung – Köln",
+      "parentOrganization": { "@id": "https://nsbb.de/#kanzlei" },
+      "url": "https://nsbb.de",
+      "telephone": "+49 221 973064-0",
+      "email": "info@nsbb.de",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Holzmarkt 2/2A",
+        "postalCode": "50676",
+        "addressLocality": "Köln",
+        "addressCountry": "DE"
+      },
+      "geo": { "@type": "GeoCoordinates", "latitude": 50.9286278, "longitude": 6.9632448 },
+      "areaServed": { "@type": "City", "name": "Köln" },
+      "sameAs": ["https://share.google/5xYMgOyFnClvdDTx6"],
+      "openingHoursSpecification": [
+        { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday"], "opens": "08:00", "closes": "17:30" },
+        { "@type": "OpeningHoursSpecification", "dayOfWeek": "Friday", "opens": "08:00", "closes": "16:30" }
+      ]
+    }
+  ]
+}
 </script>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%234A7C59'/%3E%3Ctext x='50' y='68' font-family='Georgia,serif' font-size='44' fill='white' text-anchor='middle'%3EN%3C/text%3E%3C/svg%3E"/>
+<!-- Favicon: das grüne Kugel-Emblem aus dem NSBB-Logo (Mintgrün #98D0C6),
+     inline als Data-URI (kein Extra-Request, wie die übrigen Inline-Assets). -->
+<link rel="icon" type="image/png" href="data:image/png;base64,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"/>
 
 <!-- Webfonts: lokal ausgeliefert (siehe assets/css/fonts.css). Preload nur der
      beiden Latin-Schnitte, die sofort sichtbar sind – der Rest laedt bei Bedarf. -->
-<link rel="preload" href="assets/fonts/cormorant-garamond-normal-latin.woff2" as="font" type="font/woff2" crossorigin/>
-<link rel="preload" href="assets/fonts/dm-sans-normal-latin.woff2" as="font" type="font/woff2" crossorigin/>
+<link rel="preload" href="/assets/fonts/cormorant-garamond-normal-latin.woff2" as="font" type="font/woff2" crossorigin/>
+<link rel="preload" href="/assets/fonts/dm-sans-normal-latin.woff2" as="font" type="font/woff2" crossorigin/>
 <!-- ?v= ist die Cache-Bremse: Der Server liefert CSS/JS mit 1 Jahr Cache aus.
      Nach JEDER Aenderung an einer dieser Dateien die Versionsnummer hochzaehlen,
      sonst sehen wiederkehrende Besucher weiter die alte Fassung. -->
-<link rel="stylesheet" href="assets/css/fonts.css?v=20260724"/>
-<link rel="stylesheet" href="assets/css/style.css?v=20260726"/>
+<link rel="stylesheet" href="/assets/css/fonts.css?v=20260806"/>
+<link rel="stylesheet" href="/assets/css/style.css?v=20260806"/>
 
 <!-- Kritisches CSS fuer den Ladebildschirm: muss stehen, bevor externe Dateien da sind. -->
 <style>@keyframes nsbbspin{to{transform:rotate(360deg)}}</style>
+<!-- Ohne JavaScript: den Ladebildschirm ausblenden und den vorgerenderten Inhalt
+     zeigen (.fade-up steht sonst auf opacity:0 und wird erst per JS eingeblendet).
+     So sehen Besucher ohne JS und einfache Crawler den Seiteninhalt statt eines
+     stehenden Spinners. Mit JavaScript greift diese Regel nicht – dann bleibt der
+     Ladebildschirm sichtbar, bis die Anwendung uebernimmt. -->
+<noscript><style>#nsbb-loader{display:none!important}.fade-up{opacity:1!important;transform:none!important}</style></noscript>
 </head>
 <body>
 <div id="root"><div id="nsbb-loader" style="position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#F7F6F3;z-index:9999;font-family:Georgia,'Cormorant Garamond',serif;">
 <div style="font-size:34px;letter-spacing:.04em;color:#4A7C59;font-weight:500;margin-bottom:6px;">NSBB</div>
 <div style="font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:#6B6358;font-family:-apple-system,system-ui,sans-serif;margin-bottom:28px;">Steuerberatung</div>
 <div style="width:34px;height:34px;border:3px solid #E2DDD8;border-top-color:#4A7C59;border-radius:50%;animation:nsbbspin .8s linear infinite;"></div>
-</div></div>
+</div><!--SSR:START--><!--SSR:END--></div>
 
 <noscript>
   <div style="max-width:640px;margin:0 auto;padding:48px 24px;font-family:Georgia,serif;text-align:center;position:relative;z-index:10000;background:#F7F6F3;">
     <div style="font-size:34px;color:#4A7C59;margin-bottom:16px;">NSBB</div>
     <p style="font-family:-apple-system,system-ui,sans-serif;font-size:14px;line-height:1.7;color:#3A342C;">
-      Diese Website benötigt JavaScript. Bitte aktivieren Sie JavaScript in Ihrem Browser.<br/><br/>
+      Den Inhalt dieser Seite sehen Sie auch ohne JavaScript. Für Navigation und
+      Formulare aktivieren Sie es bitte in Ihrem Browser.<br/><br/>
       Sie erreichen uns auch direkt: <a href="tel:+493081580930" style="color:#4A7C59;">+49 30 8158093-0</a> (Berlin),
       <a href="tel:+492219730640" style="color:#4A7C59;">+49 221 973064-0</a> (Köln) oder
       <a href="mailto:info@nsbb.de" style="color:#4A7C59;">info@nsbb.de</a>.
@@ -48,7 +156,7 @@
 
 <!-- React-Runtime und Anwendung. "defer" haelt die Reihenfolge ein (Vendor zuerst)
      und blockiert das Rendern des Dokuments nicht. -->
-<script src="assets/js/vendor/react-bundle.js?v=20260724" defer></script>
-<script src="assets/js/app.js?v=20260731" defer></script>
+<script src="/assets/js/vendor/react-bundle.js?v=20260806" defer></script>
+<script src="/assets/js/app.js?v=20260806" defer></script>
 </body>
 </html>

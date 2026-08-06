@@ -44,7 +44,7 @@ Großflächige Umbauten machen das Zusammenführen unmöglich und werden verworf
 | React-Laufzeit (Fremdbibliothek) | `assets/js/vendor/react-bundle.js` |
 | Serverkonfiguration | `.htaccess` |
 
-Die Website ist eine React-18-Single-Page-Application. Der Code ist bewusst in
+Die Website ist eine React-19-Single-Page-Application. Der Code ist bewusst in
 `React.createElement`-Schreibweise ohne Build-Schritt geschrieben – die Dateien
 laufen so, wie sie sind, direkt auf dem Server.
 

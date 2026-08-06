@@ -6,7 +6,7 @@
 ## Kontext in einem Satz
 
 Dies ist eine **fertig optimierte, ausgelieferte Fassung** der NSBB-Website
-(React-18-SPA ohne Build-Schritt) – kein Rohentwurf. Sie geht als ZIP zwischen
+(React-19-SPA ohne Build-Schritt) – kein Rohentwurf. Sie geht als ZIP zwischen
 Kunde und Projektleitung hin und her und wird dort per Git **zusammengeführt**.
 
 **Lies `changelog.md` – besonders „Offene Punkte" – bevor du etwas änderst.**

@@ -1,58 +1,250 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-  Hinweis: Die Hauptseite ist eine Single-Page-Application mit Hash-Routing
-  (#leistungen, #kontakt, ...). Suchmaschinen indexieren Hash-Fragmente NICHT
-  als eigene Seiten – deshalb steht hier nur die eine reale SPA-URL.
-  Zusätzlich gibt es echte, crawlbare Standort-Landingpages (statisches HTML)
-  mit eigenem Title/Meta/Canonical/JSON-LD – diese sind hier mit ihren
-  DE/EN-Alternates aufgeführt. Weitere echte URLs siehe changelog.md.
--->
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+<!-- Automatisch erzeugt von tools/seiten-generator.js – nicht von Hand bearbeiten. -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://www.nsbb.de/</loc>
-    <lastmod>2026-07-19</lastmod>
+    <loc>https://nsbb.de/</loc>
+    <lastmod>2026-07-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
   </url>
-
   <url>
-    <loc>https://www.nsbb.de/steuerberater-berlin/</loc>
-    <lastmod>2026-07-19</lastmod>
+    <loc>https://nsbb.de/leistungen</loc>
+    <lastmod>2026-07-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://nsbb.de/leistungen-unternehmen</loc>
+    <lastmod>2026-07-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="de" href="https://www.nsbb.de/steuerberater-berlin/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://www.nsbb.de/en/tax-advisor-berlin/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.nsbb.de/steuerberater-berlin/"/>
   </url>
-
   <url>
-    <loc>https://www.nsbb.de/steuerberater-koeln/</loc>
-    <lastmod>2026-07-19</lastmod>
+    <loc>https://nsbb.de/leistungen-unternehmen-leistungen</loc>
+    <lastmod>2026-07-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://nsbb.de/leistungen-unternehmen-laufend</loc>
+    <lastmod>2026-07-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://nsbb.de/leistungen-unternehmen-gestaltung</loc>
+    <lastmod>2026-07-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://nsbb.de/leistungen-unternehmen-bwl</loc>
+    <lastmod>2026-07-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://nsbb.de/leistungen-unternehmen-branchen</loc>
+    <lastmod>2026-07-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://nsbb.de/branche-ecommerce</loc>
+    <lastmod>2026-07-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://nsbb.de/branche-bau</loc>
+    <lastmod>2026-07-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://nsbb.de/branche-immobilien</loc>
+    <lastmod>2026-07-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://nsbb.de/branche-international</loc>
+    <lastmod>2026-07-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://nsbb.de/branche-startup</loc>
+    <lastmod>2026-07-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://nsbb.de/branche-aerzte</loc>
+    <lastmod>2026-07-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://nsbb.de/leistungen-international</loc>
+    <lastmod>2026-07-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="de" href="https://www.nsbb.de/steuerberater-koeln/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://www.nsbb.de/en/tax-advisor-cologne/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.nsbb.de/steuerberater-koeln/"/>
   </url>
-
   <url>
-    <loc>https://www.nsbb.de/en/tax-advisor-berlin/</loc>
-    <lastmod>2026-07-19</lastmod>
+    <loc>https://nsbb.de/intl-wegzug</loc>
+    <lastmod>2026-07-24</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="de" href="https://www.nsbb.de/steuerberater-berlin/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://www.nsbb.de/en/tax-advisor-berlin/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.nsbb.de/steuerberater-berlin/"/>
+    <priority>0.7</priority>
   </url>
-
   <url>
-    <loc>https://www.nsbb.de/en/tax-advisor-cologne/</loc>
-    <lastmod>2026-07-19</lastmod>
+    <loc>https://nsbb.de/intl-wohnsitz</loc>
+    <lastmod>2026-07-24</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="de" href="https://www.nsbb.de/steuerberater-koeln/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://www.nsbb.de/en/tax-advisor-cologne/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.nsbb.de/steuerberater-koeln/"/>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://nsbb.de/intl-dba</loc>
+    <lastmod>2026-07-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://nsbb.de/intl-einkuenfte</loc>
+    <lastmod>2026-07-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://nsbb.de/intl-immobilien</loc>
+    <lastmod>2026-07-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://nsbb.de/intl-erbschaft</loc>
+    <lastmod>2026-07-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://nsbb.de/intl-schenkung</loc>
+    <lastmod>2026-07-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://nsbb.de/intl-rueckkehr</loc>
+    <lastmod>2026-07-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://nsbb.de/intl-grenzgaenger</loc>
+    <lastmod>2026-07-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://nsbb.de/intl-vermoegen</loc>
+    <lastmod>2026-07-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://nsbb.de/leistungen-privat</loc>
+    <lastmod>2026-07-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://nsbb.de/digital</loc>
+    <lastmod>2026-07-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://nsbb.de/tgs</loc>
+    <lastmod>2026-07-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://nsbb.de/aktuelles</loc>
+    <lastmod>2026-07-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://nsbb.de/ueber-uns</loc>
+    <lastmod>2026-07-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://nsbb.de/karriere</loc>
+    <lastmod>2026-07-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://nsbb.de/karriere-steuerberater</loc>
+    <lastmod>2026-07-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://nsbb.de/karriere-steuerfachwirt</loc>
+    <lastmod>2026-07-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://nsbb.de/karriere-steuerfachangestellte</loc>
+    <lastmod>2026-07-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://nsbb.de/karriere-bilanzbuchhalter</loc>
+    <lastmod>2026-07-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://nsbb.de/karriere-initiativbewerbung</loc>
+    <lastmod>2026-07-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://nsbb.de/kanzleinachfolge</loc>
+    <lastmod>2026-07-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://nsbb.de/kontakt</loc>
+    <lastmod>2026-07-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://nsbb.de/faq</loc>
+    <lastmod>2026-07-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://nsbb.de/impressum</loc>
+    <lastmod>2026-07-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://nsbb.de/datenschutz</loc>
+    <lastmod>2026-07-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
   </url>
 </urlset>

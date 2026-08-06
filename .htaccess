@@ -11,29 +11,110 @@ AddDefaultCharset UTF-8
 # ── Verzeichnislisting abschalten ──────────────────────────────────────────
 Options -Indexes
 
-DirectoryIndex index.html
+# index.html ist die Startdatei. index.php als Nachrang, damit /redaktion/
+# (nur dort liegt eine index.php) auch dann auf index.php auflöst, wenn der
+# Verzeichnisschutz (KAS) die redaktion/.htaccess verwaltet und keine eigene
+# DirectoryIndex-Zeile enthält. Kein anderes Verzeichnis hat eine index.php.
+DirectoryIndex index.html index.php
 
 # ═══════════════════════════════════════════════════════════════════════════
-#  1. HTTPS + www erzwingen
-#     Der canonical-Tag der Seite zeigt auf https://www.nsbb.de – damit es nur
-#     EINE gültige Adresse gibt, wird alles andere dauerhaft dorthin geleitet.
+#  1. HTTPS erzwingen und auf EINE Adresse festlegen: https://nsbb.de
 #
-#     WICHTIG: Erst aktivieren, wenn das SSL-Zertifikat im KAS eingerichtet ist,
-#     sonst sperrt man sich die Seite aus. Zum Testen die vier Zeilen unter
-#     "HTTPS" auskommentieren.
+#     WICHTIG – Richtung beachten: Die bisherige Website läuft auf
+#     nsbb.de OHNE www; www.nsbb.de leitet dorthin um (am 20.07.2026 am
+#     Live-System geprüft). Die Regeln unten folgen bewusst dieser Richtung.
+#
+#     Würde hier www erzwungen, entstünde eine Weiterleitungsschleife
+#     (nsbb.de → www.nsbb.de → nsbb.de → …) und die Seite wäre nicht mehr
+#     erreichbar. Ausserdem sind alle Verweise und Suchmaschinen-Einträge
+#     seit Jahren auf nsbb.de ohne www eingespielt – ein Wechsel würde
+#     Sichtbarkeit verschenken.
+#
+#     Erst aktivieren, wenn das SSL-Zertifikat im KAS eingerichtet ist.
 # ═══════════════════════════════════════════════════════════════════════════
 <IfModule mod_rewrite.c>
   RewriteEngine On
 
+  # Verzeichnis, in dem diese Datei liegt. Ohne diese Angabe deutet Apache
+  # Umleitungsziele ohne führenden Schrägstrich als Dateisystempfad – der
+  # Besucher landet dann auf einer Adresse wie /www/htdocs/…/kontakt.
+  # Auf der Testadresse setzt tools/staging-paket.sh den Wert auf /2026/.
+  RewriteBase /
+
   # HTTPS erzwingen
   RewriteCond %{HTTPS} !=on
   RewriteCond %{HTTP:X-Forwarded-Proto} !https
-  RewriteRule ^(.*)$ https://www.nsbb.de/$1 [R=301,L]
+  RewriteRule ^(.*)$ https://nsbb.de/$1 [R=301,L]
 
-  # www erzwingen (nsbb.de -> www.nsbb.de)
-  RewriteCond %{HTTP_HOST} !^www\. [NC]
-  RewriteCond %{HTTP_HOST} !^$
-  RewriteRule ^(.*)$ https://www.nsbb.de/$1 [R=301,L]
+  # www entfernen (www.nsbb.de -> nsbb.de)
+  RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+  RewriteRule ^(.*)$ https://%1/$1 [R=301,L]
+
+  # ── Alt-Adressen aus der WordPress-Zeit (Relaunch 21.07.2026) ────────────
+  # Frühere URLs existieren nach dem Relaunch nicht mehr. Ohne Regel würden
+  # alte Anzeigen-Links, Lesezeichen und Suchtreffer über die SPA-Regel (3)
+  # als Notbehelf auf der Startseite landen. Deshalb hier dauerhaft (301) auf
+  # die passende neue Seite lenken. Muss VOR den Seitenadressen-Regeln stehen.
+  # Alle aktiven Google-Ads-Anzeigen zeigten auf /steuerberatung/ → Leistungen.
+  # Weitere Alt-URLs bei Bedarf nach gleichem Muster ergänzen.
+  RewriteRule ^steuerberatung/?$ /leistungen [R=301,L]
+
+  # /insights wurde am 21.07.2026 in /aktuelles umbenannt (Rubrik "Aktuelles"
+  # mit Mandanteninformationen + Beiträgen). Alte Suchtreffer und Lesezeichen
+  # dauerhaft weiterleiten.
+  RewriteRule ^insights/?$ /aktuelles [R=301,L]
+
+  # ── Seitenadressen ──────────────────────────────────────────────────────
+  # Die Website hat echte Adressen (/kontakt, /karriere, …). Für jede liegt
+  # eine Datei <name>.html bereit, erzeugt von tools/seiten-generator.js.
+  #
+  # 1) /kontakt.html dauerhaft auf /kontakt umleiten, damit es je Seite
+  #    genau eine gültige Adresse gibt.
+  #
+  #    Geprüft wird THE_REQUEST – die ursprüngliche Anfrage des Browsers.
+  #    Sie bleibt bei internen Umschreibungen unverändert. Eine Prüfung auf
+  #    REDIRECT_STATUS reicht hier nicht: Regel 2 schreibt /kontakt intern
+  #    auf kontakt.html um, Apache durchläuft die Regeln danach erneut, und
+  #    diese Regel würde erneut greifen – Ergebnis wäre eine Weiterleitung
+  #    auf sich selbst. Genau das ist beim ersten Versuch passiert.
+  RewriteCond %{THE_REQUEST} \s[^?\s]*\.html[\s?]
+  RewriteRule ^(.+)\.html$ $1 [R=301,L]
+
+  # 2) /kontakt  →  kontakt.html, intern und ohne Umleitung.
+  #    Bewusst Dateien statt Verzeichnissen: Bei einem Ordner /kontakt/
+  #    würde Apache von /kontakt per 301 auf /kontakt/ umleiten – ein
+  #    zusätzlicher Roundtrip und uneinheitliche Adressen.
+  #    Die Prüfung "%{REQUEST_FILENAME}.html -f" arbeitet mit dem echten
+  #    Dateipfad und funktioniert deshalb auch im Unterverzeichnis.
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_FILENAME}.html -f
+  RewriteRule ^(.+?)/?$ $1.html [L]
+
+  # 2b) Einzelne Beiträge (/beitrag/<slug>) → die vom Redaktionsbereich
+  #     erzeugte Seite in daten/beitragsseiten/. WICHTIG: Präfix "beitrag",
+  #     NICHT "aktuelles/". Für "aktuelles/…" griff die Apache-Inhalts-
+  #     verhandlung (MultiViews, erkennbar am Vary: negotiate) ein, weil die
+  #     Datei aktuelles.html existiert – Ergebnis war IMMER 404, noch bevor
+  #     diese Regel drankam. "beitrag" existiert nicht als Datei, darum stört
+  #     MultiViews hier nicht. Fehlt die Zieldatei, fällt die Anfrage zu Regel 3
+  #     durch (die Anwendung zeigt dann die Übersicht statt eines Fehlers).
+  #     %1 stammt aus der REQUEST_URI-Bedingung (base-path-unabhängig).
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_URI} /beitrag/([a-z0-9-]+)/?$
+  RewriteCond %{DOCUMENT_ROOT}/daten/beitragsseiten/%1.html -f
+  RewriteRule ^beitrag/([a-z0-9-]+)/?$ daten/beitragsseiten/$1.html [L]
+
+  # 3) Alles Übrige, wozu keine Datei existiert, an die Anwendung geben,
+  #    statt einen 404 zu zeigen. Assets bleiben ausgenommen, damit ein
+  #    fehlendes Bild ehrlich als 404 erscheint und nicht als HTML-Seite.
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  # daten/ (Redaktionsinhalte) und redaktion/ gehören ebenfalls in die Liste:
+  # Eine fehlende JSON-/Bild-/PDF-Datei soll ein ehrlicher 404 sein – sonst
+  # bekäme fetch() HTML statt JSON zurück und die Anwendung müsste raten.
+  RewriteCond %{REQUEST_URI} !^.*/(assets|_source|tools|dokumente|daten|redaktion)/ [NC]
+  RewriteRule ^ index.html [L]
 </IfModule>
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -70,6 +151,11 @@ DirectoryIndex index.html
 
   ExpiresByType text/html                 "access plus 0 seconds"
 
+  # JSON nie lange cachen: die Manifeste des Redaktionsbereichs (daten/*.json)
+  # müssen sofort frisch sein, sonst sehen Besucher neue Beiträge bis zu einem
+  # Monat lang nicht (ExpiresDefault). Andere JSONs liefert die Seite nicht aus.
+  ExpiresByType application/json          "access plus 0 seconds"
+
   ExpiresByType text/css                  "access plus 1 year"
   ExpiresByType application/javascript    "access plus 1 year"
   ExpiresByType text/javascript           "access plus 1 year"
@@ -84,6 +170,11 @@ DirectoryIndex index.html
 <IfModule mod_headers.c>
   # index.html: immer frisch vom Server holen
   <FilesMatch "\.html$">
+    Header set Cache-Control "no-cache, must-revalidate"
+  </FilesMatch>
+
+  # Redaktions-Manifeste (daten/*.json): ebenfalls immer frisch
+  <FilesMatch "\.json$">
     Header set Cache-Control "no-cache, must-revalidate"
   </FilesMatch>
 
@@ -107,8 +198,28 @@ DirectoryIndex index.html
   # als React-Style-Objekte setzt (= style-Attribute im HTML).
   # Skripte brauchen KEIN 'unsafe-inline' mehr, seit der Code in eigene
   # Dateien ausgelagert ist – das ist der Sicherheitsgewinn der Aufteilung.
-  # frame-src google.com wird für die eingebetteten Standort-Karten gebraucht.
-  Header always set Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-src https://www.google.com; form-action 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'"
+  # Content-Security-Policy mit Allowlist für Google Tag Manager, Google Ads
+  # (Conversion-Tracking) und – für später vorbereitet – Google Analytics 4.
+  #
+  # WICHTIG: Diese Domains erlauben NICHT, dass ungefragt geladen wird. GTM wird
+  # in app.js erst NACH Einwilligung nachgeladen. Die CSP legt nur fest, WOHIN
+  # überhaupt Verbindungen zulässig sind – ein zusätzlicher Schutz.
+  #
+  # Nur Google-Domains sind freigegeben. Werden im GTM andere Tags konfiguriert
+  # (z. B. Meta-Pixel, LinkedIn), müssen deren Domains hier ergänzt werden –
+  # sonst blockiert die CSP sie. Das ist gewollt: nichts lädt unbemerkt.
+  #
+  # ⚠️ 'unsafe-inline' bei script-src ist der Preis für Google Ads Conversion:
+  # Der GTM-Container injiziert nach der Einwilligung Inline-Skripte (Conversion-
+  # Linker, Ping-Pixel). Ohne 'unsafe-inline' blockiert die CSP diese und das
+  # Conversion-Tracking funktioniert nicht – im Browser bestätigt. Nonce/Hash
+  # scheiden aus, weil GTMs Inline-Skripte dynamisch sind.
+  # Der Kompromiss: schwächerer Schutz gegen eingeschleuste Skripte. Er ist die
+  # bewusste Folge der Entscheidung, Google Ads zu schalten. Alle anderen
+  # Schutzmechanismen (object-src, base-uri, frame-ancestors, form-action,
+  # Domain-Allowlists) bleiben. Wird das Ads-Tracking je entfernt, sollte
+  # 'unsafe-inline' wieder raus.
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://*.doubleclick.net https://www.google.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://www.googletagmanager.com https://www.google.com https://www.google.de https://*.doubleclick.net https://www.google-analytics.com https://*.g.doubleclick.net; font-src 'self'; connect-src 'self' https://www.googletagmanager.com https://www.google-analytics.com https://region1.google-analytics.com https://*.analytics.google.com https://pagead2.googlesyndication.com https://*.google.com https://*.doubleclick.net; frame-src https://www.googletagmanager.com https://*.doubleclick.net; form-action 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'"
 </IfModule>
 
 # ── MIME-Typen (falls der Server sie nicht kennt) ──────────────────────────
@@ -132,11 +243,16 @@ DirectoryIndex index.html
 #     haben. Falls der _source-Ordner versehentlich mit hochgeladen wird,
 #     ist er hierdurch trotzdem nicht abrufbar.
 # ═══════════════════════════════════════════════════════════════════════════
-<FilesMatch "\.(md|sha256|orig|bak|log)$">
+<FilesMatch "\.(md|sha256|orig|bak|log|docx|sh)$">
   Require all denied
 </FilesMatch>
 
 RedirectMatch 404 ^/_source(/.*)?$
+RedirectMatch 404 ^/dokumente(/.*)?$
+RedirectMatch 404 ^/tools(/.*)?$
+
+# Sicherungskopien des Redaktionsbereichs: intern, nie abrufbar.
+RedirectMatch 404 ^/daten/backup(/.*)?$
 
 # Punktdateien (.htaccess, .git, ...) sperren
 <FilesMatch "^\.">

@@ -3,6 +3,32 @@ function bootApp() {
 const { useState, useEffect, useRef, useCallback } = React;
 const e = React.createElement;
 
+// Hängt für die aktuelle Seite eine schema.org/FAQPage-Auszeichnung in den <head>
+// – maschinenlesbare Frage-Antwort-Paare für Suchmaschinen und KI-Systeme. Beim
+// Vorrendern (tools/vorrendern.js) wird dieses <script> mitgenommen, sodass es
+// auch ohne JavaScript im Roh-HTML steht. Die Seiten rufen den Hook mit ihren
+// eigenen FAQ-Daten auf – eine Quelle, kein zweiter Datensatz.
+function useFaqSchema(faqs) {
+  var schluessel = faqs ? faqs.map(function (f) { return f.q; }).join('|') : '';
+  useEffect(function () {
+    var vorhandenes = document.getElementById('nsbb-faq-jsonld');
+    if (vorhandenes) vorhandenes.remove();
+    if (!faqs || !faqs.length) return;
+    var el = document.createElement('script');
+    el.type = 'application/ld+json';
+    el.id = 'nsbb-faq-jsonld';
+    el.textContent = JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: faqs.map(function (f) {
+        return { '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } };
+      })
+    });
+    document.head.appendChild(el);
+    return function () { var x = document.getElementById('nsbb-faq-jsonld'); if (x) x.remove(); };
+  }, [schluessel]);
+}
+
 /* ─────────────────────────────────────────────────────────
    ICONS (inline SVG components)
 ───────────────────────────────────────────────────────── */
@@ -112,15 +138,48 @@ function FlagEN({ w }) {
 function MobileMenu({ nav, page, go, onClose, t, lang, setLang }) {
   const isDE = lang === 'DE';
   const [openSub, setOpenSub] = React.useState(null);
+  const panelRef = React.useRef(null);
 
   const handleNav = key => { go(key); onClose(); };
+
+  // Barrierefreiheit: Solange das Menü offen ist, bleibt der Tastaturfokus darin
+  // gefangen (sonst wandert er auf die verdeckte Seite dahinter), Escape
+  // schließt, und beim Öffnen springt der Fokus ins Menü.
+  React.useEffect(() => {
+    // panelRef.current wird ERST zur Laufzeit gelesen, nicht beim Effect-Start:
+    // Das Menü rendert über ein Portal (eigener createRoot), das DOM ist beim
+    // Effect-Start noch nicht da. Ein früher Abbruch bei null würde den
+    // Fokus-Trap ganz verhindern.
+    const fokusierbare = () => {
+      const panel = panelRef.current;
+      if (!panel) return [];
+      return Array.prototype.slice.call(
+        panel.querySelectorAll('a[href], button:not([disabled]), input, select, [tabindex]:not([tabindex="-1"])'));
+    };
+    // Fokus verzögert setzen, bis das Portal-DOM steht.
+    const fokusTimer = setTimeout(() => {
+      const f = fokusierbare();
+      if (f.length) f[0].focus();
+    }, 90);
+    const onKey = (ev) => {
+      if (ev.key === 'Escape') { onClose(); return; }
+      if (ev.key !== 'Tab') return;
+      const f = fokusierbare();
+      if (!f.length) return;
+      const erstes = f[0], letztes = f[f.length - 1];
+      if (ev.shiftKey && document.activeElement === erstes) { ev.preventDefault(); letztes.focus(); }
+      else if (!ev.shiftKey && document.activeElement === letztes) { ev.preventDefault(); erstes.focus(); }
+    };
+    document.addEventListener('keydown', onKey);
+    return () => { clearTimeout(fokusTimer); document.removeEventListener('keydown', onKey); };
+  }, []);
 
   const menuContent = e(React.Fragment, null,
     // Backdrop
     e('div', { onClick: onClose, style:{ position:'fixed',top:0,left:0,right:0,bottom:0,zIndex:9998,background:'rgba(26,25,23,.45)', backdropFilter:'blur(3px)' } }),
 
     // Panel
-    e('div', { style:{ position:'fixed',top:0,right:0,bottom:0,zIndex:9999,width:'min(360px,100vw)',background:'#FAF9F7',overflowY:'auto',display:'flex',flexDirection:'column',boxShadow:'-8px 0 48px rgba(0,0,0,.15)',animation:'slideRight .22s ease-out' } },
+    e('div', { ref:panelRef, role:'dialog', 'aria-modal':'true', 'aria-label': isDE?'Hauptmenü':'Main menu', style:{ position:'fixed',top:0,right:0,bottom:0,zIndex:9999,width:'min(360px,100vw)',background:'#FAF9F7',overflowY:'auto',display:'flex',flexDirection:'column',boxShadow:'-8px 0 48px rgba(0,0,0,.15)',animation:'slideRight .22s ease-out' } },
 
       // Header
       e('div', { style:{ display:'flex',alignItems:'center',justifyContent:'space-between',padding:'12px 20px',borderBottom:'1px solid #ECEAE6' } },
@@ -140,6 +199,8 @@ function MobileMenu({ nav, page, go, onClose, t, lang, setLang }) {
             ? e('div', null,
                 e('button', {
                   onClick:()=>setOpenSub(openSub===item.key?null:item.key),
+                  'aria-expanded': openSub===item.key,
+                  'aria-label': (isDE?'Untermenü ':'Submenu ')+item.label,
                   style:{ width:'100%',textAlign:'left',background:'none',border:'none',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'space-between',padding:'7px 20px' }
                 },
                   e('span', { style:{ fontSize:'14px',fontWeight:500,color:openSub===item.key?'var(--accent)':'#1A1917',fontFamily:"'DM Sans',sans-serif",letterSpacing:'-.01em' } }, item.label),
@@ -149,14 +210,10 @@ function MobileMenu({ nav, page, go, onClose, t, lang, setLang }) {
                 ),
                 openSub===item.key && e('div', { style:{ backgroundColor:'#F4F2EE',paddingTop:'4px',paddingBottom:'4px' } },
                   item.children.map(child =>
-                    child.href
-                      ? e('a', { key:child.href, href:child.href, onClick:onClose,
-                          style:{ width:'100%',textAlign:'left',padding:'10px 24px 10px 40px',fontSize:'14px',color:'#3D3830',fontFamily:"'DM Sans',sans-serif",display:'block',textDecoration:'none' }
-                        }, child.label)
-                      : e('button', { key:child.key,
-                          onClick:()=>handleNav(child.key),
-                          style:{ width:'100%',textAlign:'left',background:'none',border:'none',cursor:'pointer',padding:'10px 24px 10px 40px',fontSize:'14px',color:page===child.key?'var(--accent)':'#3D3830',fontFamily:"'DM Sans',sans-serif",display:'block' }
-                        }, child.label)
+                    e('button', { key:child.key,
+                      onClick:()=>handleNav(child.key),
+                      style:{ width:'100%',textAlign:'left',background:'none',border:'none',cursor:'pointer',padding:'10px 24px 10px 40px',fontSize:'14px',color:page===child.key?'var(--accent)':'#3D3830',fontFamily:"'DM Sans',sans-serif",display:'block' }
+                    }, child.label)
                   )
                 ),
               )
@@ -241,9 +298,14 @@ function Nav({ page, setPage, lang, setLang, t }) {
       { label: lang==='DE'?'Für Privatpersonen':'For Individuals', key: 'leistungen-privat' },
     ]},
     { label: 'TGS International', altLabel: 'TGS International', key: 'tgs' },
-    { label: 'Insights', altLabel: 'Insights', key: 'insights' },
+    // ── "Aktuelles" (frueher "Insights") ─────────────────────────────────────
+    // Wieder in der Navigation: Die Rubrik traegt jetzt ab Tag 1 – die
+    // monatliche Mandanteninformation (PDF) steht oben, darunter die vom
+    // Kunden ueber /redaktion/ gepflegten Beitraege. Der fruehere Grund fuer
+    // das Ausblenden ("leere Rubrik") ist damit entfallen.
+    { label: lang==='DE'?'Aktuelles':'Insights', altLabel: lang==='DE'?'Insights':'Aktuelles', key: 'aktuelles' },
     { label: lang==='DE'?'Über uns':'About us', altLabel: lang==='DE'?'About us':'Über uns', key: 'ueber-uns', children: [
-      { label: lang==='DE'?'Team':'Team', key: 'ueber-uns' },
+      { label: 'Team', key: 'ueber-uns' },
       { label: lang==='DE'?'Steuerberater Berlin':'Tax Advisor Berlin', key: 'steuerberater-berlin' },
       { label: lang==='DE'?'Steuerberater Köln':'Tax Advisor Cologne', key: 'steuerberater-koeln' },
     ]},
@@ -268,7 +330,7 @@ function Nav({ page, setPage, lang, setLang, t }) {
       e('div', { className:'nav-inner', style:{ maxWidth:'1320px', margin:'0 auto', padding:'0 20px', display:'flex', alignItems:'center', gap:'14px' } },
         // Logo
         e('button', { onClick: () => go('home'), 'aria-label':'NSBB – Startseite', style:{ flexShrink:0, background:'none', border:'none', cursor:'pointer', padding:0, display:'flex', alignItems:'center' } },
-          e('img', { src:'assets/images/logo-nav.webp', alt:'NSBB – Die Steuerberaterkanzlei', style:{ height:'44px', width:'auto', display:'block' } })
+          e('img', { src:'assets/images/logo-nav.webp', alt:'NSBB – Die Steuerberaterkanzlei', width:240, height:112, style:{ height:'44px', width:'auto', display:'block' } })
         ),
 
         // Desktop nav – only on large screens
@@ -279,6 +341,8 @@ function Nav({ page, setPage, lang, setLang, t }) {
                 'aria-current': page.startsWith(item.key) ? 'page' : undefined,
                 style:{ padding:'8px 14px', borderRadius:'8px', fontSize:'14px', fontWeight:500, border:'none', background:'none', cursor:'pointer', fontFamily:"'DM Sans',sans-serif", color: page.startsWith(item.key) ? '#4A7C59' : '#524C44', display:'flex', alignItems:'center', justifyContent:'center', gap:'4px' },
                 onClick: () => item.children ? setOpenDrop(openDrop === item.key ? null : item.key) : go(item.key),
+                'aria-expanded': item.children ? (openDrop === item.key) : undefined,
+                'aria-haspopup': item.children ? 'true' : undefined,
               },
                 // Grid-Overlay: sichtbares Label + unsichtbarer Zwilling in derselben
                 // Grid-Zelle -> Buttonbreite bleibt konstant beim DE/EN-Wechsel.
@@ -304,18 +368,11 @@ function Nav({ page, setPage, lang, setLang, t }) {
                           onClick: () => go(sub.key),
                         }, sub.label))
                       )
-                    : child.href
-                      ? e('a', {
-                          key: child.href,
-                          href: child.href,
-                          style:{ display:'block', width:'100%', textAlign:'left', padding:'10px 16px', fontSize:'14px', color:'var(--muted)', fontFamily:"'DM Sans',sans-serif", textDecoration:'none', borderRadius:'8px' },
-                          onClick: () => setOpenDrop(null),
-                        }, child.label)
-                      : e('button', {
-                          key: child.key,
-                          style:{ display:'block', width:'100%', textAlign:'left', padding:'10px 16px', fontSize:'14px', color: page===child.key ? 'var(--accent)' : 'var(--muted)', fontFamily:"'DM Sans',sans-serif", border:'none', background:'transparent', cursor:'pointer', borderRadius:'8px' },
-                          onClick: () => go(child.key),
-                        }, child.label)
+                    : e('button', {
+                        key: child.key,
+                        style:{ display:'block', width:'100%', textAlign:'left', padding:'10px 16px', fontSize:'14px', color: page===child.key ? 'var(--accent)' : 'var(--muted)', fontFamily:"'DM Sans',sans-serif", border:'none', background:'transparent', cursor:'pointer', borderRadius:'8px' },
+                        onClick: () => go(child.key),
+                      }, child.label)
                 )
               ),
             )
@@ -384,6 +441,15 @@ const LOGO_URI = 'assets/images/logo-footer.webp';
 function Footer({ setPage, lang, t }) {
   const isDE = lang === 'DE';
   const go = k => { setPage(k); window.scrollTo(0,0); };
+  // Echter Link (fuer Suchmaschinen-Crawler und Besucher ohne JavaScript) mit
+  // href, der zusaetzlich per JavaScript die SPA-Navigation ausloest (ohne
+  // vollstaendiges Neuladen). BASIS/pfadFuer bilden die richtige Adresse.
+  const seiteLink = (key, label, style) => e('a', {
+    key: key,
+    href: pfadFuer(key),
+    onClick: (ev) => { ev.preventDefault(); go(key); },
+    style: style,
+  }, label);
   const year = new Date().getFullYear();
 
   const lbl  = { fontSize:'12px', fontWeight:600, letterSpacing:'.1em', textTransform:'uppercase', color:'rgba(255,255,255,.7)', fontFamily:"'DM Sans',sans-serif", marginBottom:'8px' };
@@ -396,7 +462,7 @@ function Footer({ setPage, lang, t }) {
       // Row 1: Logo + tagline + TGS line
       e('div', { style:{ display:'flex', flexDirection:'column', alignItems:'flex-start', gap:'10px', paddingBottom:'22px', borderBottom:'1px solid rgba(255,255,255,.12)' } },
         e('button', { onClick:()=>go('home'), style:{ background:'none', border:'none', cursor:'pointer', padding:0 } },
-          e('img', { src:LOGO_URI, alt:'NSBB', style:{ height:'32px', width:'auto', filter:'brightness(0) invert(1)', opacity:.9 } })
+          e('img', { src:LOGO_URI, alt:'NSBB', width:280, height:134, style:{ height:'32px', width:'auto', filter:'brightness(0) invert(1)', opacity:.9 } })
         ),
         e('div', null,
           e('p', { style:{ fontSize:'14px', color:'rgba(255,255,255,.82)', fontFamily:"'DM Sans',sans-serif", margin:'0 0 5px' } },
@@ -415,13 +481,12 @@ function Footer({ setPage, lang, t }) {
       // Row 2: Berlin | Köln
       e('div', { style:{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'20px', paddingTop:'22px', paddingBottom:'22px', borderBottom:'1px solid rgba(255,255,255,.12)' } },
         e('div', null,
-          // Städtename verlinkt auf die lokale Landingpage (SEO: sitewide interne Verlinkung)
-          e('a', { href: '#steuerberater-berlin', style:{ ...lbl, display:'inline-block', textDecoration:'none' } }, isDE ? 'Steuerberater Berlin' : 'Tax Advisor Berlin'),
+          e('p', { style:lbl }, 'Berlin'),
           e('a', { href:'https://www.google.com/maps/place/NSBB+Steuerberatungsgesellschaft+mbH/@52.4293359,13.2562634,19z/data=!4m15!1m8!3m7!1s0x47a85bcd32214c33:0xc49996f097d43f61!2sBerlepschstra%C3%9Fe+1,+14165+Berlin!3b1!8m2!3d52.429461!4d13.2565531!16s%2Fg%2F11b8v5lfv2!3m5!1s0x47a85bee320dfedf:0xd5c5592d1cbe082d!8m2!3d52.4294067!4d13.2565013!16s%2Fg%2F11qpl7gh9y', target:'_blank', rel:'noopener noreferrer', style:{ ...body, textDecoration:'none' } }, 'Berlepschstr. 1, 14165 Berlin'),
           e('a', { href:'tel:+493081580930', style:{ ...lnk, marginTop:'5px' } }, '+49 30 815 80 93'),
         ),
         e('div', null,
-          e('a', { href: '#steuerberater-koeln', style:{ ...lbl, display:'inline-block', textDecoration:'none' } }, isDE ? 'Steuerberater Köln' : 'Tax Advisor Cologne'),
+          e('p', { style:lbl }, 'Köln'),
           e('a', { href:'https://www.google.com/maps/place/NSBB+Steuerberatungsgesellschaft+mbH/@50.9286295,6.9619573,18z/data=!3m1!4b1!4m6!3m5!1s0x47bf251aeb6f96e7:0xe6cbbac13cb5a3c8!8m2!3d50.9286278!4d6.9632448!16s%2Fg%2F11lkz0nrsq', target:'_blank', rel:'noopener noreferrer', style:{ ...body, textDecoration:'none' } }, 'Holzmarkt 2/2A, 50676 Köln'),
           e('a', { href:'tel:+492219730640', style:{ ...lnk, marginTop:'5px' } }, '+49 221 973 064 0'),
         ),
@@ -442,17 +507,38 @@ function Footer({ setPage, lang, t }) {
 
       // FAQ link
       e('div', { style:{ paddingTop:'18px', paddingBottom:'18px', borderBottom:'1px solid rgba(255,255,255,.12)' } },
-        e('button', { onClick:()=>go('faq'), style:{ fontSize:'14px', fontWeight:500, color:'rgba(255,255,255,.8)', fontFamily:"'DM Sans',sans-serif", background:'none', border:'none', cursor:'pointer', padding:0 } },
-          isDE ? 'Häufige Fragen zur Zusammenarbeit →' : 'Frequently asked questions about working with us →'
-        ),
+        seiteLink('faq', isDE ? 'Häufige Fragen zur Zusammenarbeit →' : 'Frequently asked questions about working with us →',
+          { fontSize:'14px', fontWeight:500, color:'rgba(255,255,255,.8)', fontFamily:"'DM Sans',sans-serif", textDecoration:'none' }),
+      ),
+
+      // Seiten-Navigation: echte Links (Suchmaschinen-Crawler + Besucher ohne JS).
+      // Die aufklappbaren Menüs oben sind im vorgerenderten HTML zu; hier stehen
+      // die Adressen dagegen fest im Roh-HTML.
+      e('nav', { 'aria-label': isDE ? 'Seiten' : 'Pages', style:{ display:'flex', flexWrap:'wrap', gap:'8px 20px', paddingTop:'18px', paddingBottom:'18px', borderBottom:'1px solid rgba(255,255,255,.12)' } },
+        [ ['leistungen-unternehmen', isDE ? 'Für Unternehmen' : 'For Businesses'],
+          ['leistungen-international', isDE ? 'Internationales Steuerrecht' : 'International Tax'],
+          ['leistungen-privat', isDE ? 'Für Privatpersonen' : 'For Individuals'],
+          ['digital', isDE ? 'Digitale Kanzlei' : 'Digital Office'],
+          ['ueber-uns', isDE ? 'Über uns' : 'About us'],
+          ['steuerberater-berlin', isDE ? 'Steuerberater Berlin' : 'Tax Advisor Berlin'],
+          ['steuerberater-koeln', isDE ? 'Steuerberater Köln' : 'Tax Advisor Cologne'],
+          ['karriere', isDE ? 'Karriere' : 'Careers'],
+          ['kanzleinachfolge', isDE ? 'Kanzleinachfolge' : 'Practice Succession'],
+          ['tgs', 'TGS International'],
+          ['aktuelles', isDE ? 'Aktuelles' : 'Insights'],
+          ['kontakt', isDE ? 'Kontakt' : 'Contact'],
+        ].map(function (p) { return seiteLink(p[0], p[1], { fontSize:'13px', color:'rgba(255,255,255,.75)', fontFamily:"'DM Sans',sans-serif", textDecoration:'none', whiteSpace:'nowrap' }); })
       ),
 
       // Bottom bar
       e('div', { style:{ paddingTop:'16px', display:'flex', flexWrap:'wrap', alignItems:'center', justifyContent:'space-between', gap:'8px' } },
         e('p', { style:{ fontSize:'13px', color:'rgba(255,255,255,.65)', fontFamily:"'DM Sans',sans-serif", margin:0 } }, `© ${year} NSBB Steuerberatungsgesellschaft mbH`),
-        e('div', { style:{ display:'flex', gap:'16px' } },
+        e('div', { style:{ display:'flex', flexWrap:'wrap', alignItems:'center', gap:'8px 16px' } },
+          // Cookie-Einstellungen: öffnet den Consent-Banner erneut (Widerruf/
+          // Änderung – gesetzlich gefordert, so einfach wie die Erteilung).
+          e('button', { key:'consent', onClick:()=>window.dispatchEvent(new Event('nsbb:open-consent')), style:{ fontSize:'13px', color:'rgba(255,255,255,.75)', fontFamily:"'DM Sans',sans-serif", background:'none', border:'none', cursor:'pointer', padding:0 } }, isDE?'Cookie-Einstellungen':'Cookie settings'),
           [['impressum', isDE?'Impressum':'Legal'], ['datenschutz', isDE?'Datenschutz':'Privacy']].map(([k,l]) =>
-            e('button', { key:k, onClick:()=>go(k), style:{ fontSize:'13px', color:'rgba(255,255,255,.75)', fontFamily:"'DM Sans',sans-serif", background:'none', border:'none', cursor:'pointer', padding:0 } }, l)
+            seiteLink(k, l, { fontSize:'13px', color:'rgba(255,255,255,.75)', fontFamily:"'DM Sans',sans-serif", textDecoration:'none' })
           ),
         ),
       ),
@@ -540,7 +626,7 @@ function HomePage({ setPage, lang, t }) {
   const serviceIcons = ['building','globe','user'];
    const services = t.servicesData.map((s,i) => ({ ...s, icon: serviceIcons[i] }));
   const whys = t.whyData;
-  const insights = t.insightsPosts.map(p => ({...p, key:'insights'}));
+  const insights = t.insightsPosts.map(p => ({...p, key:'aktuelles'}));
 
   const go = (k) => { setPage(k); window.scrollTo(0,0); };
 
@@ -563,19 +649,30 @@ function HomePage({ setPage, lang, t }) {
               e('button', { className: 'btn-p py-4 px-8 text-base', onClick: () => go('kontakt') }, e(Ico, { name: 'calendar', size: 17 }), t.heroCta1),
               e('button', { className: 'btn-s py-4 px-8 text-base', onClick: () => { const el = document.getElementById('unsere-leistungen'); if (el) el.scrollIntoView({ behavior: 'smooth' }); } }, t.heroCta2, e(Ico, { name: 'arrowRight', size: 16 })),
             ),
-            e('div', { className: 'flex flex-wrap items-end gap-6 pt-6 border-t', style: { borderColor: 'var(--border)' } },
-              stats.map(s => e('div', { key: s.lbl },
-                e('div', { style:{ height:'36px', display:'flex', alignItems:'center', justifyContent:'flex-start' } },
-                  e('span', { style:{ fontFamily:"'DM Sans',sans-serif", fontSize:'1.6rem', fontWeight:400, color:'var(--accent)', lineHeight:1, letterSpacing:'-.02em', display:'block' } }, s.val),
-                ),
-                e('p', { className: 'text-xs mt-0.5 font-medium', style: { color: 'var(--muted)', fontFamily: "'DM Sans',sans-serif" } }, s.lbl),
-              )),
-              // Lokale Standort-Landingpages – Desktop rechts neben den Kennzahlen,
-              // Mobil in eigener Zeile darunter (SEO-Verlinkung).
-              e('div', { className:'hero-stats-locations', style:{ display:'flex', flexDirection:'column', gap:'3px' } },
-                e('p', { className: 'text-xs font-medium', style:{ color:'var(--subtle)', fontFamily:"'DM Sans',sans-serif", letterSpacing:'.02em', marginBottom:'2px' } }, isDE?'Standorte':'Offices'),
-                e('a', { href: '#steuerberater-berlin', style:{ color:'var(--accent)', fontWeight:600, fontSize:'14px', textDecoration:'none', fontFamily:"'DM Sans',sans-serif" } }, isDE?'Steuerberater Berlin':'Tax Advisor Berlin'),
-                e('a', { href: '#steuerberater-koeln', style:{ color:'var(--accent)', fontWeight:600, fontSize:'14px', textDecoration:'none', fontFamily:"'DM Sans',sans-serif" } }, isDE?'Steuerberater Köln':'Tax Advisor Cologne'),
+            e('div', { className: 'flex flex-col md:flex-row md:items-center md:justify-between gap-6 pt-6 border-t', style: { borderColor: 'var(--border)' } },
+              // Kennzahlen (2 Standorte, 4 Berufsträger …) – links
+              e('div', { className: 'flex flex-wrap gap-6' },
+                stats.map(s => e('div', { key: s.lbl },
+                  e('div', { style:{ height:'36px', display:'flex', alignItems:'center', justifyContent:'flex-start' } },
+                    e('span', { style:{ fontFamily:"'DM Sans',sans-serif", fontSize:'1.6rem', fontWeight:400, color:'var(--accent)', lineHeight:1, letterSpacing:'-.02em', display:'block' } }, s.val),
+                  ),
+                  e('p', { className: 'text-xs mt-0.5 font-medium', style: { color: 'var(--muted)', fontFamily: "'DM Sans',sans-serif" } }, s.lbl),
+                ))
+              ),
+              // Standort-Schnellzugriff – auf Desktop rechts daneben, mobil darunter
+              e('div', { style:{ display:'flex', flexDirection:'column', gap:'8px' } },
+                [
+                  { key:'steuerberater-berlin', label: isDE?'Steuerberater Berlin':'Tax Advisor Berlin' },
+                  { key:'steuerberater-koeln',  label: isDE?'Steuerberater Köln':'Tax Advisor Cologne' },
+                ].map(loc => e('button', {
+                    key: loc.key,
+                    onClick: () => go(loc.key),
+                    style:{ display:'inline-flex', alignItems:'center', gap:'8px', background:'var(--accent-subtle)', color:'var(--accent-dark)', border:'none', borderRadius:'10px', padding:'9px 14px', fontSize:'13px', fontWeight:600, cursor:'pointer', fontFamily:"'DM Sans',sans-serif", whiteSpace:'nowrap' }
+                  },
+                  e(Ico, { name:'mapPin', size:13 }),
+                  loc.label,
+                  e(Ico, { name:'arrowRight', size:14 })
+                ))
               ),
             ),
           ),
@@ -976,6 +1073,7 @@ function LeistungenInternationalPage({ setPage, lang, t, setKontaktPreset }) {
     { q:'When do double taxation treaties apply?', a:'DTTs exist between two states and determine which state may tax which income. They prevent the same income from being fully taxed in two countries.' },
     { q:'Can collaboration be fully digital?', a:'Yes. We work fully digitally and advise clients across Germany and internationally via secure digital processes.' },
   ];
+  useFaqSchema(faqs);
 
   const [faqOpen, setFaqOpen] = React.useState(null);
 
@@ -1200,6 +1298,7 @@ function IntlWegzugPage({ setPage, lang, t, setKontaktPreset }) {
         {q:'What happens on return to Germany?',a:'If returning within seven years of exit, it is possible to apply for reversal of the assessed tax, provided the shares still exist. Since 2022, stricter rules apply to the return provision.'},
         {q:'Can the tax be deferred?',a:'For relocation to EU or EEA states, interest-free deferral of exit tax is possible. For moves to third countries like Switzerland or Dubai, deferral is generally only available against security and with interest.'},
         {q:'What structuring options exist before relocation?',a:'Various restructuring measures can significantly reduce or defer the tax burden. However, this must be done early and with careful attention to deadlines. Short-term arrangements just before departure are scrutinised critically.'}];
+  useFaqSchema(faqs);
   const [open, setOpen] = React.useState(null);
 
   return e('div', { className:'page-enter' },
@@ -1269,7 +1368,7 @@ function IntlWegzugPage({ setPage, lang, t, setKontaktPreset }) {
           isDE ? 'Typische Fragen' : 'Frequently asked questions'
         ),
         faqs.map((faq,i) => e('div', { key:i, style:{ borderBottom:'1px solid #ECEAE6' } },
-          e('button', { onClick:()=>setOpen(open===i?null:i), style:{ width:'100%', textAlign:'left', background:'none', border:'none', cursor:'pointer', display:'flex', justifyContent:'space-between', alignItems:'center', padding:'16px 0', gap:'14px' } },
+          e('button', { onClick:()=>setOpen(open===i?null:i), 'aria-expanded': open===i, style:{ width:'100%', textAlign:'left', background:'none', border:'none', cursor:'pointer', display:'flex', justifyContent:'space-between', alignItems:'center', padding:'16px 0', gap:'14px' } },
             e('span', { style:{ fontFamily:"'Cormorant Garamond',serif", fontSize:'1.05rem', color: open===i?'#1A1917':'#3A342C', fontWeight: open===i?500:400, lineHeight:1.35 } }, faq.q),
             e('span', { style:{ flexShrink:0, width:'22px', height:'22px', borderRadius:'50%', border:`1px solid ${open===i?'var(--accent)':'#D4CFC8'}`, backgroundColor: open===i?'var(--accent)':'transparent', display:'flex', alignItems:'center', justifyContent:'center', transition:'all .2s' } },
               open===i
@@ -1334,6 +1433,7 @@ function IntlWohnsitzPage({ setPage, lang, t, setKontaktPreset }) {
         {q:'What applies with multiple residences?',a:'With a dual residence, Germany is generally still entitled to tax. Only the applicable double taxation treaty can determine which state has primary taxing rights. Tie-breaker rules play a decisive role.'},
         {q:'What evidence does the tax office require?',a:'Typically evidence of place of residence, length of stay, social ties, economic interests abroad and corresponding official documents is required. Depending on the individual case, further documentation may be needed.'},
         {q:'What happens to German income after relocation?',a:'After relocating abroad, German-source income remains subject to limited tax liability in Germany. This includes income from real estate located in Germany or German shareholdings.'}];
+  useFaqSchema(faqs);
   const [open, setOpen] = React.useState(null);
 
   return e('div', { className:'page-enter' },
@@ -1403,7 +1503,7 @@ function IntlWohnsitzPage({ setPage, lang, t, setKontaktPreset }) {
           isDE ? 'Typische Fragen' : 'Frequently asked questions'
         ),
         faqs.map((faq,i) => e('div', { key:i, style:{ borderBottom:'1px solid #ECEAE6' } },
-          e('button', { onClick:()=>setOpen(open===i?null:i), style:{ width:'100%', textAlign:'left', background:'none', border:'none', cursor:'pointer', display:'flex', justifyContent:'space-between', alignItems:'center', padding:'16px 0', gap:'14px' } },
+          e('button', { onClick:()=>setOpen(open===i?null:i), 'aria-expanded': open===i, style:{ width:'100%', textAlign:'left', background:'none', border:'none', cursor:'pointer', display:'flex', justifyContent:'space-between', alignItems:'center', padding:'16px 0', gap:'14px' } },
             e('span', { style:{ fontFamily:"'Cormorant Garamond',serif", fontSize:'1.05rem', color: open===i?'#1A1917':'#3A342C', fontWeight: open===i?500:400, lineHeight:1.35 } }, faq.q),
             e('span', { style:{ flexShrink:0, width:'22px', height:'22px', borderRadius:'50%', border:`1px solid ${open===i?'var(--accent)':'#D4CFC8'}`, backgroundColor: open===i?'var(--accent)':'transparent', display:'flex', alignItems:'center', justifyContent:'center', transition:'all .2s' } },
               open===i
@@ -1468,6 +1568,7 @@ function IntlDBAPage({ setPage, lang, t, setKontaktPreset }) {
         {q:'How is foreign income treated in Germany?',a:'Depending on the DTT and the type of income, foreign income is either exempt from tax in Germany (possibly with a progression clause) or the foreign tax is credited against German tax.'},
         {q:'What is the exemption method?',a:'Under the exemption method, foreign income is exempt from taxation in Germany. However, it may be taken into account under the progression clause, thereby increasing the rate applicable to remaining income.'},
         {q:'What is the credit method?',a:'Under the credit method, foreign income is taxed in Germany; however, the tax paid abroad is credited against the German tax liability – up to the amount of German tax on that income.'}];
+  useFaqSchema(faqs);
   const [open, setOpen] = React.useState(null);
 
   return e('div', { className:'page-enter' },
@@ -1537,7 +1638,7 @@ function IntlDBAPage({ setPage, lang, t, setKontaktPreset }) {
           isDE ? 'Typische Fragen' : 'Frequently asked questions'
         ),
         faqs.map((faq,i) => e('div', { key:i, style:{ borderBottom:'1px solid #ECEAE6' } },
-          e('button', { onClick:()=>setOpen(open===i?null:i), style:{ width:'100%', textAlign:'left', background:'none', border:'none', cursor:'pointer', display:'flex', justifyContent:'space-between', alignItems:'center', padding:'16px 0', gap:'14px' } },
+          e('button', { onClick:()=>setOpen(open===i?null:i), 'aria-expanded': open===i, style:{ width:'100%', textAlign:'left', background:'none', border:'none', cursor:'pointer', display:'flex', justifyContent:'space-between', alignItems:'center', padding:'16px 0', gap:'14px' } },
             e('span', { style:{ fontFamily:"'Cormorant Garamond',serif", fontSize:'1.05rem', color: open===i?'#1A1917':'#3A342C', fontWeight: open===i?500:400, lineHeight:1.35 } }, faq.q),
             e('span', { style:{ flexShrink:0, width:'22px', height:'22px', borderRadius:'50%', border:`1px solid ${open===i?'var(--accent)':'#D4CFC8'}`, backgroundColor: open===i?'var(--accent)':'transparent', display:'flex', alignItems:'center', justifyContent:'center', transition:'all .2s' } },
               open===i
@@ -1602,6 +1703,7 @@ function IntlEinkuenftePage({ setPage, lang, t, setKontaktPreset }) {
         {q:'What is CFC taxation?',a:'CFC taxation under §§ 7 et seq. AStG captures passive income of controlled foreign subsidiaries that are subject to low taxation. This income is attributed directly to the German shareholder and taxed in Germany.'},
         {q:'How are foreign dividends taxed?',a:'Foreign dividends are subject to flat-rate tax of 25% plus solidarity surcharge in Germany. Different rules apply to business assets. Foreign withholding tax paid can be credited up to the amount of German tax.'},
         {q:'Must I report foreign bank accounts?',a:'There are no explicit reporting obligations for foreign bank accounts. However, interest and capital income earned on them must be fully declared in the German tax return. Through automatic information exchange, German tax offices are already aware of many foreign accounts.'}];
+  useFaqSchema(faqs);
   const [open, setOpen] = React.useState(null);
 
   return e('div', { className:'page-enter' },
@@ -1671,7 +1773,7 @@ function IntlEinkuenftePage({ setPage, lang, t, setKontaktPreset }) {
           isDE ? 'Typische Fragen' : 'Frequently asked questions'
         ),
         faqs.map((faq,i) => e('div', { key:i, style:{ borderBottom:'1px solid #ECEAE6' } },
-          e('button', { onClick:()=>setOpen(open===i?null:i), style:{ width:'100%', textAlign:'left', background:'none', border:'none', cursor:'pointer', display:'flex', justifyContent:'space-between', alignItems:'center', padding:'16px 0', gap:'14px' } },
+          e('button', { onClick:()=>setOpen(open===i?null:i), 'aria-expanded': open===i, style:{ width:'100%', textAlign:'left', background:'none', border:'none', cursor:'pointer', display:'flex', justifyContent:'space-between', alignItems:'center', padding:'16px 0', gap:'14px' } },
             e('span', { style:{ fontFamily:"'Cormorant Garamond',serif", fontSize:'1.05rem', color: open===i?'#1A1917':'#3A342C', fontWeight: open===i?500:400, lineHeight:1.35 } }, faq.q),
             e('span', { style:{ flexShrink:0, width:'22px', height:'22px', borderRadius:'50%', border:`1px solid ${open===i?'var(--accent)':'#D4CFC8'}`, backgroundColor: open===i?'var(--accent)':'transparent', display:'flex', alignItems:'center', justifyContent:'center', transition:'all .2s' } },
               open===i
@@ -1736,6 +1838,7 @@ function IntlImmobilienPage({ setPage, lang, t, setKontaktPreset }) {
         {q:'What taxes apply abroad?',a:'Depending on the country, different taxes may apply: real estate transfer tax on purchase, ongoing property tax, withholding tax on rental income and capital gains tax on sale. The exact rules depend on the country.'},
         {q:'What applies when inheriting a foreign property?',a:'When inheriting a foreign property, both the country of location and Germany may levy inheritance tax. Germany has only concluded DTTs on inheritance tax with a few countries.'},
         {q:'Is a company structure sensible for the purchase?',a:'Whether investing via a company (e.g. a local corporation) makes sense depends on various factors: tax burden abroad, personal tax situation in Germany, planned holding period and type of use. An individual analysis is essential.'}];
+  useFaqSchema(faqs);
   const [open, setOpen] = React.useState(null);
 
   return e('div', { className:'page-enter' },
@@ -1805,7 +1908,7 @@ function IntlImmobilienPage({ setPage, lang, t, setKontaktPreset }) {
           isDE ? 'Typische Fragen' : 'Frequently asked questions'
         ),
         faqs.map((faq,i) => e('div', { key:i, style:{ borderBottom:'1px solid #ECEAE6' } },
-          e('button', { onClick:()=>setOpen(open===i?null:i), style:{ width:'100%', textAlign:'left', background:'none', border:'none', cursor:'pointer', display:'flex', justifyContent:'space-between', alignItems:'center', padding:'16px 0', gap:'14px' } },
+          e('button', { onClick:()=>setOpen(open===i?null:i), 'aria-expanded': open===i, style:{ width:'100%', textAlign:'left', background:'none', border:'none', cursor:'pointer', display:'flex', justifyContent:'space-between', alignItems:'center', padding:'16px 0', gap:'14px' } },
             e('span', { style:{ fontFamily:"'Cormorant Garamond',serif", fontSize:'1.05rem', color: open===i?'#1A1917':'#3A342C', fontWeight: open===i?500:400, lineHeight:1.35 } }, faq.q),
             e('span', { style:{ flexShrink:0, width:'22px', height:'22px', borderRadius:'50%', border:`1px solid ${open===i?'var(--accent)':'#D4CFC8'}`, backgroundColor: open===i?'var(--accent)':'transparent', display:'flex', alignItems:'center', justifyContent:'center', transition:'all .2s' } },
               open===i
@@ -1870,6 +1973,7 @@ function IntlErbschaftPage({ setPage, lang, t, setKontaktPreset }) {
         {q:'What exemptions apply in cross-border inheritances?',a:'German exemptions generally also apply in cross-border inheritances. For limited inheritance tax liability (foreign deceased and foreign heir with domestic assets), lower exemptions apply.'},
         {q:'Must I file an inheritance tax return in Germany?',a:'Where German inheritance tax liability exists, a tax return must be filed. The tax office may also request a return. The deadline is generally three months from knowledge of the death.'},
         {q:'How is business property treated in a cross-border inheritance?',a:'Special relief provisions can be claimed for inherited business assets. Whether these provisions apply to international business assets depends on the individual case and requires careful analysis.'}];
+  useFaqSchema(faqs);
   const [open, setOpen] = React.useState(null);
 
   return e('div', { className:'page-enter' },
@@ -1939,7 +2043,7 @@ function IntlErbschaftPage({ setPage, lang, t, setKontaktPreset }) {
           isDE ? 'Typische Fragen' : 'Frequently asked questions'
         ),
         faqs.map((faq,i) => e('div', { key:i, style:{ borderBottom:'1px solid #ECEAE6' } },
-          e('button', { onClick:()=>setOpen(open===i?null:i), style:{ width:'100%', textAlign:'left', background:'none', border:'none', cursor:'pointer', display:'flex', justifyContent:'space-between', alignItems:'center', padding:'16px 0', gap:'14px' } },
+          e('button', { onClick:()=>setOpen(open===i?null:i), 'aria-expanded': open===i, style:{ width:'100%', textAlign:'left', background:'none', border:'none', cursor:'pointer', display:'flex', justifyContent:'space-between', alignItems:'center', padding:'16px 0', gap:'14px' } },
             e('span', { style:{ fontFamily:"'Cormorant Garamond',serif", fontSize:'1.05rem', color: open===i?'#1A1917':'#3A342C', fontWeight: open===i?500:400, lineHeight:1.35 } }, faq.q),
             e('span', { style:{ flexShrink:0, width:'22px', height:'22px', borderRadius:'50%', border:`1px solid ${open===i?'var(--accent)':'#D4CFC8'}`, backgroundColor: open===i?'var(--accent)':'transparent', display:'flex', alignItems:'center', justifyContent:'center', transition:'all .2s' } },
               open===i
@@ -2004,6 +2108,7 @@ function IntlSchenkungPage({ setPage, lang, t, setKontaktPreset }) {
         {q:'Must a gift be reported?',a:'In Germany there is a notification obligation to the tax office within three months of the gift being made. This applies even if no gift tax is due. Banks must report gifts of €20,000 or more.'},
         {q:'How are company shares valued for gift purposes?',a:'Company shares are valued at fair market value – generally using the income capitalisation method under the Valuation Act. For family businesses, special valuation discounts may be available.'},
         {q:'Can gift tax be optimised through staged gifts?',a:'Yes. Through a staggered approach utilising exemptions every ten years, the gift tax burden can be significantly reduced. Forward-looking planning is key.'}];
+  useFaqSchema(faqs);
   const [open, setOpen] = React.useState(null);
 
   return e('div', { className:'page-enter' },
@@ -2073,7 +2178,7 @@ function IntlSchenkungPage({ setPage, lang, t, setKontaktPreset }) {
           isDE ? 'Typische Fragen' : 'Frequently asked questions'
         ),
         faqs.map((faq,i) => e('div', { key:i, style:{ borderBottom:'1px solid #ECEAE6' } },
-          e('button', { onClick:()=>setOpen(open===i?null:i), style:{ width:'100%', textAlign:'left', background:'none', border:'none', cursor:'pointer', display:'flex', justifyContent:'space-between', alignItems:'center', padding:'16px 0', gap:'14px' } },
+          e('button', { onClick:()=>setOpen(open===i?null:i), 'aria-expanded': open===i, style:{ width:'100%', textAlign:'left', background:'none', border:'none', cursor:'pointer', display:'flex', justifyContent:'space-between', alignItems:'center', padding:'16px 0', gap:'14px' } },
             e('span', { style:{ fontFamily:"'Cormorant Garamond',serif", fontSize:'1.05rem', color: open===i?'#1A1917':'#3A342C', fontWeight: open===i?500:400, lineHeight:1.35 } }, faq.q),
             e('span', { style:{ flexShrink:0, width:'22px', height:'22px', borderRadius:'50%', border:`1px solid ${open===i?'var(--accent)':'#D4CFC8'}`, backgroundColor: open===i?'var(--accent)':'transparent', display:'flex', alignItems:'center', justifyContent:'center', transition:'all .2s' } },
               open===i
@@ -2138,6 +2243,7 @@ function IntlRueckkehrPage({ setPage, lang, t, setKontaktPreset }) {
         {q:'Must I report my foreign accounts and custody accounts?',a:'Germany has no explicit reporting obligation for foreign accounts. However, interest, dividends and capital gains must be fully declared. Through automatic information exchange, German tax offices are already aware of many foreign accounts.'},
         {q:'How is wealth saved in Switzerland or Dubai treated?',a:'Foreign assets as such are not subject to German wealth tax. However, income from them becomes fully taxable in Germany from the point of return. Additionally, certain company shareholdings can give rise to taxation.'},
         {q:'How do I plan my return from a tax perspective?',a:'Early planning – ideally six to twelve months before return – makes it possible to identify tax risks and structure asset positions optimally. Pre-return advice is strongly recommended.'}];
+  useFaqSchema(faqs);
   const [open, setOpen] = React.useState(null);
 
   return e('div', { className:'page-enter' },
@@ -2207,7 +2313,7 @@ function IntlRueckkehrPage({ setPage, lang, t, setKontaktPreset }) {
           isDE ? 'Typische Fragen' : 'Frequently asked questions'
         ),
         faqs.map((faq,i) => e('div', { key:i, style:{ borderBottom:'1px solid #ECEAE6' } },
-          e('button', { onClick:()=>setOpen(open===i?null:i), style:{ width:'100%', textAlign:'left', background:'none', border:'none', cursor:'pointer', display:'flex', justifyContent:'space-between', alignItems:'center', padding:'16px 0', gap:'14px' } },
+          e('button', { onClick:()=>setOpen(open===i?null:i), 'aria-expanded': open===i, style:{ width:'100%', textAlign:'left', background:'none', border:'none', cursor:'pointer', display:'flex', justifyContent:'space-between', alignItems:'center', padding:'16px 0', gap:'14px' } },
             e('span', { style:{ fontFamily:"'Cormorant Garamond',serif", fontSize:'1.05rem', color: open===i?'#1A1917':'#3A342C', fontWeight: open===i?500:400, lineHeight:1.35 } }, faq.q),
             e('span', { style:{ flexShrink:0, width:'22px', height:'22px', borderRadius:'50%', border:`1px solid ${open===i?'var(--accent)':'#D4CFC8'}`, backgroundColor: open===i?'var(--accent)':'transparent', display:'flex', alignItems:'center', justifyContent:'center', transition:'all .2s' } },
               open===i
@@ -2272,6 +2378,7 @@ function IntlGrenzgaengerPage({ setPage, lang, t, setKontaktPreset }) {
         {q:'Where am I subject to social security?',a:'For EU employees, the general rule is that social security liability arises in the country of work. Those who work to a substantial extent in their country of residence (generally over 25%) are subject to social security there.'},
         {q:'What applies to self-employed persons with clients in several countries?',a:'Self-employed persons active in multiple countries risk establishing a permanent establishment in each country of activity. This would mean profits earned there are taxed in that state.'},
         {q:'What special rules apply to cross-border workers from Switzerland?',a:'The Germany-Switzerland DTT contains a specific cross-border worker rule. Cross-border workers between Germany and Switzerland are taxed in their country of residence; however, Switzerland levies withholding tax of 4.5%, which is credited against German tax.'}];
+  useFaqSchema(faqs);
   const [open, setOpen] = React.useState(null);
 
   return e('div', { className:'page-enter' },
@@ -2341,7 +2448,7 @@ function IntlGrenzgaengerPage({ setPage, lang, t, setKontaktPreset }) {
           isDE ? 'Typische Fragen' : 'Frequently asked questions'
         ),
         faqs.map((faq,i) => e('div', { key:i, style:{ borderBottom:'1px solid #ECEAE6' } },
-          e('button', { onClick:()=>setOpen(open===i?null:i), style:{ width:'100%', textAlign:'left', background:'none', border:'none', cursor:'pointer', display:'flex', justifyContent:'space-between', alignItems:'center', padding:'16px 0', gap:'14px' } },
+          e('button', { onClick:()=>setOpen(open===i?null:i), 'aria-expanded': open===i, style:{ width:'100%', textAlign:'left', background:'none', border:'none', cursor:'pointer', display:'flex', justifyContent:'space-between', alignItems:'center', padding:'16px 0', gap:'14px' } },
             e('span', { style:{ fontFamily:"'Cormorant Garamond',serif", fontSize:'1.05rem', color: open===i?'#1A1917':'#3A342C', fontWeight: open===i?500:400, lineHeight:1.35 } }, faq.q),
             e('span', { style:{ flexShrink:0, width:'22px', height:'22px', borderRadius:'50%', border:`1px solid ${open===i?'var(--accent)':'#D4CFC8'}`, backgroundColor: open===i?'var(--accent)':'transparent', display:'flex', alignItems:'center', justifyContent:'center', transition:'all .2s' } },
               open===i
@@ -2406,6 +2513,7 @@ function IntlVermoegenPage({ setPage, lang, t, setKontaktPreset }) {
         {q:'Which structures are suitable for entrepreneurial families?',a:'Holding structures combined with family partnerships or family pool structures are often suitable for entrepreneurial families. These enable efficient transfer of assets to the next generation and can optimise inheritance and gift tax.'},
         {q:'Is a holding company abroad legal?',a:'Yes – if it has economic substance, a real seat and is not merely designed to avoid tax. Pure shell companies are not recognised under modern international tax law.'},
         {q:'What role does succession planning play in wealth structuring?',a:'Forward-looking wealth structuring incorporates succession from the outset: who gets what, when and how? Early use of exemptions, choosing the right legal form and involving family members are central elements.'}];
+  useFaqSchema(faqs);
   const [open, setOpen] = React.useState(null);
 
   return e('div', { className:'page-enter' },
@@ -2475,7 +2583,7 @@ function IntlVermoegenPage({ setPage, lang, t, setKontaktPreset }) {
           isDE ? 'Typische Fragen' : 'Frequently asked questions'
         ),
         faqs.map((faq,i) => e('div', { key:i, style:{ borderBottom:'1px solid #ECEAE6' } },
-          e('button', { onClick:()=>setOpen(open===i?null:i), style:{ width:'100%', textAlign:'left', background:'none', border:'none', cursor:'pointer', display:'flex', justifyContent:'space-between', alignItems:'center', padding:'16px 0', gap:'14px' } },
+          e('button', { onClick:()=>setOpen(open===i?null:i), 'aria-expanded': open===i, style:{ width:'100%', textAlign:'left', background:'none', border:'none', cursor:'pointer', display:'flex', justifyContent:'space-between', alignItems:'center', padding:'16px 0', gap:'14px' } },
             e('span', { style:{ fontFamily:"'Cormorant Garamond',serif", fontSize:'1.05rem', color: open===i?'#1A1917':'#3A342C', fontWeight: open===i?500:400, lineHeight:1.35 } }, faq.q),
             e('span', { style:{ flexShrink:0, width:'22px', height:'22px', borderRadius:'50%', border:`1px solid ${open===i?'var(--accent)':'#D4CFC8'}`, backgroundColor: open===i?'var(--accent)':'transparent', display:'flex', alignItems:'center', justifyContent:'center', transition:'all .2s' } },
               open===i
@@ -2567,7 +2675,7 @@ function DigitalPage({ setPage, lang, t, setKontaktPreset }) {
         // Section header
         e('div', { className:'max-w-xl mb-8 fade-up' },
           e('p', { className:'label mb-4' }, t.digitalToolsLabel),
-          e('h2', { className:'font-display', style:{ fontSize:'clamp(1.8rem,3.5vw,2.8rem)', color:'#1A1917', fontFamily:"'Cormorant Garamond',serif", whiteSpace:'nowrap' } }, t.digitalToolsH2),
+          e('h2', { className:'font-display', style:{ fontSize:'clamp(1.8rem,3.5vw,2.8rem)', color:'#1A1917', fontFamily:"'Cormorant Garamond',serif" } }, t.digitalToolsH2),
         ),
 
         // Positioning sentence
@@ -2626,7 +2734,7 @@ function DigitalPage({ setPage, lang, t, setKontaktPreset }) {
       e('div', { className:'max-w-site mx-auto px-5 md:px-8' },
         e('div', { className:'max-w-xl mb-14 fade-up' },
           e('p', { className:'label mb-4' }, t.digitalBenefitsLabel),
-          e('h2', { className:'font-display', style:{ fontSize:'clamp(1.8rem,3.5vw,2.8rem)', color:'#1A1917', fontFamily:"'Cormorant Garamond',serif", whiteSpace:'nowrap' } }, t.digitalBenefitsH2),
+          e('h2', { className:'font-display', style:{ fontSize:'clamp(1.8rem,3.5vw,2.8rem)', color:'#1A1917', fontFamily:"'Cormorant Garamond',serif" } }, t.digitalBenefitsH2),
         ),
         e('div', { className:'grid grid-cols-1 md:grid-cols-2 gap-5' },
           benefits.map((b,i) => e('div', { key:b.t, className:'flex gap-6 bg-white rounded-2xl p-8 fade-up', style:{ transitionDelay:`${i*80}ms`, boxShadow:'0 1px 3px rgba(0,0,0,.04)' } },
@@ -2963,6 +3071,7 @@ function UeberUnsPage({ setPage, lang, t }) {
     // ── Profile Modal ──────────────────────────────────────
     active && e(Portal, null,
       e('div', {
+        role:'dialog', 'aria-modal':'true', 'aria-label': (isDE?'Profil: ':'Profile: ')+active.name,
         style:{ position:'fixed', inset:0, zIndex:9900, display:'flex', alignItems:'center', justifyContent:'center', padding:'16px' },
         onClick:()=>setActiveProfile(null)
       },
@@ -3028,137 +3137,454 @@ function UeberUnsPage({ setPage, lang, t }) {
   );
 }
 
-function InsightsPage({ setPage, lang, t }) {
+// ── Aktuelles: Mandanteninformationen (PDF) + Beitraege aus der Redaktion ────
+// Die Inhalte liegen NICHT im Code, sondern als JSON/Dateien in daten/ auf dem
+// Server und werden vom Kunden ueber /redaktion/ gepflegt (durch den Server
+// geschuetzt, siehe dokumente/Redaktionsbereich-Konzept.md, "Weg 1"). Diese
+// Seite laedt die Manifeste zur Laufzeit – neue Inhalte erscheinen ohne Upload.
+// Die fruehere Redaktionsleiste hier im Browser (Admin-Attrappe mit Klartext-
+// Passwort) ist ersatzlos entfernt und darf laut Konzept nie zurueckkehren.
+// Waehrend des Ladens traegt die Seite data-nsbb-laedt – tools/vorrendern.js
+// wartet darauf, damit die Momentaufnahme nie den halbfertigen Zustand zeigt.
+
+const MONATE_DE = ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
+
+// ── Markdown: kleiner, abhaengigkeitsfreier Parser fuer Beitragstexte ───────
+// Absichtlich einfach gehalten (kein npm-Paket, kein Build-Schritt): erkennt
+// genau das, was die Formatierungs-Symbolleiste im Redaktionsbereich erzeugt
+// (## / ### Ueberschriften, Listen, **fett**/*kursiv*, [Text](Adresse), GFM-
+// Tabellen, --- Trennlinien). React escapet alle Textinhalte automatisch beim
+// Rendern – eingegebenes HTML wird nie interpretiert.
+function ankerAusText(text) {
+  var s = String(text || '').toLowerCase();
+  s = s.replace(/ä/g, 'ae').replace(/ö/g, 'oe').replace(/ü/g, 'ue').replace(/ß/g, 'ss');
+  s = s.replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  return s || 'abschnitt';
+}
+
+// Block-Ebene: zerlegt den Text (durch Leerzeilen getrennt) in eine Liste
+// typisierter Bloecke. Ein vorhandenes "{#anker}" hinter einer Ueberschrift
+// wird uebernommen (wie im gelieferten Referenz-Beitrag), sonst automatisch
+// aus dem Text abgeleitet – bei Mehrfachnennung mit "-2", "-3" … eindeutig.
+function markdownAst(text) {
+  var bloecke = String(text || '').split(/\n{2,}/);
+  var verwendeteAnker = {};
+  var eindeutig = function (basis) {
+    var a = basis, i = 2;
+    while (verwendeteAnker[a]) { a = basis + '-' + i; i++; }
+    verwendeteAnker[a] = true;
+    return a;
+  };
+  var ast = [];
+  bloecke.forEach(function (block) {
+    block = block.trim();
+    if (!block) return;
+
+    if (/^-{3,}$/.test(block)) { ast.push({ typ:'trennlinie' }); return; }
+
+    var uMatch = /^(#{2,3})\s+(.*?)\s*(?:\{#([a-z0-9-]+)\}\s*)?$/.exec(block);
+    if (uMatch) {
+      var uText = uMatch[2];
+      var anker = uMatch[3] || eindeutig(ankerAusText(uText));
+      if (uMatch[3]) { verwendeteAnker[anker] = true; }
+      ast.push({ typ:'ueberschrift', ebene:uMatch[1].length, text:uText, anker:anker });
+      return;
+    }
+
+    var zeilen = block.split('\n');
+
+    // Tabelle: zweite Zeile ist eine GFM-Trennzeile aus |---|---|…
+    if (zeilen.length >= 2 && /^\|?\s*:?-{2,}:?\s*(\|\s*:?-{2,}:?\s*)*\|?$/.test(zeilen[1].trim())) {
+      var zeileZuZellen = function (z) { return z.trim().replace(/^\|/, '').replace(/\|$/, '').split('|').map(function (c) { return c.trim(); }); };
+      ast.push({ typ:'tabelle', kopf: zeileZuZellen(zeilen[0]), zeilen: zeilen.slice(2).map(zeileZuZellen) });
+      return;
+    }
+
+    // Liste: jede Zeile beginnt mit "- "/"* " (ungeordnet) oder "1. " (geordnet).
+    if (zeilen.every(function (z) { return /^\s*([-*]|\d+\.)\s+/.test(z); })) {
+      ast.push({
+        typ:'liste',
+        geordnet: /^\s*\d+\./.test(zeilen[0]),
+        punkte: zeilen.map(function (z) { return z.replace(/^\s*([-*]|\d+\.)\s+/, ''); }),
+      });
+      return;
+    }
+
+    // Absatz: weiche Zeilenumbrueche werden zu einem Leerzeichen (kein <br>).
+    ast.push({ typ:'absatz', text: zeilen.join(' ') });
+  });
+  return ast;
+}
+
+// Inline-Ebene: **fett**, *kursiv*, [Text](Adresse) in eine flache Token-Liste.
+function markdownInline(text) {
+  var tokens = [];
+  var rest = String(text || '');
+  var re = /(\*\*(.+?)\*\*)|(\*(.+?)\*)|(\[([^\]]+)\]\(([^)]+)\))/;
+  while (rest.length) {
+    var m = re.exec(rest);
+    if (!m) { tokens.push({ typ:'text', text:rest }); break; }
+    if (m.index > 0) { tokens.push({ typ:'text', text:rest.slice(0, m.index) }); }
+    if (m[1]) { tokens.push({ typ:'fett', text:m[2] }); }
+    else if (m[3]) { tokens.push({ typ:'kursiv', text:m[4] }); }
+    else { tokens.push({ typ:'link', text:m[6], href:m[7] }); }
+    rest = rest.slice(m.index + m[0].length);
+  }
+  return tokens;
+}
+
+// Interne Adressen ("/kontakt") bekommen die BASIS vorangestellt (Live "/",
+// Testadresse "/2026/"), externe/Anker-Adressen bleiben unveraendert –
+// konsistent mit der uebrigen internen Verlinkung dieser Website.
+function markdownLinkAdresse(href) {
+  if (/^https?:\/\//i.test(href) || href.charAt(0) === '#') return href;
+  if (href.charAt(0) === '/') return BASIS + href.slice(1);
+  return href;
+}
+
+function markdownInlineRender(text, keyPrefix) {
+  return markdownInline(text).map(function (tok, i) {
+    var key = keyPrefix + '-i' + i;
+    // Fett/Kursiv rekursiv rendern, damit ein Link INNERHALB von **fett**
+    // (z. B. **[Text](Adresse)**) auch wirklich als Link erscheint und nicht
+    // als roher Markdown-Text stehen bleibt.
+    if (tok.typ === 'fett') return e('strong', { key:key }, markdownInlineRender(tok.text, key));
+    if (tok.typ === 'kursiv') return e('em', { key:key }, markdownInlineRender(tok.text, key));
+    if (tok.typ === 'link') {
+      var extern = /^https?:\/\//i.test(tok.href);
+      return e('a', { key:key, href: markdownLinkAdresse(tok.href), target: extern ? '_blank' : undefined, rel: extern ? 'noopener' : undefined, style:{ color:'var(--accent)', textDecoration:'underline' } }, tok.text);
+    }
+    return tok.text;
+  });
+}
+
+// Block-Ebene rendern – Typografie orientiert sich an der bisherigen
+// Volltext-Darstellung (14px/1.8, DM Sans, max. 720px), Ueberschriften nutzen
+// die Schriftfamilie der uebrigen Seitentitel (Cormorant Garamond).
+function markdownRender(ast, keyPrefix) {
+  var absatzStil = { fontSize:'14px', lineHeight:1.8, color:'#3A342C', marginBottom:'14px', fontFamily:"'DM Sans',sans-serif", maxWidth:'720px' };
+  var listeStil  = { fontSize:'14px', lineHeight:1.8, color:'#3A342C', marginBottom:'14px', paddingLeft:'22px', fontFamily:"'DM Sans',sans-serif", maxWidth:'720px' };
+  return ast.map(function (block, i) {
+    var key = keyPrefix + '-b' + i;
+    if (block.typ === 'ueberschrift') {
+      var stil = block.ebene === 2
+        ? { fontSize:'21px', fontWeight:600, color:'#1A1917', margin:'28px 0 12px', fontFamily:"'Cormorant Garamond',serif", scrollMarginTop:'100px' }
+        : { fontSize:'17px', fontWeight:600, color:'#1A1917', margin:'22px 0 10px', fontFamily:"'Cormorant Garamond',serif", scrollMarginTop:'100px' };
+      return e(block.ebene === 2 ? 'h2' : 'h3', { key:key, id:block.anker, style:stil }, markdownInlineRender(block.text, key));
+    }
+    if (block.typ === 'absatz') {
+      return e('p', { key:key, style:absatzStil }, markdownInlineRender(block.text, key));
+    }
+    if (block.typ === 'liste') {
+      return e(block.geordnet ? 'ol' : 'ul', { key:key, style:listeStil },
+        block.punkte.map(function (p, j) { return e('li', { key:key + '-p' + j, style:{ marginBottom:'6px' } }, markdownInlineRender(p, key + '-p' + j)); }));
+    }
+    if (block.typ === 'tabelle') {
+      return e('div', { key:key, style:{ overflowX:'auto', marginBottom:'18px' } },
+        e('table', { style:{ borderCollapse:'collapse', width:'100%', fontSize:'13px', fontFamily:"'DM Sans',sans-serif" } },
+          e('thead', null, e('tr', null, block.kopf.map(function (c, j) { return e('th', { key:'k' + j, style:{ textAlign:'left', padding:'8px 10px', borderBottom:'2px solid var(--border)', color:'#1A1917' } }, c); }))),
+          e('tbody', null, block.zeilen.map(function (zeile, ri) {
+            return e('tr', { key:'r' + ri }, zeile.map(function (c, ci) { return e('td', { key:'c' + ci, style:{ padding:'8px 10px', borderBottom:'1px solid var(--border)', color:'#3A342C' } }, c); }));
+          })),
+        ),
+      );
+    }
+    if (block.typ === 'trennlinie') {
+      return e('hr', { key:key, style:{ border:'none', borderTop:'1px solid var(--border)', margin:'24px 0' } });
+    }
+    return null;
+  });
+}
+
+function markdownInhaltsverzeichnis(ast) {
+  return ast.filter(function (b) { return b.typ === 'ueberschrift'; });
+}
+
+// Erkennt einen Abschnitt "Haeufige Fragen"/"FAQ" und liest daraus Absaetze
+// der Form "**Frage?** Antwort …" (ein Absatz je Paar). Eigene, bewusst
+// einfache JS-Fassung – dieselbe Erkennung existiert nochmal in PHP
+// (redaktion/index.php), weil PHP kein JS aufrufen kann; beide muessen
+// unabhaengig funktionieren. Rueckgabe passt direkt zu useFaqSchema({q,a}).
+function markdownFaqExtrahieren(ast) {
+  var inFaq = false;
+  var ergebnis = [];
+  ast.forEach(function (block) {
+    if (block.typ === 'ueberschrift') {
+      inFaq = /^(h[äa]ufige\s+fragen|faq)s?:?$/i.test(block.text.trim());
+      return;
+    }
+    if (!inFaq || block.typ !== 'absatz') return;
+    var m = /^\*\*(.+?)\*\*\s+([\s\S]+)$/.exec(block.text);
+    if (m) { ergebnis.push({ q:m[1].trim(), a:m[2].trim() }); }
+  });
+  return ergebnis;
+}
+
+function AktuellesPage({ setPage, lang, t }) {
   useScrollAnim();
   const isDE = lang === 'DE';
-  const [activeTag, setActiveTag] = React.useState(isDE ? 'Alle' : 'All');
-  const [showAdd, setShowAdd] = React.useState(false);
-  const [adminPass, setAdminPass] = React.useState('');
-  const [adminOK, setAdminOK] = React.useState(false);
-  const [np, setNp] = React.useState({ tag:'GmbH', title:'', excerpt:'', photo:'', date: new Date().toLocaleDateString('de-DE',{day:'numeric',month:'long',year:'numeric'}) });
-  const [posts, setPosts] = React.useState(() => []);
-  const cats = isDE ? ['Alle','GmbH','Holdingstrukturen','E-Commerce','International','Unternehmer','Immobilien','Digitalisierung'] : ['All','GmbH','Holding structures','E-Commerce','International','Entrepreneurs','Real estate','Digitalisation'];
-  const filtered = (activeTag === 'Alle' || activeTag === 'All') ? posts : posts.filter(p => p.tag === activeTag);
-  const addPost = () => {
-    if (!np.title) return;
-    setPosts(prev => [{...np, id:Date.now(), color:prev.length%3===0?'var(--accent-subtle)':'var(--cream)'}, ...prev]);
-    setNp({ tag:'GmbH', title:'', excerpt:'', photo:'', date:new Date().toLocaleDateString('de-DE',{day:'numeric',month:'long',year:'numeric'}) });
-    setShowAdd(false);
+  const [beitraege, setBeitraege] = React.useState(null);   // null = laedt noch
+  const [ausgaben, setAusgaben]   = React.useState(null);
+  const [aktiveKat, setAktiveKat] = React.useState('Alle');
+  const [slug, setSlug]           = React.useState(() => beitragsSlugAusPfad());  // '' = Uebersicht, sonst Einzelbeitrag
+  const laedt = beitraege === null || ausgaben === null;
+
+  // Manifeste laden. ?ts= umgeht jeden Zwischenspeicher. Ein Fehlschlag (Datei
+  // fehlt noch, oder der Vorrender-Server liefert HTML statt JSON) ergibt
+  // schlicht leere Listen – die Seite zeigt dann die Leerzustaende.
+  React.useEffect(() => {
+    let aktiv = true;
+    const hole = (datei) => fetch(BASIS + 'daten/' + datei + '?ts=' + Date.now())
+      .then(function (r) { return r.json(); }).catch(function () { return null; });
+    hole('beitraege.json').then(function (d) {
+      if (!aktiv) return;
+      const liste = (d && Array.isArray(d.beitraege)) ? d.beitraege.filter(Boolean) : [];
+      liste.sort(function (a, b) { return String(b.datum || '').localeCompare(String(a.datum || '')); });
+      setBeitraege(liste);
+    });
+    hole('mandanteninfo.json').then(function (d) {
+      if (!aktiv) return;
+      const liste = (d && Array.isArray(d.ausgaben)) ? d.ausgaben.filter(Boolean) : [];
+      liste.sort(function (a, b) { return (b.jahr - a.jahr) || (b.monat - a.monat); });
+      setAusgaben(liste);
+    });
+    return () => { aktiv = false; };
+  }, []);
+
+  // Alte Hash-Adresse (#beitrag-<id>) weiter verstehen: auf die neue
+  // Einzel-Adresse /beitrag/<slug> umschreiben – bereits geteilte Links und
+  // Lesezeichen sollen nicht ins Leere laufen.
+  React.useEffect(() => {
+    if (!beitraege || slug) return;
+    const m = /^#beitrag-(.+)$/.exec(window.location.hash || '');
+    if (!m) return;
+    const treffer = beitraege.find(b => b.id === decodeURIComponent(m[1]));
+    if (!treffer || !treffer.slug) return;
+    try { history.replaceState(null, '', BASIS + 'beitrag/' + treffer.slug); } catch (e) {}
+    setSlug(treffer.slug);
+  }, [beitraege]);
+
+  // Browser-Zurueck/-Vorwaerts zwischen Uebersicht und Einzelbeitraegen: die
+  // Komponente wird dabei nicht neu gemountet (im Router bleibt die Seite
+  // "aktuelles"), darum die Adresse hier selbst nachfuehren.
+  React.useEffect(() => {
+    const aufNav = () => setSlug(beitragsSlugAusPfad());
+    window.addEventListener('popstate', aufNav);
+    return () => window.removeEventListener('popstate', aufNav);
+  }, []);
+
+  // "2026-07-22" -> "22. Juli 2026" (bewusst ohne toLocaleDateString: kein
+  // Zeitzonen-Verschieben, identisch auf Server-Momentaufnahme und Browser).
+  const datumAnzeige = (iso) => {
+    const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso || '');
+    return m ? (parseInt(m[3], 10) + '. ' + MONATE_DE[parseInt(m[2], 10) - 1] + ' ' + m[1]) : (iso || '');
   };
-  const delPost = (id) => { if(window.confirm(isDE?'Beitrag löschen?':'Delete post?')) setPosts(prev=>prev.filter(p=>p.id!==id)); };
-  return e('div', { className:'page-enter' },
-    e(PageHero, { label:t.insightsPageLabel,
+  const alsMB = (bytes) => (Math.max(bytes / 1048576, 0.1)).toFixed(1).replace('.', ',');
+
+  // Zu einem Beitrag wechseln bzw. zurueck zur Uebersicht – jeweils MIT
+  // Verlaufseintrag (pushState), damit der Zurueck-Knopf wie erwartet wirkt.
+  const zeigeBeitrag = (s) => {
+    if (!s) return;
+    try { history.pushState(null, '', BASIS + 'beitrag/' + s); } catch (e) {}
+    setSlug(s);
+    window.scrollTo(0, 0);
+  };
+  const zurUebersicht = () => {
+    try { history.pushState(null, '', pfadFuer('aktuelles')); } catch (e) {}
+    setSlug('');
+    window.scrollTo(0, 0);
+  };
+
+  // Aktuell angezeigter Einzelbeitrag (oder null = Uebersicht). Markdown einmal
+  // aufbereiten und an Inhaltsverzeichnis, FAQ-Strukturdaten und Darstellung
+  // weiterreichen (die Hooks stehen bewusst VOR jeder Fallunterscheidung, damit
+  // ihre Reihenfolge in jedem Render gleich bleibt).
+  const aktuellerBeitrag = (slug && beitraege) ? (beitraege.find(b => b.slug === slug) || null) : null;
+  const ast  = React.useMemo(() => aktuellerBeitrag ? markdownAst(aktuellerBeitrag.text || aktuellerBeitrag.teaser || '') : [], [aktuellerBeitrag]);
+  const toc  = React.useMemo(() => markdownInhaltsverzeichnis(ast), [ast]);
+  const faqs = React.useMemo(() => markdownFaqExtrahieren(ast), [ast]);
+  useFaqSchema(faqs);
+
+  // Seitentitel im Browser an den Beitrag anpassen (Suchmaschinen lesen ohnehin
+  // die serverseitig erzeugte Beitragsseite – dies ist nur die Browser-Ansicht).
+  // In der Übersicht wieder den Übersichtstitel setzen: der Router-Titel greift
+  // nur beim Wechsel der Seite, und Beitrag wie Übersicht sind beide „aktuelles".
+  React.useEffect(() => {
+    if (aktuellerBeitrag) {
+      document.title = aktuellerBeitrag.titel + ' | NSBB';
+    } else {
+      document.title = isDE ? 'Aktuelles & Mandanteninformationen | NSBB Steuerberatung' : 'Insights & News | NSBB Tax Advisors';
+    }
+  }, [aktuellerBeitrag, isDE]);
+
+  // Einzel-Adresse aufgerufen, Beitraege laden noch: leere, ladende Seite zeigen
+  // statt kurz die Uebersicht aufblitzen zu lassen.
+  if (slug && !beitraege) {
+    return e('div', { className:'page-enter', 'data-nsbb-laedt':'1', style:{ minHeight:'70vh' } });
+  }
+
+  // ── Einzelbeitrag-Ansicht: nur der Beitrag, darunter Vor/Zurueck ──────────
+  if (aktuellerBeitrag) {
+    const b = aktuellerBeitrag;
+    const idx = beitraege.findIndex(x => x.slug === slug);
+    const neuer  = idx > 0 ? beitraege[idx - 1] : null;                                   // spaeter veroeffentlicht
+    const aelter = (idx >= 0 && idx < beitraege.length - 1) ? beitraege[idx + 1] : null;  // frueher veroeffentlicht
+    const navBox = (bp, richtung) => e('button', { key: richtung, onClick: () => zeigeBeitrag(bp.slug),
+        style:{ textAlign: richtung === 'next' ? 'right' : 'left', flex:'1 1 260px', minWidth:'200px', background:'#fff', border:'1px solid var(--border)', borderRadius:'14px', padding:'16px 20px', cursor:'pointer', fontFamily:"'DM Sans',sans-serif" } },
+      e('span', { style:{ fontSize:'12px', fontWeight:600, letterSpacing:'.06em', textTransform:'uppercase', color:'var(--subtle)', display:'block', marginBottom:'6px' } },
+        richtung === 'next' ? (isDE ? 'Nächster Beitrag →' : 'Next article →') : (isDE ? '← Vorheriger Beitrag' : '← Previous article')),
+      e('span', { style:{ fontSize:'15px', fontWeight:600, color:'#1A1917', lineHeight:1.4, display:'block' } }, bp.titel),
+    );
+    return e('div', { className:'page-enter' },
+      /* Kopfbereich: Hero-Verlauf der Website, nur Beitrags-Metadaten */
+      e('section', { style:{ background:'linear-gradient(135deg,#F7F6F3 0%,#F0EEE9 50%,#EAF0EC 100%)', padding:'40px 0 34px' } },
+        e('div', { className:'max-w-site mx-auto px-5 md:px-8' },
+          e('button', { onClick: zurUebersicht, style:{ background:'none', border:'none', cursor:'pointer', color:'var(--accent)', fontSize:'13px', fontWeight:500, fontFamily:"'DM Sans',sans-serif", padding:0, marginBottom:'20px' } },
+            (isDE ? '← Alle Beiträge' : '← All articles')),
+          e('div', { style:{ maxWidth:'760px' } },
+            b.kategorie && e('span', { className:'label', style:{ display:'block', marginBottom:'12px' } }, b.kategorie),
+            e('h1', { className:'font-display', style:{ fontSize:'clamp(2rem,4.5vw,3.1rem)', lineHeight:1.12, color:'#1A1917', fontFamily:"'Cormorant Garamond',serif", margin:'0 0 16px' } }, b.titel),
+            e('p', { style:{ fontSize:'14px', color:'var(--muted)', fontFamily:"'DM Sans',sans-serif", margin:0 } },
+              datumAnzeige(b.datum) + (b.autor ? (isDE ? ' · von ' : ' · by ') + b.autor : '')),
+          ),
+        ),
+      ),
+      /* Beitrag: Bild, Inhaltsverzeichnis, Markdown-Text – zentrierte Lesespalte */
+      e('section', { style:{ background:'#fff', padding:'44px 0 56px' } },
+        e('div', { className:'max-w-site mx-auto px-5 md:px-8' },
+          e('div', { style:{ maxWidth:'760px', margin:'0 auto' } },
+            (b.bild && b.bild.datei) && e('img', { src: BASIS + b.bild.datei, alt:(b.bild.alt || ''), width:b.bild.breite || undefined, height:b.bild.hoehe || undefined,
+              style:{ width:'100%', height:'auto', borderRadius:'16px', display:'block', marginBottom:'32px', border:'1px solid var(--border)' } }),
+            toc.length > 1 && e('nav', { style:{ background:'var(--offwhite)', border:'1px solid var(--border)', borderRadius:'12px', padding:'16px 20px', marginBottom:'28px' } },
+              e('p', { style:{ fontSize:'11px', fontWeight:600, letterSpacing:'.08em', textTransform:'uppercase', color:'var(--subtle)', fontFamily:"'DM Sans',sans-serif", marginBottom:'8px' } }, isDE ? 'Inhalt' : 'Contents'),
+              e('ol', { style:{ margin:0, paddingLeft:'18px' } },
+                toc.map((h, hi) => e('li', { key:hi, style:{ marginBottom:'5px' } },
+                  e('a', { href:'#' + h.anker, style:{ fontSize:'14px', color:'var(--accent)', textDecoration:'none', fontFamily:"'DM Sans',sans-serif" },
+                    onClick:(ev) => { ev.preventDefault(); const el = document.getElementById(h.anker); if (el) el.scrollIntoView({ behavior:'smooth', block:'start' }); } }, h.text)))),
+            ),
+            e('div', null, markdownRender(ast, 'md')),
+          ),
+        ),
+      ),
+      /* Fussbereich: Vor/Zurueck zu benachbarten Beitraegen + zurueck zur Uebersicht */
+      e('section', { style:{ background:'var(--offwhite)', borderTop:'1px solid var(--border)', padding:'40px 0' } },
+        e('div', { className:'max-w-site mx-auto px-5 md:px-8' },
+          e('div', { style:{ maxWidth:'760px', margin:'0 auto' } },
+            (neuer || aelter) && e('div', { style:{ display:'flex', gap:'14px', flexWrap:'wrap', marginBottom:'24px' } },
+              aelter ? navBox(aelter, 'prev') : e('span', { key:'sp', style:{ flex:'1 1 260px' } }),
+              neuer ? navBox(neuer, 'next') : e('span', { key:'sn', style:{ flex:'1 1 260px' } }),
+            ),
+            e('div', { style:{ textAlign:'center' } },
+              e('button', { onClick: zurUebersicht, style:{ background:'none', border:'none', cursor:'pointer', color:'var(--accent)', fontSize:'14px', fontWeight:500, fontFamily:"'DM Sans',sans-serif", padding:'6px 0' } },
+                (isDE ? '← Alle Beiträge' : '← All articles'))),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Filter-Chips dynamisch aus den tatsaechlich vorhandenen Kategorien.
+  const kats = ['Alle'].concat((beitraege || []).map(b => b.kategorie).filter(Boolean).filter((k, i, arr) => arr.indexOf(k) === i));
+  const gefiltert = (beitraege || []).filter(b => aktiveKat === 'Alle' || b.kategorie === aktiveKat);
+  const aktuelle = (ausgaben || [])[0];
+  const archiv = (ausgaben || []).slice(1);
+
+  const chipStil = (aktivChip) => aktivChip
+    ? { backgroundColor:'var(--accent)', color:'#fff', padding:'8px 16px', borderRadius:'999px', fontSize:'14px', fontWeight:500, fontFamily:"'DM Sans',sans-serif", border:'none', cursor:'pointer' }
+    : { backgroundColor:'white', color:'var(--muted)', padding:'8px 16px', borderRadius:'999px', fontSize:'14px', fontWeight:500, fontFamily:"'DM Sans',sans-serif", border:'1px solid var(--border)', cursor:'pointer' };
+
+  return e('div', { className:'page-enter', 'data-nsbb-laedt': laedt ? '1' : undefined },
+    e(PageHero, { label:t.aktuellesLabel,
       fit:true,
-      title:t.insightsPageH1a,
-      accent:t.insightsPageH1b,
-      subtitle:isDE?['Steuerliches Expertenwissen für wachstumsorientierte','Unternehmer – strukturiert, verständlich und praxisnah.']:['Expert tax knowledge for growth-oriented','entrepreneurs – structured, accessible and practical.']
+      title:t.aktuellesH1a,
+      accent:t.aktuellesH1b,
+      subtitle:isDE?['Die monatliche Mandanteninformation als PDF und','Fachbeiträge aus der Kanzlei – verständlich aufbereitet.']:['Our monthly client newsletter as a PDF and','articles from the firm – clear and practical.']
     }),
-    e('section', { style:{ backgroundColor:'white', borderBottom:'1px solid var(--border)', paddingTop:'40px', paddingBottom:'20px' } },
-      e('div', { className:'max-w-site mx-auto px-5 md:px-8', style:{ display:'flex', flexWrap:'wrap', gap:'8px' } },
-        cats.map(c => e('button', { key:c, onClick:()=>setActiveTag(c), style: activeTag===c ? { backgroundColor:'var(--accent)', color:'#fff', padding:'8px 16px', borderRadius:'999px', fontSize:'14px', fontWeight:500, fontFamily:"'DM Sans',sans-serif", border:'none', cursor:'pointer' } : { backgroundColor:'var(--offwhite)', color:'var(--muted)', padding:'8px 16px', borderRadius:'999px', fontSize:'14px', fontWeight:500, fontFamily:"'DM Sans',sans-serif", border:'none', cursor:'pointer' } }, c))
-      ),
-    ),
-    e('section', { style:{ backgroundColor:'white', borderBottom:'1px solid var(--border)', padding:'10px 0' } },
-      e('div', { className:'max-w-site mx-auto px-5 md:px-8', style:{ display:'flex', alignItems:'center', gap:'12px', flexWrap:'wrap' } },
-        !adminOK
-          ? e(React.Fragment, null,
-              e('input', { type:'password', placeholder:isDE?'Admin-Code':'Admin code', value:adminPass, onChange:ev=>setAdminPass(ev.target.value), style:{ padding:'8px 12px', border:'1.5px solid var(--border)', borderRadius:'10px', fontSize:'13px', fontFamily:"'DM Sans',sans-serif", width:'100%', maxWidth:'210px', outline:'none' } }),
-              e('button', { onClick:()=>{ if(adminPass==='Holzmarkt2/2a')setAdminOK(true); else alert(isDE?'Falscher Code':'Wrong code'); }, style:{ padding:'8px 16px', borderRadius:'10px', background:'var(--accent)', color:'white', border:'none', cursor:'pointer', fontSize:'13px', fontFamily:"'DM Sans',sans-serif" } }, isDE?'Freischalten':'Unlock'),
-            )
-          : e(React.Fragment, null,
-              e('span', { style:{ fontSize:'12px', color:'var(--accent)', fontFamily:"'DM Sans',sans-serif", fontWeight:600 } }, '✓ ' + (isDE?'Admin aktiv':'Admin active')),
-              e('button', { onClick:()=>setShowAdd(s=>!s), style:{ padding:'8px 14px', borderRadius:'10px', background:'var(--accent)', color:'white', border:'none', cursor:'pointer', fontSize:'13px', fontFamily:"'DM Sans',sans-serif" } }, isDE?'+ Neuer Beitrag':'+ New post'),
-              e('button', { onClick:()=>setAdminOK(false), style:{ padding:'8px 14px', borderRadius:'10px', background:'var(--offwhite)', color:'var(--muted)', border:'1px solid var(--border)', cursor:'pointer', fontSize:'13px', fontFamily:"'DM Sans',sans-serif" } }, isDE?'Abmelden':'Log out'),
-            )
-      ),
-    ),
-    adminOK && showAdd && e('section', { style:{ backgroundColor:'var(--offwhite)', padding:'28px 0' } },
+    // In der englischen Ansicht kurz erklaeren, warum die Inhalte deutsch sind.
+    !isDE && e('section', { style:{ backgroundColor:'var(--offwhite)', padding:'14px 0', borderBottom:'1px solid var(--border)' } },
       e('div', { className:'max-w-site mx-auto px-5 md:px-8' },
-        e('div', { style:{ background:'white', borderRadius:'16px', padding:'28px', border:'1px solid var(--border)' } },
-          e('h3', { style:{ fontFamily:"'Cormorant Garamond',serif", fontSize:'1.4rem', color:'#1A1917', marginBottom:'20px' } }, isDE?'Neuen Beitrag anlegen':'Create new post'),
-          e('div', { className:'grid-resp-2', style:{ display:'grid', gap:'14px', marginBottom:'14px' } },
-            e('div', null, e('label', { className:'flabel' }, isDE?'Titel *':'Title *'), e('input', { type:'text', value:np.title, onChange:ev=>setNp(p=>({...p,title:ev.target.value})), className:'finput', placeholder:isDE?'Beitragstitel ...':'Post title ...' })),
-            e('div', null, e('label', { className:'flabel' }, isDE?'Kategorie':'Category'), e('select', { value:np.tag, onChange:ev=>setNp(p=>({...p,tag:ev.target.value})), className:'finput' }, ['GmbH','Holdingstrukturen','E-Commerce','International','Unternehmer','Immobilien','Digitalisierung'].map(c=>e('option',{key:c,value:c},c)))),
-          ),
-          e('div', { style:{ marginBottom:'14px' } },
-            e('label', { className:'flabel' }, isDE?'Titelbild (optional)':'Cover image (optional)'),
-            e('input', { type:'file', accept:'image/*', onChange:ev=>{
-              const file = ev.target.files && ev.target.files[0];
-              if (!file) return;
-              const reader = new FileReader();
-              reader.onload = () => setNp(p=>({...p, photo: reader.result}));
-              reader.readAsDataURL(file);
-            }, style:{ fontSize:'13px', fontFamily:"'DM Sans',sans-serif" } }),
-            np.photo && e('img', { src:np.photo, style:{ marginTop:'8px', height:'60px', borderRadius:'8px', objectFit:'cover' } }),
-          ),
-          e('div', { style:{ marginBottom:'14px' } }, e('label', { className:'flabel' }, isDE?'Kurzbeschreibung':'Excerpt'), e('textarea', { value:np.excerpt, onChange:ev=>setNp(p=>({...p,excerpt:ev.target.value})), rows:3, className:'finput', style:{resize:'vertical'} })),
-          e('div', { style:{ display:'flex', gap:'10px' } },
-            e('button', { onClick:addPost, style:{ padding:'10px 20px', borderRadius:'999px', background:'var(--accent)', color:'white', border:'none', cursor:'pointer', fontSize:'14px', fontFamily:"'DM Sans',sans-serif" } }, isDE?'Hinzufügen':'Add'),
-            e('button', { onClick:()=>setShowAdd(false), style:{ padding:'10px 20px', borderRadius:'999px', background:'transparent', color:'var(--muted)', border:'1.5px solid var(--border)', cursor:'pointer', fontSize:'14px', fontFamily:"'DM Sans',sans-serif" } }, isDE?'Abbrechen':'Cancel'),
+        e('p', { style:{ fontSize:'13px', color:'var(--muted)', fontFamily:"'DM Sans',sans-serif", margin:0 } }, 'Our articles and client newsletters are published in German. Feel free to contact us for an English summary.'),
+      ),
+    ),
+
+    /* ── Abschnitt 1: Mandanteninformation – aktuelle Ausgabe + Archiv ── */
+    e('section', { style:{ backgroundColor:'white', borderBottom:'1px solid var(--border)', padding:'56px 0' } },
+      e('div', { className:'max-w-site mx-auto px-5 md:px-8' },
+        e('h2', { className:'font-display fade-up', style:{ fontSize:'clamp(1.6rem,3vw,2.2rem)', color:'#1A1917', marginBottom:'8px', fontFamily:"'Cormorant Garamond',serif" } }, isDE ? 'Mandanteninformation' : 'Client newsletter'),
+        e('p', { className:'fade-up', style:{ fontSize:'14px', color:'var(--muted)', fontFamily:"'DM Sans',sans-serif", maxWidth:'640px', marginBottom:'24px', lineHeight:1.7 } },
+          isDE
+            ? 'Jeden Monat fassen wir die wichtigsten steuerlichen Neuerungen kompakt für Sie zusammen.'
+            : 'Every month we summarise the most important tax developments for you (in German).'),
+        aktuelle
+          ? e('div', { className:'fade-up' },
+              e('a', { href: BASIS + aktuelle.datei, target:'_blank', rel:'noopener',
+                       style:{ display:'inline-flex', alignItems:'center', gap:'10px', backgroundColor:'var(--accent)', color:'#fff', padding:'14px 26px', borderRadius:'999px', fontSize:'15px', fontWeight:600, fontFamily:"'DM Sans',sans-serif", textDecoration:'none' } },
+                (isDE ? 'Aktuelle Ausgabe: ' : 'Current issue: ') + (aktuelle.titel || ''),
+                e(Ico, { name:'arrowRight', size:16 })),
+              e('p', { style:{ fontSize:'12px', color:'var(--subtle)', fontFamily:"'DM Sans',sans-serif", marginTop:'10px' } },
+                (isDE ? 'PDF – öffnet in einem neuen Tab' : 'PDF – opens in a new tab') + (aktuelle.groesseBytes ? ' · ' + alsMB(aktuelle.groesseBytes) + ' MB' : '')),
+            )
+          : (!laedt ? e('p', { style:{ fontSize:'14px', color:'var(--muted)', fontFamily:"'DM Sans',sans-serif" } },
+              isDE ? 'Die erste Mandanteninformation erscheint hier in Kürze.' : 'The first issue will be available here shortly.') : null),
+        archiv.length > 0 && e('div', { className:'fade-up', style:{ marginTop:'32px' } },
+          e('h3', { style:{ fontSize:'13px', fontWeight:600, letterSpacing:'.08em', textTransform:'uppercase', color:'var(--subtle)', fontFamily:"'DM Sans',sans-serif", marginBottom:'12px' } }, isDE ? 'Frühere Ausgaben' : 'Previous issues'),
+          e('div', { style:{ display:'flex', flexDirection:'column', gap:'6px', maxWidth:'520px' } },
+            archiv.map(a => e('a', { key:a.id, href: BASIS + a.datei, target:'_blank', rel:'noopener',
+                style:{ display:'flex', alignItems:'center', justifyContent:'space-between', gap:'12px', padding:'10px 14px', border:'1px solid var(--border)', borderRadius:'12px', textDecoration:'none', backgroundColor:'var(--offwhite)' } },
+              e('span', { style:{ fontSize:'14px', color:'#1A1917', fontFamily:"'DM Sans',sans-serif" } }, a.titel || ''),
+              e('span', { style:{ fontSize:'12px', fontWeight:600, color:'var(--accent)', fontFamily:"'DM Sans',sans-serif", whiteSpace:'nowrap' } }, 'PDF'),
+            )),
           ),
         ),
       ),
     ),
-    e('section', { className:'py-20 bg-white' },
-      e('div', { className:'max-w-site mx-auto px-5 md:px-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' },
-        filtered.length > 0 ? filtered.map((p,i) => e('div', { key:String(p.id||i), className:'bg-white rounded-2xl overflow-hidden flex flex-col card-hover fade-up', style:{ transitionDelay:`${i*60}ms`, boxShadow:'0 1px 3px rgba(0,0,0,.05)', border:'1px solid var(--border)', position:'relative' } },
-          p.photo
-            ? e('div', { className:'h-44', style:{ backgroundImage:'url('+p.photo+')', backgroundSize:'cover', backgroundPosition:'center' } })
-            : e('div', { className:'img-placeholder h-44' },
-                e('svg',{width:26,height:26,viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:1.5,strokeLinecap:'round'},e('path',{d:'M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8zM14 2v6h6M16 13H8M16 17H8M10 9H8'})),
-                e('span', null, p.tag),
+
+    /* ── Abschnitt 2: Beitraege aus der Kanzlei ── */
+    e('section', { className:'py-20', style:{ backgroundColor:'var(--offwhite)' } },
+      e('div', { className:'max-w-site mx-auto px-5 md:px-8' },
+        e('h2', { className:'font-display fade-up', style:{ fontSize:'clamp(1.6rem,3vw,2.2rem)', color:'#1A1917', marginBottom:'8px', fontFamily:"'Cormorant Garamond',serif" } }, isDE ? 'Beiträge' : 'Articles'),
+        e('p', { className:'fade-up', style:{ fontSize:'14px', color:'var(--muted)', fontFamily:"'DM Sans',sans-serif", maxWidth:'640px', marginBottom:'24px', lineHeight:1.7 } },
+          isDE ? 'Fachliches aus der Kanzlei – strukturiert, verständlich und praxisnah.' : 'Expert knowledge from the firm – structured, accessible and practical.'),
+        kats.length > 1 && e('div', { className:'fade-up', style:{ display:'flex', flexWrap:'wrap', gap:'8px', marginBottom:'28px' } },
+          kats.map(k => e('button', { key:k, onClick:()=>setAktiveKat(k), style: chipStil(aktiveKat === k) }, k === 'Alle' && !isDE ? 'All' : k))
+        ),
+        e('div', { className:'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' },
+          gefiltert.length > 0 ? gefiltert.map((b, i) => {
+            const bid = b.id || String(i);
+            // Ganze Karte fuehrt zur eigenen Beitragsseite /beitrag/<slug>.
+            return e('article', { key:bid, onClick: () => b.slug ? zeigeBeitrag(b.slug) : null,
+                className:'bg-white rounded-2xl overflow-hidden flex flex-col card-hover fade-up', style:{ transitionDelay:`${i*60}ms`, boxShadow:'0 1px 3px rgba(0,0,0,.05)', border:'1px solid var(--border)', cursor: b.slug ? 'pointer' : 'default' } },
+              (b.bild && b.bild.datei)
+                ? e('img', { src: BASIS + b.bild.datei, alt: (b.bild.alt || ''), width: b.bild.breite || undefined, height: b.bild.hoehe || undefined, loading:'lazy',
+                             style:{ width:'100%', aspectRatio:'1200 / 630', objectFit:'cover', display:'block' } })
+                : e('div', { className:'img-placeholder', style:{ aspectRatio:'1200 / 630' } },
+                    e('svg',{width:26,height:26,viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:1.5,strokeLinecap:'round'},e('path',{d:'M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8zM14 2v6h6M16 13H8M16 17H8M10 9H8'})),
+                    e('span', null, b.kategorie || (isDE ? 'Beitrag' : 'Article')),
+                  ),
+              e('div', { className:'p-7 flex flex-col flex-1' },
+                b.kategorie && e('span', { className:'tag mb-4 self-start' }, b.kategorie),
+                e('h3', { style:{ fontSize:'15px', fontWeight:600, lineHeight:1.4, marginBottom:'10px', flex:1, color:'#1A1917', fontFamily:"'DM Sans',sans-serif" } }, b.titel),
+                b.teaser && e('p', { style:{ fontSize:'13px', lineHeight:1.6, marginBottom:'18px', color:'var(--muted)', display:'-webkit-box', WebkitLineClamp:2, WebkitBoxOrient:'vertical', overflow:'hidden' } }, b.teaser),
+                e('div', { style:{ display:'flex', alignItems:'center', justifyContent:'space-between', paddingTop:'14px', borderTop:'1px solid var(--border)', marginTop:'auto' } },
+                  e('span', { style:{ fontSize:'12px', color:'var(--subtle)', fontFamily:"'DM Sans',sans-serif" } }, datumAnzeige(b.datum)),
+                  e('span', { style:{ fontSize:'12px', fontWeight:500, display:'flex', alignItems:'center', gap:'4px', color:'var(--accent)', fontFamily:"'DM Sans',sans-serif" } },
+                    (isDE ? 'Weiterlesen' : 'Read more'),
+                    e(Ico, { name:'arrowRight', size:13 })),
+                ),
               ),
-          adminOK && e('button', { onClick:()=>delPost(p.id||i), style:{ position:'absolute', top:'8px', right:'8px', background:'rgba(255,255,255,.92)', border:'none', borderRadius:'8px', padding:'4px 8px', fontSize:'12px', cursor:'pointer', color:'#e53e3e' } }, '×'),
-          e('div', { className:'p-7 flex flex-col flex-1' },
-            e('span', { className:'tag mb-4 self-start' }, p.tag),
-            e('h2', { style:{ fontSize:'15px', fontWeight:600, lineHeight:1.4, marginBottom:'10px', flex:1, color:'#1A1917', fontFamily:"'DM Sans',sans-serif" } }, p.title),
-            p.excerpt && e('p', { style:{ fontSize:'13px', lineHeight:1.6, marginBottom:'18px', color:'var(--muted)', display:'-webkit-box', WebkitLineClamp:2, WebkitBoxOrient:'vertical', overflow:'hidden' } }, p.excerpt),
-            e('div', { style:{ display:'flex', alignItems:'center', justifyContent:'space-between', paddingTop:'14px', borderTop:'1px solid var(--border)' } },
-              e('span', { style:{ fontSize:'12px', color:'var(--subtle)', fontFamily:"'DM Sans',sans-serif" } }, p.date),
-              e('span', { style:{ fontSize:'12px', fontWeight:500, display:'flex', alignItems:'center', gap:'4px', color:'var(--accent)', fontFamily:"'DM Sans',sans-serif" } }, t.insightsPageRead, e(Ico,{name:'arrowRight',size:13})),
-            ),
-          ),
-        )) : e('p', { style:{ fontSize:'14px', textAlign:'center', padding:'48px', color:'var(--muted)', gridColumn:'1/-1' } }, isDE?'Derzeit noch keine Beiträge.':'No posts yet.'),
+            );
+          }) : (!laedt ? e('p', { style:{ fontSize:'14px', textAlign:'center', padding:'48px', color:'var(--muted)', gridColumn:'1/-1' } },
+                  isDE ? 'Derzeit noch keine Beiträge – schauen Sie bald wieder vorbei.' : 'No articles yet – please check back soon.') : null),
+        ),
       ),
     ),
   );
 }
 
-function KarriereBewerbungsform({ lang, isDE }) {
-  const [frm, setFrm] = React.useState({ name:'', email:'', pos:'', msg:'' });
-  const [sent, setSent] = React.useState(false);
-  const [busy, setBusy] = React.useState(false);
-  const s = (k,v) => setFrm(f=>({...f,[k]:v}));
-  const submit = async () => { if (!frm.name || !frm.email) return; setBusy(true); await new Promise(r=>setTimeout(r,700)); setBusy(false); setSent(true); };
-  if (sent) return e('div', { style:{ textAlign:'center',padding:'24px' } },
-    e('div', { style:{ width:'48px',height:'48px',borderRadius:'50%',backgroundColor:'var(--accent-subtle)',display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 16px' } }, e(Ico,{name:'checkCircle',size:22})),
-    e('h4', { style:{ fontFamily:"'Cormorant Garamond',serif",fontSize:'1.4rem',color:'#1A1917',marginBottom:'8px' } }, isDE?'Vielen Dank!':'Thank you!'),
-    e('p', { style:{ fontSize:'13px',color:'var(--muted)',fontFamily:"'DM Sans',sans-serif" } }, isDE?'Wir melden uns schnellstmöglich.':'We will be in touch soon.'),
-  );
-  return e('div', { style:{ display:'flex',flexDirection:'column',gap:'14px' } },
-    e('div', { className:'grid-resp-2', style:{ display:'grid',gap:'12px' } },
-      e('div',null,e('label',{className:'flabel'},isDE?'Name *':'Name *'),e('input',{type:'text',value:frm.name,onChange:ev=>s('name',ev.target.value),className:'finput',placeholder:isDE?'Ihr Name':'Your name'})),
-      e('div',null,e('label',{className:'flabel'},'E-Mail *'),e('input',{type:'email',value:frm.email,onChange:ev=>s('email',ev.target.value),className:'finput',placeholder:'ihre@email.de'})),
-    ),
-    e('div',null,
-      e('label',{className:'flabel'},isDE?'Gewünschte Stelle':'Position'),
-      e('select',{value:frm.pos,onChange:ev=>s('pos',ev.target.value),className:'finput'},
-        e('option',{value:''},isDE?'Bitte auswählen':'Please select'),
-        e('option',{value:'Steuerfachangestellte/r'},isDE?'Steuerfachangestellte/r':'Tax assistant'),
-        e('option',{value:'Steuerfachwirt/in'},isDE?'Steuerfachwirt/in':'Senior tax assistant'),
-        e('option',{value:'Werkstudent/in'},isDE?'Werkstudent/in':'Working student'),
-        e('option',{value:'Initiativbewerbung'},isDE?'Initiativbewerbung':'Speculative application'),
-      ),
-    ),
-    e('div',null,
-      e('label',{className:'flabel'},isDE?'Anschreiben (max. 500 Zeichen)':'Cover note (max. 500 chars)'),
-      e('textarea',{value:frm.msg,onChange:ev=>s('msg',ev.target.value),rows:3,className:'finput',style:{resize:'vertical'},maxLength:500}),
-      e('p',{style:{fontSize:'11px',textAlign:'right',color:frm.msg.length>480?'#e53e3e':'var(--subtle)',fontFamily:"'DM Sans',sans-serif",marginTop:'4px'}},frm.msg.length+'/500'),
-    ),
-    e('button',{onClick:submit,disabled:busy,style:{padding:'11px 24px',borderRadius:'999px',backgroundColor:'var(--accent)',color:'white',border:'none',cursor:'pointer',fontSize:'14px',fontFamily:"'DM Sans',sans-serif",alignSelf:'flex-start'}},busy?(isDE?'Bitte warten...':'Please wait...'):(isDE?'Bewerbung absenden':'Submit application')),
-    e('p',{style:{fontSize:'11px',color:'var(--subtle)',fontFamily:"'DM Sans',sans-serif"}},isDE?'Wird direkt an karriere@nsbb.de weitergeleitet.':'Forwarded to karriere@nsbb.de.'),
-  );
-}
+// Hinweis (H1, 20.07.): Die frühere Komponente "KarriereBewerbungsform" stand
+// hier, wurde aber NIRGENDS gerendert (toter Code) und täuschte einen Versand nur
+// per Timer vor. Das tatsächlich genutzte Bewerbungsformular ist KarriereForm
+// (weiter unten), das echt an contact.php sendet. Der tote Code wurde entfernt.
 function KarrierePage({ setPage, lang, t }) {
   useScrollAnim();
   const isDE = lang === 'DE';
@@ -3332,15 +3758,10 @@ function KontaktPage({ setPage, lang, t, kontaktPreset, setKontaktPreset }) {
   const isDE = lang === 'DE';
   useEffect(() => { if (kontaktPreset && setKontaktPreset) setKontaktPreset(null); }, []);
 
-  // ── Sequential inquiry counter (localStorage, separate per category) ──
-  const getNextNr = (category) => {
-    try {
-      const key = 'nsbb_anfrage_nr_' + category;
-      const n = parseInt(localStorage.getItem(key) || '0') + 1;
-      localStorage.setItem(key, String(n));
-      return n;
-    } catch(e) { return Math.floor(Math.random()*900)+100; }
-  };
+  // ── Anfragenummer ─────────────────────────────────────────────────────
+  // Die fortlaufende Nummer vergibt jetzt der Server (contact.php) – nur dort
+  // ist sie kanzleiweit eindeutig. Frueher wurde sie pro Browser im localStorage
+  // gezaehlt, sodass zwei verschiedene Interessenten beide „Anfrage #1" sendeten.
   const fmtDate = () => {
     const d = new Date();
     return d.toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'}) + ', ' + d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'}) + ' Uhr';
@@ -3351,6 +3772,9 @@ function KontaktPage({ setPage, lang, t, kontaktPreset, setKontaktPreset }) {
   const [tab, setTab] = useState(() => (kontaktPreset && kontaktPreset.tab) ? kontaktPreset.tab : null);
   const [submitted, setSubmitted] = useState(false);
   const [errors, setErrors] = useState({});
+  const [sending, setSending] = useState(false);      // laeuft gerade ein Versand?
+  const [sendError, setSendError] = useState('');     // Fehlermeldung des Servers
+  const [hp, setHp] = useState('');                   // Honeypot gegen Bots
   const [form, setForm] = useState({
     email:'', phone:'', rechtsform:'', umsatz:'', mitarbeiter:'', branche:'',
     leistung:'', einkunftsarten:[], steuerjahr:'', sonstiges:'', ansaessigkeit:'',
@@ -3386,14 +3810,16 @@ function KontaktPage({ setPage, lang, t, kontaktPreset, setKontaktPreset }) {
     return e;
   };
 
-  const buildMailto = () => {
-    const nr = getNextNr(tab);
+  // Baut den Nachrichtentext. Frueher entstand daraus ein mailto:-Link – der
+  // loeste bei Besuchern ohne eingerichtetes Mailprogramm (Web-Mail im Browser)
+  // gar nichts aus, waehrend das Formular trotzdem "Vielen Dank" meldete.
+  // Jetzt geht der Text an contact.php und wird dort wirklich verschickt.
+  const buildBody = () => {
     const dt = fmtDate();
     const typeLabel = tab==='unternehmen' ? (isDE?'Unternehmen':'Business') : tab==='international' ? (isDE?'Internationales Steuerrecht':'International Tax') : (isDE?'Privatpersonen':'Private individuals');
-    const subj = encodeURIComponent(isDE?`Anfrage ${typeLabel} (${nr})`:`Inquiry ${typeLabel} (${nr})`);
     let body = isDE
-      ? `Anfrage #${nr}\nDatum: ${dt}\nArt: ${typeLabel}\n\n`
-      : `Inquiry #${nr}\nDate: ${dt}\nType: ${typeLabel}\n\n`;
+      ? `Datum: ${dt}\nArt: ${typeLabel}\n\n`
+      : `Date: ${dt}\nType: ${typeLabel}\n\n`;
     body += `E-Mail: ${form.email}\n`;
     if (form.phone) body += (isDE?`Telefon: `:`Phone: `) + form.phone + '\n';
     if (tab==='unternehmen') {
@@ -3416,34 +3842,93 @@ function KontaktPage({ setPage, lang, t, kontaktPreset, setKontaktPreset }) {
       if (form.leistung) body += (isDE?`Gewünschte Leistung: `:`Service: `) + form.leistung + '\n';
       if (form.sonstigePrivat) body += (isDE?`Kurze Beschreibung: `:`Brief description: `) + form.sonstigePrivat + '\n';
     }
-    return `mailto:mandant@nsbb.de?subject=${subj}&body=${encodeURIComponent(body)}`;
+    return { body: body, typeLabel: typeLabel };
   };
 
   const handleSubmit = () => {
-    const e = validate();
-    setErrors(e);
-    if (Object.keys(e).length > 0) return;
-    const mailto = buildMailto();
-    window.location.href = mailto;
-    setTimeout(() => setSubmitted(true), 800);
+    const fehler = validate();
+    setErrors(fehler);
+    if (Object.keys(fehler).length > 0) return;
+
+    const daten = buildBody();
+    setSending(true);
+    setSendError('');
+
+    fetch('contact.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        type: (isDE ? 'Anfrage ' : 'Inquiry ') + daten.typeLabel,
+        email: form.email,
+        body: daten.body,
+        website: hp            // Honeypot: bleibt bei echten Besuchern leer
+      })
+    })
+      .then(function (r) { return r.json().catch(function () { return { success: false }; }); })
+      .then(function (res) {
+        setSending(false);
+        // Erfolg NUR melden, wenn der Server ihn bestaetigt hat.
+        if (res && res.success) {
+          setSubmitted(true);
+          // Conversion-Signal ans dataLayer (GTM wertet es nur nach Einwilligung aus).
+          try { (window.dataLayer = window.dataLayer || []).push({ event: 'generate_lead', formular: 'kontakt' }); } catch (e) {}
+        } else {
+          setSendError((res && res.message) || (isDE
+            ? 'Der Versand ist fehlgeschlagen. Bitte schreiben Sie uns direkt an info@nsbb.de.'
+            : 'Sending failed. Please email us directly at info@nsbb.de.'));
+        }
+      })
+      .catch(function () {
+        setSending(false);
+        setSendError(isDE
+          ? 'Der Versand ist fehlgeschlagen. Bitte prüfen Sie Ihre Internetverbindung oder schreiben Sie an info@nsbb.de.'
+          : 'Sending failed. Please check your connection or email us at info@nsbb.de.');
+      });
   };
 
   // ── Input helpers ───────────────────────────────────────────
-  const inp = (name, label, type='text', placeholder='', req=true) =>
-    e('div', null,
-      e('label', { className:'flabel' }, label, req && e('span', { style:{ color:'var(--accent)' } }, ' *')),
-      e('input', { type, value:form[name], onChange:ev=>set(name,ev.target.value), placeholder, className:'finput' }),
-      errors[name] && e('p', { className:'ferr' }, errors[name]),
+  // Passende Autovervollstaendigung je Feld. Der Browser kann E-Mail und
+  // Telefonnummer dann selbst einsetzen – am Handy spart das spuerbar Tipparbeit
+  // und damit Abbrecher.
+  const autoFuer = { email:'email', phone:'tel', vorname:'given-name', nachname:'family-name' };
+
+  const inp = (name, label, type='text', placeholder='', req=true) => {
+    const id = 'f-' + name;
+    const fehlerId = id + '-err';
+    return e('div', null,
+      // htmlFor/id verbinden Beschriftung und Feld: Ein Tipp auf die
+      // Beschriftung setzt den Cursor ins Feld (groessere Trefferflaeche),
+      // und Screenreader koennen ansagen, wonach gefragt wird.
+      e('label', { className:'flabel', htmlFor:id }, label, req && e('span', { style:{ color:'var(--accent)' } }, ' *')),
+      e('input', {
+        id, type, value:form[name], onChange:ev=>set(name,ev.target.value), placeholder, className:'finput',
+        autoComplete: autoFuer[name] || 'on',
+        inputMode: type==='tel' ? 'tel' : (type==='email' ? 'email' : undefined),
+        required: req || undefined,
+        'aria-required': req ? 'true' : undefined,
+        'aria-invalid': errors[name] ? 'true' : undefined,
+        'aria-describedby': errors[name] ? fehlerId : undefined,
+      }),
+      errors[name] && e('p', { className:'ferr', id:fehlerId, role:'alert' }, errors[name]),
     );
-  const sel = (name, label, opts) =>
-    e('div', null,
-      e('label', { className:'flabel' }, label, e('span', { style:{ color:'var(--accent)' } }, ' *')),
-      e('select', { value:form[name], onChange:ev=>set(name,ev.target.value), className:'finput' },
+  };
+  const sel = (name, label, opts) => {
+    const id = 'f-' + name;
+    const fehlerId = id + '-err';
+    return e('div', null,
+      e('label', { className:'flabel', htmlFor:id }, label, e('span', { style:{ color:'var(--accent)' } }, ' *')),
+      e('select', {
+        id, value:form[name], onChange:ev=>set(name,ev.target.value), className:'finput',
+        'aria-required': 'true',
+        'aria-invalid': errors[name] ? 'true' : undefined,
+        'aria-describedby': errors[name] ? fehlerId : undefined,
+      },
         e('option', { value:'' }, isDE?'Bitte auswählen ...':'Please select ...'),
         opts.map(o => e('option', { key:o, value:o }, o)),
       ),
-      errors[name] && e('p', { className:'ferr' }, errors[name]),
+      errors[name] && e('p', { className:'ferr', id:fehlerId, role:'alert' }, errors[name]),
     );
+  };
 
   // ── Unified "Kurze Beschreibung" field ─────────────────────
   // Always max. 1000 characters, discreet "X von 1000" counter bottom-right.
@@ -3464,8 +3949,8 @@ function KontaktPage({ setPage, lang, t, kontaktPreset, setKontaktPreset }) {
 
   // ── Location data ───────────────────────────────────────────
   const locs = [
-    { city:'Berlin', googleBusiness: null, /* TODO: replace null with your Google Business URL e.g. 'https://g.page/nsbb-berlin' */ anfahrt: { de:'S-Bahn: Linie S1 bis Zehlendorf (ca. 5 Min. Fußweg). Bus: M48/X10 Haltestelle Berlepschstraße. Parken: kostenfreie Parkplätze vor dem Gebäude verfügbar.', en:'S-Bahn: Line S1 to Zehlendorf (approx. 5 min walk). Bus: M48/X10 stop Berlepschstraße. Parking: free parking spaces available at the building.' }, img:'assets/images/standort-berlin.webp', addr:'Berlepschstr. 1\n14165 Berlin', tel:'+49 (0) 30 815 80 93', href:'tel:+493081580930', mapSrc:'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2432!2d13.2487!3d52.4367!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2sBerlepschstr.+1%2C+14165+Berlin!5e0!3m2!1sde!2sde!4v1700000000000!5m2!1sde!2sde' },
-    { city:'Köln', googleBusiness: null, /* TODO: replace null with your Google Business URL e.g. 'https://g.page/nsbb-koeln' */ anfahrt: { de:'U-Bahn: Linie 3/4 bis Heumarkt (ca. 8 Min. Fußweg). S-Bahn: Köln Hauptbahnhof (ca. 10 Min. Fußweg). Parken: Tiefgaragenstellplätze stehen direkt unter unserem Gebäude zur Verfügung.', en:'Metro: Line 3/4 to Heumarkt (approx. 8 min walk). S-Bahn: Cologne Central Station (approx. 10 min walk). Parking: Underground parking spaces are available directly below our building.' }, img:'assets/images/standort-koeln.webp', addr:'Holzmarkt 2/2A\n50676 Köln', tel:'+49 (0) 221 973 064 0', href:'tel:+492219730640', mapSrc:'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2513!2d6.9670!3d50.9282!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2sHolzmarkt+2%2C+50676+K%C3%B6ln!5e0!3m2!1sde!2sde!4v1700000000000!5m2!1sde!2sde' },
+    { city:'Berlin', googleBusiness: 'https://share.google/x3HqmATL5PqAqlRVX', anfahrt: { de:'S-Bahn: Linie S1 bis Zehlendorf (ca. 5 Min. Fußweg). Bus: M48/X10 Haltestelle Berlepschstraße. Parken: kostenfreie Parkplätze vor dem Gebäude verfügbar.', en:'S-Bahn: Line S1 to Zehlendorf (approx. 5 min walk). Bus: M48/X10 stop Berlepschstraße. Parking: free parking spaces available at the building.' }, img:'assets/images/standort-berlin.webp', addr:'Berlepschstr. 1\n14165 Berlin', tel:'+49 (0) 30 815 80 93', href:'tel:+493081580930', mapSrc:'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2432!2d13.2487!3d52.4367!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2sBerlepschstr.+1%2C+14165+Berlin!5e0!3m2!1sde!2sde!4v1700000000000!5m2!1sde!2sde' },
+    { city:'Köln', googleBusiness: 'https://share.google/5xYMgOyFnClvdDTx6', anfahrt: { de:'U-Bahn: Linie 3/4 bis Heumarkt (ca. 8 Min. Fußweg). S-Bahn: Köln Hauptbahnhof (ca. 10 Min. Fußweg). Parken: Tiefgaragenstellplätze stehen direkt unter unserem Gebäude zur Verfügung.', en:'Metro: Line 3/4 to Heumarkt (approx. 8 min walk). S-Bahn: Cologne Central Station (approx. 10 min walk). Parking: Underground parking spaces are available directly below our building.' }, img:'assets/images/standort-koeln.webp', addr:'Holzmarkt 2/2A\n50676 Köln', tel:'+49 (0) 221 973 064 0', href:'tel:+492219730640', mapSrc:'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2513!2d6.9670!3d50.9282!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2sHolzmarkt+2%2C+50676+K%C3%B6ln!5e0!3m2!1sde!2sde!4v1700000000000!5m2!1sde!2sde' },
   ];
 
   const directContacts = [
@@ -3521,7 +4006,7 @@ function KontaktPage({ setPage, lang, t, kontaktPreset, setKontaktPreset }) {
             ? e('div', { className:'text-center py-12' },
                 e('div', { style:{ width:'56px', height:'56px', borderRadius:'50%', backgroundColor:'var(--accent-subtle)', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 16px' } }, e(Ico,{name:'checkCircle',size:24})),
                 e('h3', { className:'font-display mb-3', style:{ fontSize:'1.5rem', color:'#1A1917', fontFamily:"'Cormorant Garamond',serif" } }, isDE?'Vielen Dank!':'Thank you!'),
-                e('p', { style:{ fontSize:'14px', color:'var(--muted)', fontFamily:"'DM Sans',sans-serif" } }, isDE?'Ihre Anfrage wurde vorbereitet. Bitte senden Sie die geöffnete E-Mail ab.':'Your enquiry has been prepared. Please send the email that has opened.'),
+                e('p', { style:{ fontSize:'14px', color:'var(--muted)', fontFamily:"'DM Sans',sans-serif" } }, isDE?'Ihre Anfrage ist bei uns eingegangen. Wir melden uns schnellstmöglich bei Ihnen.':'We have received your enquiry and will get back to you as soon as possible.'),
               )
             : e('div', { className:'space-y-5' },
 
@@ -3610,7 +4095,23 @@ function KontaktPage({ setPage, lang, t, kontaktPreset, setKontaktPreset }) {
                     )
                   ),
                   errors.datenschutz && e('p', { className:'ferr', role:'alert', 'aria-live':'polite', style:{marginTop:'-8px',marginBottom:'12px'} }, errors.datenschutz),
-                  e('button', { className:'btn-p', onClick:handleSubmit, 'aria-label': isDE?'Anfrage absenden':'Send enquiry' }, e(Ico,{name:'mail',size:16}), isDE?'Anfrage absenden':'Send enquiry'),
+                  // Honeypot: fuer Menschen unsichtbar, Bots fuellen ihn aus.
+                  // Nicht display:none – manche Bots erkennen das und lassen es leer.
+                  e('div', { style:{ position:'absolute', left:'-9999px', width:'1px', height:'1px', overflow:'hidden' }, 'aria-hidden':'true' },
+                    e('label', { htmlFor:'nsbb-website-hp' }, 'Website'),
+                    e('input', { id:'nsbb-website-hp', type:'text', name:'website', tabIndex:-1, autoComplete:'off', value:hp, onChange:ev=>setHp(ev.target.value) })
+                  ),
+                  e('button', {
+                    className:'btn-p',
+                    onClick:handleSubmit,
+                    disabled: sending,
+                    style:{ opacity: sending ? .7 : 1, cursor: sending ? 'wait' : 'pointer' },
+                    'aria-label': isDE?'Anfrage absenden':'Send enquiry'
+                  }, e(Ico,{name:'mail',size:16}), sending ? (isDE?'Wird gesendet …':'Sending …') : (isDE?'Anfrage absenden':'Send enquiry')),
+                  sendError && e('p', {
+                    className:'ferr', role:'alert', 'aria-live':'assertive',
+                    style:{ marginTop:'10px', fontSize:'.8rem', lineHeight:1.5 }
+                  }, sendError),
                 ),
               ),
         ),
@@ -3653,10 +4154,13 @@ function KontaktPage({ setPage, lang, t, kontaktPreset, setKontaktPreset }) {
                 e('a', { href:loc.href, style:{ display:'inline-flex', alignItems:'center', gap:'6px', fontSize:'14px', fontWeight:600, color:'var(--accent)', fontFamily:"'DM Sans',sans-serif", textDecoration:'none' } },
                   e(Ico,{name:'phone',size:14}), loc.tel
                 ),
-                // Link zur lokalen Landingpage (SEO: interne Verlinkung auf echte URL)
-                e('a', { href: loc.city==='Berlin' ? '#steuerberater-berlin' : '#steuerberater-koeln', style:{ display:'inline-flex', alignItems:'center', gap:'6px', fontSize:'13px', fontWeight:600, color:'var(--accent)', fontFamily:"'DM Sans',sans-serif", textDecoration:'none', marginTop:'8px' } },
-                  (isDE?'Steuerberater ':'Tax advisor ') + loc.city, ' →'
-                ),
+                // Google-Business-Profil des Standorts. Führt Besucher direkt
+                // zu Bewertungen – der stärkste Hebel für die lokale
+                // Auffindbarkeit. Erscheint nur, wenn eine URL hinterlegt ist.
+                loc.googleBusiness && e('a', {
+                  href: loc.googleBusiness, target:'_blank', rel:'noopener noreferrer',
+                  style:{ display:'inline-flex', alignItems:'center', gap:'6px', fontSize:'13px', fontWeight:500, color:'var(--muted)', marginTop:'10px', fontFamily:"'DM Sans',sans-serif" }
+                }, e(Ico,{name:'mapPin',size:13}), isDE?'Auf Google ansehen & bewerten':'View & review on Google'),
               ),
             ),
             e('div', { style:{ borderTop:'1px solid var(--border)', padding:'14px 20px', backgroundColor:'white' } },
@@ -3676,24 +4180,24 @@ function KontaktPage({ setPage, lang, t, kontaktPreset, setKontaktPreset }) {
                 ),
               ),
             ),
-            e('div', { style:{ borderTop:'1px solid var(--border)', height:'220px', overflow:'hidden', position:'relative', backgroundColor:'var(--offwhite)' } },
-              e('iframe', {
-                src: loc.city==='Berlin'
-                  ? 'https://www.google.com/maps?q=Berlepschstr.+1,+14165+Berlin&output=embed&z=15'
-                  : 'https://www.google.com/maps?q=Holzmarkt+2,+50676+K%C3%B6ln&output=embed&z=15',
-                width:'100%', height:'220', style:{ border:0, display:'block' },
-                loading:'lazy', referrerPolicy:'no-referrer-when-downgrade',
-                allowFullScreen:true, title:`NSBB ${loc.city} – Standort auf Google Maps`,
-                'aria-label':`Karte: NSBB ${loc.city}`
-              }),
-              e('a', {
-                href: loc.city==='Berlin'
-                  ? 'https://www.google.com/maps/place/NSBB+Steuerberatungsgesellschaft+mbH/@52.4293359,13.2562634,19z/data=!4m15!1m8!3m7!1s0x47a85bcd32214c33:0xc49996f097d43f61!2sBerlepschstra%C3%9Fe+1,+14165+Berlin!3b1!8m2!3d52.429461!4d13.2565531!16s%2Fg%2F11b8v5lfv2!3m5!1s0x47a85bee320dfedf:0xd5c5592d1cbe082d!8m2!3d52.4294067!4d13.2565013!16s%2Fg%2F11qpl7gh9y'
-                  : 'https://www.google.com/maps/place/NSBB+Steuerberatungsgesellschaft+mbH/@50.9286295,6.9619573,18z/data=!3m1!4b1!4m6!3m5!1s0x47bf251aeb6f96e7:0xe6cbbac13cb5a3c8!8m2!3d50.9286278!4d6.9632448!16s%2Fg%2F11lkz0nrsq',
-                target:'_blank', rel:'noopener noreferrer',
-                style:{ position:'absolute', bottom:'10px', right:'10px', backgroundColor:'white', borderRadius:'8px', padding:'6px 12px', fontSize:'12px', fontWeight:600, color:'var(--accent)', fontFamily:"'DM Sans',sans-serif", textDecoration:'none', boxShadow:'0 2px 8px rgba(0,0,0,.15)', display:'inline-flex', alignItems:'center', gap:'5px' }
-              }, e(Ico,{name:'mapPin',size:12}), isDE?'Größere Karte':'Larger map')
-            ),
+            // Google Maps wurde entfernt: Die frühere Karten-Einbettung lud
+            // beim Seitenaufruf ungefragt von Google und übertrug die IP-Adresse
+            // des Besuchers – bei einer Kanzlei ein Datenschutzrisiko. Stattdessen
+            // eine klickbare Fläche, die NICHTS automatisch lädt und Google Maps
+            // erst nach aktivem Klick in einem neuen Tab öffnet.
+            // Die spätere Zwei-Klick-Karte (echte Karte nach Klick nachladen)
+            // steht in ROADMAP.md.
+            e('a', {
+              href: loc.city==='Berlin'
+                ? 'https://www.google.com/maps/search/?api=1&query=NSBB+Steuerberatung+Berlin'
+                : 'https://www.google.com/maps/search/?api=1&query=NSBB+Steuerberatung+K%C3%B6ln',
+              target:'_blank', rel:'noopener noreferrer',
+              'aria-label': (isDE?'Route planen zu NSBB ':'Directions to NSBB ')+loc.city+(isDE?' – öffnet Google Maps in neuem Tab':' – opens Google Maps in a new tab'),
+              style:{ borderTop:'1px solid var(--border)', minHeight:'96px', display:'flex', alignItems:'center', justifyContent:'center', gap:'10px', backgroundColor:'var(--offwhite)', color:'var(--accent)', fontFamily:"'DM Sans',sans-serif", fontSize:'14px', fontWeight:600, textDecoration:'none' }
+            },
+              e(Ico,{name:'mapPin',size:16}),
+              isDE?'Route planen · in Google Maps öffnen':'Get directions · open in Google Maps'
+            )
           ))
         ),
       ),
@@ -3856,6 +4360,7 @@ function DatenschutzPage({ setPage, lang, t }) {
         e('h3', { style:S.h3 }, 'All-Inkl'),
         e('p', { style:S.p }, isDE?'Anbieter ist die ALL-INKL.COM – Neue Medien Münnich, Inh. René Münnich, Hauptstraße 68, 02742 Friedersdorf. Details entnehmen Sie der Datenschutzerklärung von All-Inkl: https://all-inkl.com/datenschutzinformationen/.':'The provider is ALL-INKL.COM – Neue Medien Münnich, owner René Münnich, Hauptstraße 68, 02742 Friedersdorf, Germany. Details can be found in All-Inkl\'s privacy policy: https://all-inkl.com/datenschutzinformationen/.'),
         e('p', { style:S.p }, isDE?'Die Verwendung von All-Inkl erfolgt auf Grundlage von Art. 6 Abs. 1 lit. f DSGVO. Wir haben ein berechtigtes Interesse an einer möglichst zuverlässigen Darstellung unserer Website.':'The use of All-Inkl is based on Art. 6(1)(f) GDPR. We have a legitimate interest in the most reliable presentation of our website possible.'),
+        e('p', { style:S.p }, isDE?'Wir haben mit All-Inkl einen Vertrag über Auftragsverarbeitung (AVV) geschlossen. Dies ist ein datenschutzrechtlich vorgeschriebener Vertrag, der gewährleistet, dass All-Inkl die personenbezogenen Daten unserer Websitebesucher nur nach unseren Weisungen und unter Einhaltung der DSGVO verarbeitet.':'We have concluded a data processing agreement (DPA) with All-Inkl. This is a contract required under data protection law which ensures that All-Inkl processes the personal data of our website visitors only in accordance with our instructions and in compliance with the GDPR.'),
 
         e('div', { style:{ height:'1px', backgroundColor:'#ECEAE6', margin:'40px 0' } }),
 
@@ -3894,15 +4399,25 @@ function DatenschutzPage({ setPage, lang, t }) {
         e('div', { style:{ height:'1px', backgroundColor:'#ECEAE6', margin:'40px 0' } }),
 
         e('h2', { style:S.h2flat }, isDE?'4. Datenerfassung auf dieser Website':'4. Data collection on this website'),
+        e('h3', { style:S.h3 }, isDE?'Server-Logdateien':'Server log files'),
+        e('p', { style:S.p }, isDE?'Der Provider der Seite erhebt und speichert automatisch Informationen in sogenannten Server-Logdateien, die Ihr Browser automatisch an uns übermittelt. Dies sind: Browsertyp und -version, verwendetes Betriebssystem, Referrer-URL, Hostname des zugreifenden Rechners, Uhrzeit der Serveranfrage und die IP-Adresse. Eine Zusammenführung dieser Daten mit anderen Datenquellen wird nicht vorgenommen.':'The provider of this site automatically collects and stores information in so-called server log files, which your browser transmits to us automatically. These are: browser type and version, operating system used, referrer URL, host name of the accessing computer, time of the server request and the IP address. This data is not merged with other data sources.'),
+        e('p', { style:S.p }, isDE?'Die Erfassung dieser Daten erfolgt auf Grundlage von Art. 6 Abs. 1 lit. f DSGVO. Der Websitebetreiber hat ein berechtigtes Interesse an der technisch fehlerfreien Darstellung und der Sicherheit seiner Website; hierzu müssen die Server-Logdateien erfasst werden. Die Daten werden nach kurzer Zeit gelöscht, soweit sie nicht zur Aufklärung von Missbrauch oder Störungen benötigt werden.':'This data is collected on the basis of Art. 6(1)(f) GDPR. The website operator has a legitimate interest in the technically error-free presentation and the security of its website; the server log files must be recorded for this purpose. The data is deleted after a short time unless it is needed to investigate misuse or malfunctions.'),
         e('h3', { style:S.h3 }, isDE?'Kontaktformular':'Contact form'),
         e('p', { style:S.p }, isDE?'Wenn Sie uns per Kontaktformular Anfragen zukommen lassen, werden Ihre Angaben aus dem Anfrageformular inklusive der von Ihnen dort angegebenen Kontaktdaten zwecks Bearbeitung der Anfrage und für den Fall von Anschlussfragen bei uns gespeichert. Diese Daten geben wir nicht ohne Ihre Einwilligung weiter.':'If you send us enquiries via the contact form, the details you provide, including the contact details given there, will be stored by us for the purpose of processing the enquiry and in case of follow-up questions. We do not pass on this data without your consent.'),
         e('p', { style:S.p }, isDE?'Die Verarbeitung dieser Daten erfolgt auf Grundlage von Art. 6 Abs. 1 lit. b DSGVO, sofern Ihre Anfrage mit der Erfüllung eines Vertrags zusammenhängt oder zur Durchführung vorvertraglicher Maßnahmen erforderlich ist. In allen übrigen Fällen beruht die Verarbeitung auf unserem berechtigten Interesse an der effektiven Bearbeitung der an uns gerichteten Anfragen (Art. 6 Abs. 1 lit. f DSGVO) oder auf Ihrer Einwilligung (Art. 6 Abs. 1 lit. a DSGVO) sofern diese abgefragt wurde.':'The processing of this data is based on Art. 6(1)(b) GDPR, provided your enquiry relates to the fulfilment of a contract or is necessary for pre-contractual measures. In all other cases, processing is based on our legitimate interest in the effective handling of enquiries addressed to us (Art. 6(1)(f) GDPR) or on your consent (Art. 6(1)(a) GDPR), if requested.'),
+        e('p', { style:S.p }, isDE?'Zum Schutz vor automatisiertem Missbrauch (Spam) begrenzen wir die Zahl der Formularsendungen pro Absender. Dazu speichern wir für maximal eine Stunde einen Zeitstempel je zugreifender IP-Adresse – die IP-Adresse wird dabei nicht im Klartext, sondern nur als nicht rückrechenbarer Prüfwert (Hash) gespeichert. Rechtsgrundlage ist unser berechtigtes Interesse an der Abwehr von Missbrauch (Art. 6 Abs. 1 lit. f DSGVO).':'To protect against automated misuse (spam), we limit the number of form submissions per sender. For this purpose we store a timestamp per accessing IP address for a maximum of one hour – the IP address is not stored in plain text but only as a non-reversible checksum (hash). The legal basis is our legitimate interest in preventing misuse (Art. 6(1)(f) GDPR).'),
 
         e('div', { style:{ height:'1px', backgroundColor:'#ECEAE6', margin:'40px 0' } }),
 
         e('h2', { style:S.h2flat }, isDE?'5. Analyse-Tools und Werbung':'5. Analytics tools and advertising'),
         e('h3', { style:S.h3 }, 'Google Tag Manager'),
         e('p', { style:S.p }, isDE?'Wir setzen den Google Tag Manager ein. Anbieter ist die Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Irland. Der Google Tag Manager ist ein Tool, mit dessen Hilfe wir Tracking- oder Statistik-Tools auf unserer Website einbinden können. Der Google Tag Manager selbst erstellt keine Nutzerprofile, speichert keine Cookies und nimmt keine eigenständigen Analysen vor.':'We use Google Tag Manager. The provider is Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Ireland. Google Tag Manager is a tool that allows us to integrate tracking or statistics tools on our website. Google Tag Manager itself does not create user profiles, does not store cookies, and does not carry out any independent analyses.'),
+
+        e('h3', { style:S.h3 }, isDE?'Einwilligung (Consent) und Cookie-Banner':'Consent and cookie banner'),
+        e('p', { style:S.p }, isDE?'Statistik- und Marketing-Dienste (siehe unten) werden erst geladen, nachdem Sie über unseren Cookie-Banner ausdrücklich eingewilligt haben. Vor Ihrer Einwilligung werden keine Daten an Google übertragen. Der Google Tag Manager wird ebenfalls erst nach Ihrer Einwilligung geladen. Wir verwenden den Google Consent Mode: Bis zu Ihrer Einwilligung stehen alle Einwilligungssignale auf „denied" (abgelehnt). Ihre Auswahl speichern wir lokal in Ihrem Browser; Sie können sie jederzeit über den Link „Cookie-Einstellungen" im Seitenfuß ändern oder widerrufen. Die Rechtmäßigkeit der bis zum Widerruf erfolgten Verarbeitung bleibt unberührt. Rechtsgrundlage ist Ihre Einwilligung gemäß Art. 6 Abs. 1 lit. a DSGVO und § 25 Abs. 1 TDDDG.':'Statistics and marketing services (see below) are only loaded after you have expressly consented via our cookie banner. No data is transmitted to Google before your consent. Google Tag Manager is also only loaded after your consent. We use Google Consent Mode: until you consent, all consent signals are set to "denied". We store your choice locally in your browser; you can change or withdraw it at any time via the "Cookie settings" link in the footer. The lawfulness of processing carried out until withdrawal remains unaffected. The legal basis is your consent pursuant to Art. 6(1)(a) GDPR and § 25(1) TDDDG.'),
+
+        e('h3', { style:S.h3 }, isDE?'Google Ads und Conversion-Tracking':'Google Ads and conversion tracking'),
+        e('p', { style:S.p }, isDE?'Nach Ihrer Einwilligung setzen wir über den Google Tag Manager Google Ads mit Conversion-Tracking ein. Anbieter ist die Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Irland. Damit werten wir aus, ob und wie Nutzer über unsere Anzeigen auf die Website gelangt sind (z. B. ob ein Kontaktformular abgesendet wurde). Dabei können Cookies gesetzt und Daten – auch an Server von Google in den USA – übertragen werden. Für die Datenübermittlung in die USA stützt sich Google auf die Standardvertragsklauseln der EU-Kommission und das EU-US Data Privacy Framework. Weitere Informationen finden Sie in der Datenschutzerklärung von Google unter https://policies.google.com/privacy.':'After your consent, we use Google Ads with conversion tracking via Google Tag Manager. The provider is Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Ireland. This lets us analyse whether and how users reached the website via our ads (e.g. whether a contact form was submitted). Cookies may be set and data transmitted – including to Google servers in the USA. For the transfer to the USA, Google relies on the EU Commission\'s standard contractual clauses and the EU-US Data Privacy Framework. For more information see Google\'s privacy policy at https://policies.google.com/privacy.'),
 
         e('div', { style:{ height:'1px', backgroundColor:'#ECEAE6', margin:'40px 0' } }),
 
@@ -3995,6 +4510,7 @@ function FAQPage({ setPage, lang, t }) {
       a: 'Yes. In addition to entrepreneurs and businesses, we advise private individuals particularly on income tax, real estate, wealth succession and inheritance and gift tax.'
     },
   ];
+  useFaqSchema(faqs);
 
   return e('div', { className: 'page-enter' },
     e(PageHero, {
@@ -4384,12 +4900,20 @@ function KarriereForm({ lang, jobTitle }) {
   var sent = s3[0]; var setSent = s3[1];
   var s4 = useState('');
   var formError = s4[0]; var setFormError = s4[1];
+  var s5 = useState(null);
+  var file = s5[0]; var setFile = s5[1];            // optionaler Lebenslauf
+  var s6 = useState('');
+  var hp = s6[0]; var setHp = s6[1];                // Honeypot gegen Bots
 
   function setField(k, v) { setForm(function(f) { var n={}; for(var x in f) n[x]=f[x]; n[k]=v; return n; }); }
 
   function handleSubmit() {
     if (!form.vorname || !form.nachname || !form.email || !form.phone || !form.standort || !form.erfahrung) {
       setFormError(isDE ? 'Bitte alle Pflichtfelder ausfüllen.' : 'Please fill in all required fields.');
+      return;
+    }
+    if (file && file.size > 5*1024*1024) {
+      setFormError(isDE ? 'Die Datei ist zu groß (max. 5 MB).' : 'The file is too large (max. 5 MB).');
       return;
     }
     setSending(true); setFormError('');
@@ -4400,10 +4924,19 @@ function KarriereForm({ lang, jobTitle }) {
                (isDE?'Telefon: ':'Phone: ') + form.phone + '\n' +
                (isDE?'Gewünschter Standort: ':'Preferred location: ') + form.standort + '\n' +
                (isDE?'Berufserfahrung: ':'Experience: ') + form.erfahrung +
-               (form.message ? '\n\n' + (isDE?'Nachricht:\n':'Message:\n') + form.message : '');
-    fetch('contact.php', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ type:isDE?'Karriere':'Career', email:form.email, body:body }) })
+               (form.message ? '\n\n' + (isDE?'Nachricht:\n':'Message:\n') + form.message : '') +
+               (file ? '\n\n' + (isDE?'(Lebenslauf im Anhang)':'(CV attached)') : '');
+    // FormData statt JSON, damit ein Lebenslauf angehaengt werden kann (contact.php
+    // nimmt beides an). Honeypot 'website' bleibt bei echten Besuchern leer.
+    var fd = new FormData();
+    fd.append('type', isDE?'Karriere':'Career');
+    fd.append('email', form.email);
+    fd.append('body', body);
+    fd.append('website', hp);
+    if (file) { fd.append('datei', file); }
+    fetch('contact.php', { method:'POST', body: fd })
     .then(function(r){ return r.json(); })
-    .then(function(res){ setSending(false); if(res.success){ setSent(true); } else { setFormError(res.message||(isDE?'Fehler beim Senden. Bitte an karriere@nsbb.de wenden.':'Error. Please email karriere@nsbb.de.')); } })
+    .then(function(res){ setSending(false); if(res.success){ setSent(true); try { (window.dataLayer = window.dataLayer || []).push({ event: 'generate_lead', formular: 'karriere' }); } catch(e){} } else { setFormError(res.message||(isDE?'Fehler beim Senden. Bitte an karriere@nsbb.de wenden.':'Error. Please email karriere@nsbb.de.')); } })
     .catch(function(){ setSending(false); setFormError(isDE?'Fehler beim Senden. Bitte an karriere@nsbb.de wenden.':'Error. Please email karriere@nsbb.de.'); });
   }
 
@@ -4421,13 +4954,15 @@ function KarriereForm({ lang, jobTitle }) {
     : ['Career starter','1–3 years','3–5 years','5–10 years','More than 10 years'];
 
   return e('div', null,
+    // Honeypot: fuer Menschen unsichtbar, nur Bots fuellen es aus.
+    e('input',{type:'text',name:'website',value:hp,onChange:function(ev){setHp(ev.target.value);},tabIndex:-1,autoComplete:'off','aria-hidden':'true',style:{position:'absolute',left:'-9999px',width:'1px',height:'1px',opacity:0}}),
     e('div', { className:'grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4' },
-      e('div', null, e('label',{className:'flabel'}, isDE?'Vorname':'First name', e('span',{style:{color:'var(--accent)'}},' *')), e('input',{type:'text',value:form.vorname,onChange:function(ev){setField('vorname',ev.target.value);},placeholder:isDE?'Vorname':'First name',className:'finput',maxLength:80})),
-      e('div', null, e('label',{className:'flabel'}, isDE?'Nachname':'Last name', e('span',{style:{color:'var(--accent)'}},' *')), e('input',{type:'text',value:form.nachname,onChange:function(ev){setField('nachname',ev.target.value);},placeholder:isDE?'Nachname':'Last name',className:'finput',maxLength:80})),
+      e('div', null, e('label',{className:'flabel',htmlFor:'k-vorname'}, isDE?'Vorname':'First name', e('span',{style:{color:'var(--accent)'}},' *')), e('input',{id:'k-vorname',autoComplete:'given-name','aria-required':'true',type:'text',value:form.vorname,onChange:function(ev){setField('vorname',ev.target.value);},placeholder:isDE?'Vorname':'First name',className:'finput',maxLength:80})),
+      e('div', null, e('label',{className:'flabel',htmlFor:'k-nachname'}, isDE?'Nachname':'Last name', e('span',{style:{color:'var(--accent)'}},' *')), e('input',{id:'k-nachname',autoComplete:'family-name','aria-required':'true',type:'text',value:form.nachname,onChange:function(ev){setField('nachname',ev.target.value);},placeholder:isDE?'Nachname':'Last name',className:'finput',maxLength:80})),
     ),
     e('div', { className:'grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4' },
-      e('div', null, e('label',{className:'flabel'}, 'E-Mail', e('span',{style:{color:'var(--accent)'}},' *')), e('input',{type:'email',value:form.email,onChange:function(ev){setField('email',ev.target.value);},placeholder:isDE?'ihre@email.de':'your@email.com',className:'finput',maxLength:100})),
-      e('div', null, e('label',{className:'flabel'}, isDE?'Telefonnummer':'Phone', e('span',{style:{color:'var(--accent)'}},' *')), e('input',{type:'tel',value:form.phone,onChange:function(ev){setField('phone',ev.target.value);},placeholder:'+49 ...',className:'finput',maxLength:100})),
+      e('div', null, e('label',{className:'flabel',htmlFor:'k-email'}, 'E-Mail', e('span',{style:{color:'var(--accent)'}},' *')), e('input',{id:'k-email',autoComplete:'email',inputMode:'email','aria-required':'true',type:'email',value:form.email,onChange:function(ev){setField('email',ev.target.value);},placeholder:isDE?'ihre@email.de':'your@email.com',className:'finput',maxLength:100})),
+      e('div', null, e('label',{className:'flabel',htmlFor:'k-phone'}, isDE?'Telefonnummer':'Phone', e('span',{style:{color:'var(--accent)'}},' *')), e('input',{id:'k-phone',autoComplete:'tel',inputMode:'tel','aria-required':'true',type:'tel',value:form.phone,onChange:function(ev){setField('phone',ev.target.value);},placeholder:'+49 ...',className:'finput',maxLength:100})),
     ),
     e('div', { className:'grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4' },
       e('div', null,
@@ -4448,6 +4983,11 @@ function KarriereForm({ lang, jobTitle }) {
     e('div', { className:'mb-6' },
       e('label',{className:'flabel'}, isDE?'Kurze Nachricht (optional)':'Short message (optional)'),
       e('textarea',{value:form.message,onChange:function(ev){setField('message',ev.target.value);},rows:3,maxLength:1000,className:'finput',style:{resize:'vertical',minHeight:'90px'},placeholder:isDE?'Was möchten Sie uns vorab mitteilen?':'What would you like to tell us in advance?'}),
+    ),
+    e('div', { className:'mb-6' },
+      e('label',{className:'flabel'}, isDE?'Lebenslauf (optional · PDF, DOC, JPG · max. 5 MB)':'CV (optional · PDF, DOC, JPG · max. 5 MB)'),
+      e('input',{type:'file',accept:'.pdf,.doc,.docx,.jpg,.jpeg,.png',onChange:function(ev){ var fl=ev.target.files&&ev.target.files[0]; setFile(fl||null); setFormError(''); },className:'finput',style:{padding:'8px',fontSize:'13px'}}),
+      file && e('p',{className:'text-sm',style:{color:'var(--muted)',marginTop:'4px'}}, file.name + ' · ' + Math.round(file.size/1024) + ' KB')
     ),
     formError && e('p',{className:'ferr mb-3'},formError),
     e('button',{className:'btn-p',onClick:handleSubmit,disabled:sending,style:{opacity:sending?0.7:1,cursor:sending?'wait':'pointer'}},
@@ -4793,20 +5333,10 @@ const T = {
     modalWerdegang: 'Werdegang',
     modalSchwerpunkte: 'Beratungsschwerpunkte',
     // Insights page
-    insightsPageLabel: 'Insights & Expertise',
-    insightsPageH1a: 'Wissen, das',
-    insightsPageH1b: 'weiterhilft.',
-    insightsPageSub: 'Steuerliches Expertenwissen für wachstumsorientierte Unternehmer – strukturiert, verständlich und praxisnah.',
-    insightsPageRead: 'Lesen',
-    insightsPageCats: ['Alle','GmbH','Holdingstrukturen','E-Commerce','International','Unternehmer','Immobilien','Digitalisierung'],
-    insightsPagePosts: [
-      { tag:'GmbH', title:'Holdingstruktur aufbauen: Wann es sich lohnt und worauf Sie achten sollten', excerpt:'Eine Holdingstruktur kann steuerlich erhebliche Vorteile bieten – aber sie ist nicht für jedes Unternehmen sinnvoll.', date:'12. Mai 2025' },
-      { tag:'E-Commerce', title:'Steuerliche Herausforderungen im Online-Handel – ein Überblick', excerpt:'E-Commerce-Unternehmen sehen sich mit einer Vielzahl steuerlicher Besonderheiten konfrontiert.', date:'5. Mai 2025' },
-      { tag:'International', title:'Wegzugsbesteuerung: Was GmbH-Gesellschafter wissen müssen', excerpt:'Der Wegzug ins Ausland kann für GmbH-Gesellschafter erhebliche steuerliche Konsequenzen haben.', date:'28. April 2025' },
-      { tag:'GmbH', title:'GmbH-Gründung: Die wichtigsten steuerlichen Aspekte', excerpt:'Die GmbH ist die beliebteste Rechtsform für Unternehmer in Deutschland.', date:'20. April 2025' },
-      { tag:'Unternehmer', title:'Betriebsprüfung: So bereiten Sie sich optimal vor', excerpt:'Mit der richtigen Vorbereitung verliert die Betriebsprüfung ihren Schrecken.', date:'14. April 2025' },
-      { tag:'Immobilien', title:'Immobilienbesteuerung 2025: Was sich geändert hat', excerpt:'Die steuerlichen Rahmenbedingungen für Immobilieninvestoren haben sich verändert.', date:'7. April 2025' },
-    ],
+    // Aktuelles (frueher "Insights"; Beitragsdaten kommen aus daten/, nicht aus dem Code)
+    aktuellesLabel: 'Aktuelles',
+    aktuellesH1a: 'Gut informiert.',
+    aktuellesH1b: 'Monat für Monat.',
     // Karriere
     karriereLabel: 'Karriere',
     karriereH1a: 'Fachlich stark.',
@@ -4929,7 +5459,14 @@ const T = {
     heroH1a: 'Strategic tax counsel.',
     heroH1b: 'Digital. Personal.',
     heroH1c: 'Built to last.',
-    heroSub: 'We accompany entrepreneurs, companies and private individuals in growth, structuring and tax decisions – from ongoing advice to complex national and international matters.',
+    // Laenge an die deutsche Fassung angeglichen: 5 Zeilen wie im Deutschen,
+    // mit einer aehnlich vollen letzten Zeile (33 vs. 32 Zeichen) – der Hero
+    // springt beim Sprachwechsel nicht mehr und es bleibt kein einzelnes
+    // Wort allein stehen. Zwei inhaltliche Verbesserungen nebenbei:
+    // "owner-managed companies" trifft die Zielgruppe genauer als "companies",
+    // und "German and international" sagt einem auslaendischen Leser mehr
+    // als "national". Bei Aenderungen bitte die Zeilenzahl nachmessen.
+    heroSub: 'We support entrepreneurs, owner-managed companies and private individuals with growth, structuring and tax-related decisions – from day-to-day advisory work through to complex questions of German and international tax law.',
     heroCta1: 'Request tax advice',
     heroCta2: 'Our services',
     heroStat1: 'Offices', heroStat2: 'Partners', heroStat3: 'Team members', heroStat4: 'Global Network',
@@ -5049,20 +5586,10 @@ const T = {
     ueberStandortH2: 'Berlin & Cologne.',
     modalWerdegang: 'Background',
     modalSchwerpunkte: 'Areas of expertise',
-    insightsPageLabel: 'Insights & Expertise',
-    insightsPageH1a: 'Knowledge that',
-    insightsPageH1b: 'moves you forward.',
-    insightsPageSub: 'Expert tax knowledge for growth-oriented entrepreneurs – structured, accessible and practice-oriented.',
-    insightsPageRead: 'Read',
-    insightsPageCats: ['All','GmbH','Holding structures','E-Commerce','International','Entrepreneurs','Real estate','Digitalisation'],
-    insightsPagePosts: [
-      { tag:'GmbH', title:'Setting up a holding structure: When it makes sense', excerpt:'A holding structure can offer significant tax and strategic advantages – but is not right for every business.', date:'12 May 2025' },
-      { tag:'E-Commerce', title:'Tax challenges in online retail – a structured overview', excerpt:'E-commerce businesses face a wide range of tax complexities.', date:'5 May 2025' },
-      { tag:'International', title:'Exit taxation: what GmbH shareholders need to know', excerpt:'Relocating abroad can have significant tax consequences for GmbH shareholders.', date:'28 April 2025' },
-      { tag:'GmbH', title:'Forming a GmbH: The key tax considerations', excerpt:'The GmbH is the most popular legal form for entrepreneurs in Germany.', date:'20 April 2025' },
-      { tag:'Entrepreneurs', title:'Tax audit: How to prepare effectively', excerpt:'With the right preparation a tax audit need not be a stressful event.', date:'14 April 2025' },
-      { tag:'Real estate', title:'Real estate taxation 2025: What has changed', excerpt:'The tax framework for real estate investors has changed significantly in recent years.', date:'7 April 2025' },
-    ],
+    // Insights (German "Aktuelles"; article data comes from daten/, not from code)
+    aktuellesLabel: 'Insights',
+    aktuellesH1a: 'Well informed.',
+    aktuellesH1b: 'Month after month.',
     karriereLabel: 'Careers',
     karriereH1a: 'Modern work.',
     karriereH1b: 'Personally close.',
@@ -5167,27 +5694,206 @@ const T = {
    APP ROUTER
 ───────────────────────────────────────────────────────── */
 
+/* ─────────────────────────────────────────────────────────
+   EINWILLIGUNGSVERWALTUNG (Consent) + Google Tag Manager
+
+   Grundsatz (mit der Projektleitung abgestimmt, 20.07.2026):
+   GTM lädt ERST NACH ausdrücklicher Einwilligung. Vor der Zustimmung geht
+   kein Byte an Google. Das ist die strengste Auslegung von § 25 TDDDG.
+
+   Ablauf:
+   1. Beim Start wird Google Consent Mode v2 auf "denied" gesetzt (falls GTM
+      später lädt, kennt es den Status sofort).
+   2. Der Besucher wählt im Banner: notwendig (immer), Statistik, Marketing.
+   3. Wird Statistik oder Marketing zugestimmt, wird der Consent auf "granted"
+      aktualisiert UND der GTM-Container nachgeladen. Sonst passiert nichts.
+   4. Die Entscheidung liegt in localStorage; über den Fußzeilen-Link
+      "Cookie-Einstellungen" lässt sie sich jederzeit widerrufen.
+
+   Die eigentlichen Google-Ads-Conversion-Tags werden IM GTM-Interface
+   konfiguriert (GTM-NNQTHD76), nicht hier im Code.
+───────────────────────────────────────────────────────── */
+
+var GTM_ID = 'GTM-NNQTHD76';
+var CONSENT_KEY = 'nsbb_consent_v1';
+
+// dataLayer + gtag früh bereitstellen und Consent-Grundzustand auf "denied".
+function consentBootstrap() {
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = window.gtag || function(){ window.dataLayer.push(arguments); };
+  window.gtag('consent', 'default', {
+    ad_storage: 'denied',
+    ad_user_data: 'denied',
+    ad_personalization: 'denied',
+    analytics_storage: 'denied',
+    functionality_storage: 'granted',
+    security_storage: 'granted',
+    wait_for_update: 500
+  });
+}
+
+function consentLesen() {
+  try { return JSON.parse(localStorage.getItem(CONSENT_KEY) || 'null'); }
+  catch (e) { return null; }
+}
+
+function gtmLaden() {
+  if (window.__nsbbGtmGeladen) return;
+  window.__nsbbGtmGeladen = true;
+  window.dataLayer.push({ 'gtm.start': +new Date(), event: 'gtm.js' });
+  var s = document.createElement('script');
+  s.async = true;
+  s.src = 'https://www.googletagmanager.com/gtm.js?id=' + GTM_ID;
+  document.head.appendChild(s);
+}
+
+// Wahl anwenden: Consent-Signale aktualisieren und GTM ggf. laden.
+function consentAnwenden(wahl) {
+  window.gtag('consent', 'update', {
+    analytics_storage: wahl.analytics ? 'granted' : 'denied',
+    ad_storage:        wahl.marketing ? 'granted' : 'denied',
+    ad_user_data:      wahl.marketing ? 'granted' : 'denied',
+    ad_personalization:wahl.marketing ? 'granted' : 'denied'
+  });
+  if (wahl.analytics || wahl.marketing) gtmLaden();
+}
+
+// Beim App-Start: Grundzustand setzen und eine bereits getroffene Wahl anwenden.
+consentBootstrap();
+(function(){
+  var g = consentLesen();
+  if (g && (g.analytics || g.marketing)) consentAnwenden(g);
+})();
+
 function CookieBanner({ lang }) {
-  const [show, setShow] = React.useState(false);
-  React.useEffect(() => {
-    const accepted = localStorage.getItem && localStorage.getItem('nsbb_cookies');
-    if (!accepted) setShow(true);
-  }, []);
-  const accept = () => { try { localStorage.setItem('nsbb_cookies','1'); } catch(e){} setShow(false); };
-  if (!show) return null;
   const isDE = lang === 'DE';
-  return e('div', { className:'cookie-banner' },
-    e('div', { style:{ flex:1, minWidth:'200px' } },
-      e('p', { style:{ fontSize:'13px', fontWeight:600, color:'#1A1917', fontFamily:"'DM Sans',sans-serif", marginBottom:'4px' } }, isDE?'Wir verwenden Cookies':'We use cookies'),
-      e('p', { style:{ fontSize:'12px', color:'var(--muted)', fontFamily:"'DM Sans',sans-serif" } }, isDE?'Diese Website verwendet technisch notwendige Cookies. Weitere Informationen in unserer Datenschutzerklärung.':'This website uses technically necessary cookies. See our privacy policy for details.'),
+  const gespeichert = consentLesen();
+  // Sichtbar, wenn noch keine Entscheidung vorliegt.
+  const [show, setShow] = React.useState(!gespeichert);
+  const [details, setDetails] = React.useState(false);
+  const [analytics, setAnalytics] = React.useState(gespeichert ? !!gespeichert.analytics : false);
+  const [marketing, setMarketing] = React.useState(gespeichert ? !!gespeichert.marketing : false);
+
+  // Über den Fußzeilen-Link erneut öffnen (Widerruf/Änderung).
+  React.useEffect(() => {
+    const oeffnen = () => {
+      const g = consentLesen();
+      setAnalytics(g ? !!g.analytics : false);
+      setMarketing(g ? !!g.marketing : false);
+      setDetails(true); setShow(true);
+    };
+    window.addEventListener('nsbb:open-consent', oeffnen);
+    return () => window.removeEventListener('nsbb:open-consent', oeffnen);
+  }, []);
+
+  const speichern = (wahl) => {
+    try { localStorage.setItem(CONSENT_KEY, JSON.stringify({ ...wahl, ts: Date.now() })); } catch (e) {}
+    consentAnwenden(wahl);
+    setShow(false); setDetails(false);
+  };
+  const alleAkzeptieren = () => speichern({ necessary:true, analytics:true, marketing:true });
+  const nurNotwendige   = () => speichern({ necessary:true, analytics:false, marketing:false });
+  const auswahlSpeichern= () => speichern({ necessary:true, analytics, marketing });
+
+  if (!show) return null;
+
+  const btnP = { padding:'9px 18px', borderRadius:'999px', background:'var(--accent)', color:'white', border:'none', cursor:'pointer', fontSize:'13px', fontWeight:600, fontFamily:"'DM Sans',sans-serif" };
+  const btnS = { padding:'9px 18px', borderRadius:'999px', background:'transparent', color:'var(--text)', border:'1.5px solid var(--border)', cursor:'pointer', fontSize:'13px', fontWeight:500, fontFamily:"'DM Sans',sans-serif" };
+  const btnLink = { background:'none', border:'none', color:'var(--accent)', cursor:'pointer', fontSize:'12px', fontWeight:500, fontFamily:"'DM Sans',sans-serif", textDecoration:'underline', padding:0 };
+
+  // Eine Kategorie-Zeile mit Schalter.
+  const kategorie = (titel, text, an, setAn, fest) =>
+    e('label', { style:{ display:'flex', gap:'12px', alignItems:'flex-start', padding:'10px 0', borderTop:'1px solid var(--border)', cursor: fest?'default':'pointer' } },
+      e('input', { type:'checkbox', checked: fest ? true : an, disabled: fest, onChange: fest?undefined:(ev=>setAn(ev.target.checked)), style:{ marginTop:'2px', accentColor:'var(--accent)', flexShrink:0 } }),
+      e('div', null,
+        e('p', { style:{ fontSize:'13px', fontWeight:600, color:'#1A1917', fontFamily:"'DM Sans',sans-serif", margin:'0 0 2px' } }, titel + (fest ? (isDE?' (immer aktiv)':' (always on)') : '')),
+        e('p', { style:{ fontSize:'12px', color:'var(--muted)', fontFamily:"'DM Sans',sans-serif", margin:0, lineHeight:1.5 } }, text)
+      )
+    );
+
+  return e('div', { className:'cookie-banner', role:'dialog', 'aria-modal':'false', 'aria-label': isDE?'Cookie-Einstellungen':'Cookie settings' },
+    e('div', { style:{ flex:1, minWidth:'240px', maxWidth: details ? '640px' : '520px' } },
+      e('p', { style:{ fontSize:'14px', fontWeight:600, color:'#1A1917', fontFamily:"'DM Sans',sans-serif", marginBottom:'4px' } }, isDE?'Wir respektieren Ihre Privatsphäre':'We respect your privacy'),
+      e('p', { style:{ fontSize:'12px', color:'var(--muted)', fontFamily:"'DM Sans',sans-serif", lineHeight:1.6, marginBottom: details?'8px':0 } },
+        isDE
+          ? 'Technisch notwendige Cookies setzen wir immer. Für Statistik und Marketing (Google) bitten wir um Ihre Einwilligung. Sie können frei wählen und Ihre Entscheidung jederzeit über „Cookie-Einstellungen" im Seitenfuß ändern.'
+          : 'We always set technically necessary cookies. For statistics and marketing (Google) we ask for your consent. You can choose freely and change your decision any time via “Cookie settings” in the footer.'
+      ),
+      details && e('div', { style:{ marginTop:'4px' } },
+        kategorie(isDE?'Notwendig':'Necessary', isDE?'Für den Betrieb der Seite erforderlich. Speichert nur Ihre Cookie-Auswahl.':'Required to operate the site. Stores only your cookie choice.', true, null, true),
+        kategorie(isDE?'Statistik':'Statistics', isDE?'Hilft zu verstehen, wie die Seite genutzt wird (z. B. Google Analytics). Derzeit nicht aktiv eingebunden.':'Helps understand how the site is used (e.g. Google Analytics). Not actively integrated yet.', analytics, setAnalytics, false),
+        kategorie(isDE?'Marketing':'Marketing', isDE?'Misst den Erfolg von Google-Ads-Anzeigen (Conversion-Tracking). Lädt Google Tag Manager.':'Measures the success of Google Ads (conversion tracking). Loads Google Tag Manager.', marketing, setMarketing, false),
+        e('button', { onClick:()=>setDetails(false), style:{ ...btnLink, marginTop:'8px' } }, isDE?'weniger anzeigen':'show less')
+      ),
+      !details && e('button', { onClick:()=>setDetails(true), style:{ ...btnLink, marginTop:'6px' } }, isDE?'Einstellungen anzeigen':'Show settings')
     ),
-    e('div', { style:{ display:'flex', gap:'8px', flexShrink:0 } },
-      e('button', { onClick:accept, style:{ padding:'9px 20px', borderRadius:'999px', background:'var(--accent)', color:'white', border:'none', cursor:'pointer', fontSize:'13px', fontWeight:500, fontFamily:"'DM Sans',sans-serif" } }, isDE?'Akzeptieren':'Accept'),
+    e('div', { style:{ display:'flex', gap:'8px', flexShrink:0, flexWrap:'wrap', alignItems:'center' } },
+      e('button', { onClick:nurNotwendige, style:btnS }, isDE?'Nur notwendige':'Necessary only'),
+      details && e('button', { onClick:auswahlSpeichern, style:btnS }, isDE?'Auswahl speichern':'Save selection'),
+      e('button', { onClick:alleAkzeptieren, style:btnP }, isDE?'Alle akzeptieren':'Accept all')
     ),
   );
 }
 
 function isDE_skip(lang){ return lang==='DE' ? 'Zum Inhalt springen' : 'Skip to content'; }
+
+const validPages = ['home','leistungen','leistungen-unternehmen','leistungen-unternehmen-leistungen','leistungen-unternehmen-laufend','leistungen-unternehmen-gestaltung','leistungen-unternehmen-bwl','leistungen-unternehmen-branchen','branche-ecommerce','branche-bau','branche-immobilien','branche-international','branche-startup','branche-aerzte','leistungen-international','intl-wegzug','intl-wohnsitz','intl-dba','intl-einkuenfte','intl-immobilien','intl-erbschaft','intl-schenkung','intl-rueckkehr','intl-grenzgaenger','intl-vermoegen','leistungen-privat','digital','tgs','aktuelles','ueber-uns','steuerberater-berlin','steuerberater-koeln','karriere','karriere-steuerberater','karriere-steuerfachwirt','karriere-steuerfachangestellte','karriere-bilanzbuchhalter','karriere-initiativbewerbung','kanzleinachfolge','kontakt','faq','impressum','datenschutz'];
+
+/* ─────────────────────────────────────────────────────────
+   ADRESSEN (Routing)
+
+   Bis Juli 2026 lief die Navigation ueber Adress-Fragmente
+   (nsbb.de/#kontakt). Das sah aus wie ein Anker, war aber ein
+   Zustandsmarker: JavaScript las ihn aus und rendert eine andere Seite.
+   Fuer Suchmaschinen existierte damit nur EINE Adresse – alle 40
+   Unterseiten waren unsichtbar und konnten nicht ranken.
+
+   Jetzt echte Adressen (nsbb.de/kontakt) ueber die History-API.
+   Damit das traegt, gehoeren drei Dinge zusammen:
+     1. hier die Umstellung auf pushState/popstate
+     2. eine Rewrite-Regel in der .htaccess (unbekannte Pfade -> index.html)
+     3. je Seite eine HTML-Datei mit eigenem Titel (tools/seiten-generator.js)
+   Fehlt eines davon, gibt es 404er oder 41 Adressen mit gleichem Titel.
+───────────────────────────────────────────────────────── */
+
+// Basis-Pfad: live "/", auf der Testadresse "/2026/". Steht als Meta-Angabe
+// in der index.html und wird von den Paket-Skripten gesetzt.
+const BASIS = (() => {
+  const m = document.querySelector('meta[name="app-base"]');
+  let b = (m && m.content) || '/';
+  if (!b.startsWith('/')) b = '/' + b;
+  if (!b.endsWith('/')) b += '/';
+  return b;
+})();
+
+const pfadFuer = (p) => BASIS + (p === 'home' ? '' : p);
+
+const seiteAusAdresse = () => {
+  // Alte Fragment-Adressen (#kontakt) weiter verstehen – geteilte Links,
+  // Lesezeichen und Suchmaschinen-Eintraege sollen nicht ins Leere laufen.
+  const frag = window.location.hash.replace('#', '');
+  if (frag && validPages.includes(frag)) return frag;
+
+  let pfad = window.location.pathname;
+  if (pfad.startsWith(BASIS)) pfad = pfad.slice(BASIS.length);
+  pfad = pfad.replace(/^\/+|\/+$/g, '');
+  if (!pfad || pfad === 'index.html') return 'home';
+  // Einzelne Beitraege liegen unter /beitrag/<slug> (bewusst NICHT /aktuelles/…,
+  // das kollidierte auf dem Server mit der vorhandenen Datei aktuelles.html und
+  // lieferte darum 404). Sie gehoeren zur selben Seite wie die Uebersicht
+  // /aktuelles – AktuellesPage liest den Slug selbst aus der Adresse.
+  if (pfad === 'aktuelles' || pfad.startsWith('beitrag/')) return 'aktuelles';
+  return validPages.includes(pfad) ? pfad : 'home';
+};
+
+// Slug eines Beitrags aus /beitrag/<slug> lesen (leerer String, wenn nicht vorhanden).
+const beitragsSlugAusPfad = () => {
+  let pfad = window.location.pathname;
+  if (pfad.startsWith(BASIS)) pfad = pfad.slice(BASIS.length);
+  pfad = pfad.replace(/^\/+|\/+$/g, '');
+  const m = /^beitrag\/([a-z0-9-]+)$/.exec(pfad);
+  return m ? m[1] : '';
+};
 
 /* ─────────────────────────────────────────────────────────
    STANDORTSEITEN (Berlin / Köln) – echte SPA-Seiten mit
@@ -5374,26 +6080,187 @@ function SteuerberaterKoelnPage(props){ return e(StandortPage, Object.assign({},
 
 
 function App() {
-  const [page, setPageState] = useState(() => {
-    const h = window.location.hash.replace('#','');
-    const validPages = ['home','leistungen','leistungen-unternehmen','leistungen-unternehmen-leistungen','leistungen-unternehmen-laufend','leistungen-unternehmen-gestaltung','leistungen-unternehmen-bwl','leistungen-unternehmen-branchen','branche-ecommerce','branche-bau','branche-immobilien','branche-international','branche-startup','branche-aerzte','leistungen-international','intl-wegzug','intl-wohnsitz','intl-dba','intl-einkuenfte','intl-immobilien','intl-erbschaft','intl-schenkung','intl-rueckkehr','intl-grenzgaenger','intl-vermoegen','leistungen-privat','digital','tgs','insights','faq','ueber-uns','karriere','karriere-steuerberater','karriere-steuerfachwirt','karriere-steuerfachangestellte','karriere-bilanzbuchhalter','karriere-initiativbewerbung','kanzleinachfolge','kontakt','impressum','datenschutz','steuerberater-berlin','steuerberater-koeln'];
-    return validPages.includes(h) ? h : 'home';
-  });
-  const setPage = (p) => { setPageState(p); window.location.hash = p === 'home' ? '' : p; };
+  const [page, setPageState] = useState(seiteAusAdresse);
+
+  const setPage = (p) => {
+    setPageState(p);
+    try {
+      window.history.pushState({ seite: p }, '', pfadFuer(p));
+      // Unterseiten-Komponenten mit eigener Adresse (AktuellesPage kennt zusaetzlich
+      // /beitrag/<slug>) horchen auf popstate. pushState loest das NICHT aus, und
+      // "page" bleibt hier oft gleich (Beitrag UND Uebersicht sind beide
+      // "aktuelles") – ohne dieses Signal bliebe beim Klick auf „Aktuelles" der
+      // geoeffnete Beitrag stehen. Darum popstate selbst ausloesen.
+      window.dispatchEvent(new Event('popstate'));
+    } catch (e) {
+      // Sollte pushState scheitern (sehr alte Browser, file://), faellt die
+      // Navigation auf das alte Verhalten zurueck statt ganz auszufallen.
+      window.location.hash = p === 'home' ? '' : p;
+    }
+  };
+
+  // Browser-Zurueck und -Vorwaerts.
+  useEffect(() => {
+    const onNav = () => setPageState(seiteAusAdresse());
+    window.addEventListener('popstate', onNav);
+    window.addEventListener('hashchange', onNav);   // fuer alte Fragment-Links
+    return () => {
+      window.removeEventListener('popstate', onNav);
+      window.removeEventListener('hashchange', onNav);
+    };
+  }, []);
+
+  // Wurde die Seite ueber eine alte Fragment-Adresse aufgerufen, einmalig auf
+  // die echte Adresse umschreiben – ohne neuen Eintrag im Verlauf.
+  useEffect(() => {
+    const frag = window.location.hash.replace('#', '');
+    if (frag && validPages.includes(frag)) {
+      try { window.history.replaceState({ seite: frag }, '', pfadFuer(frag)); } catch (e) {}
+    }
+  }, []);
   const [kontaktPreset, setKontaktPreset] = useState(null);
-  const [lang, setLang] = useState('DE');
+  // Sprachwahl merken. Vorher stand nach jedem Neuladen wieder Deutsch da –
+  // unangenehm gerade fuer die internationalen Mandanten, fuer die es eigene
+  // Seiten zu Wegzug, DBA und Grenzgaengern gibt.
+  // Reihenfolge: ?lang=en in der Adresse (der hreflang-Verweis zeigt darauf)
+  // schlaegt gespeicherte Wahl, diese schlaegt die Browsersprache.
+  const [lang, setLangState] = useState(() => {
+    try {
+      const ausAdresse = new URLSearchParams(window.location.search).get('lang');
+      if (ausAdresse) return ausAdresse.toUpperCase() === 'EN' ? 'EN' : 'DE';
+      const gespeichert = localStorage.getItem('nsbb_lang');
+      if (gespeichert === 'EN' || gespeichert === 'DE') return gespeichert;
+      if ((navigator.language || '').toLowerCase().startsWith('en')) return 'EN';
+    } catch (e) { /* privater Modus o.ae.: dann eben Deutsch */ }
+    return 'DE';
+  });
+  const setLang = (l) => {
+    setLangState(l);
+    try { localStorage.setItem('nsbb_lang', l); } catch (e) {}
+  };
   const t = T[lang];
 
   useEffect(() => { window.scrollTo(0, 0); }, [page]);
-  // Auf Hash-Änderungen reagieren (interne #route-Links, Zurück/Vor-Button des Browsers)
-  useEffect(() => {
-    const onHash = () => { const h = window.location.hash.replace('#',''); setPageState(h || 'home'); };
-    window.addEventListener('hashchange', onHash);
-    return () => window.removeEventListener('hashchange', onHash);
-  }, []);
   useEffect(() => { document.documentElement.lang = lang.toLowerCase(); }, [lang]);
-  const pageTitles = {'home':'NSBB – Steuerberatung Berlin & Köln | Modern. Digital. Persönlich.', 'leistungen':'Leistungen | NSBB Steuerberatung', 'leistungen-unternehmen':'Steuerberatung für Unternehmen | NSBB', 'leistungen-international':'Internationales Steuerrecht | NSBB', 'leistungen-privat':'Steuerberatung für Privatpersonen | NSBB', 'digital':'Digitale Kanzlei | NSBB Steuerberatung', 'tgs':'TGS International Netzwerk | NSBB', 'faq':'Häufige Fragen | NSBB Steuerberatung', 'ueber-uns':'Über uns & Team | NSBB Steuerberatung', 'kontakt':'Kontakt aufnehmen | NSBB Steuerberatung Berlin & Köln', 'karriere':'Karriere bei NSBB | Steuerberater gesucht', 'kanzleinachfolge':'Kanzleinachfolge | NSBB Steuerberatung', 'impressum':'Impressum | NSBB Steuerberatung', 'datenschutz':'Datenschutz | NSBB Steuerberatung', 'steuerberater-berlin':'Steuerberater Berlin – digital & persönlich | NSBB', 'steuerberater-koeln':'Steuerberater Köln – digital & persönlich | NSBB'};
-  useEffect(() => { const t = pageTitles[page] || 'NSBB – Steuerberatung Berlin & Köln'; document.title = t; }, [page, lang]);
+  // Seitentitel: erscheinen im Browser-Tab, im Verlauf und in Lesezeichen –
+  // und sind der erste Text, den Suchmaschinen zu einer Seite lesen.
+  // Vorher trugen 28 von 41 Seiten denselben Titel.
+  const pageTitles = {
+    DE: {
+      'home': 'NSBB – Steuerberatung Berlin & Köln | Modern. Digital. Persönlich.',
+      'leistungen': 'Leistungen | NSBB Steuerberatung',
+      'leistungen-unternehmen': 'Steuerberatung für Unternehmen | NSBB',
+      'leistungen-unternehmen-leistungen': 'Drei Bereiche der Unternehmensberatung | NSBB',
+      'leistungen-unternehmen-laufend': 'Laufende Steuerberatung & Jahresabschluss | NSBB',
+      'leistungen-unternehmen-gestaltung': 'Steuerliche Gestaltungsberatung | NSBB',
+      'leistungen-unternehmen-bwl': 'Betriebswirtschaftliche Beratung | NSBB',
+      'leistungen-unternehmen-branchen': 'Branchenlösungen für Unternehmen | NSBB',
+      'branche-ecommerce': 'Steuerberatung für E-Commerce & Onlinehandel | NSBB',
+      'branche-bau': 'Steuerberatung für Bau & Handwerk | NSBB',
+      'branche-immobilien': 'Steuerberatung für Immobilienunternehmen | NSBB',
+      'branche-international': 'Steuerberatung für international tätige Unternehmen | NSBB',
+      'branche-startup': 'Steuerberatung für Start-ups & Gründer | NSBB',
+      'branche-aerzte': 'Steuerberatung für Ärzte & Heilberufe | NSBB',
+      'leistungen-international': 'Internationales Steuerrecht | NSBB',
+      'intl-wegzug': 'Wegzugsbesteuerung: Wegzug ins Ausland | NSBB',
+      'intl-wohnsitz': 'Wohnsitz & Steuerpflicht im Ausland | NSBB',
+      'intl-dba': 'Doppelbesteuerungsabkommen (DBA) | NSBB',
+      'intl-einkuenfte': 'Ausländische Einkünfte richtig versteuern | NSBB',
+      'intl-immobilien': 'Immobilien im Ausland: Steuern | NSBB',
+      'intl-erbschaft': 'Erbschaft mit Auslandsbezug | NSBB',
+      'intl-schenkung': 'Schenkung mit Auslandsbezug | NSBB',
+      'intl-rueckkehr': 'Rückkehr nach Deutschland: Steuern | NSBB',
+      'intl-grenzgaenger': 'Grenzgänger: Wo zahle ich Steuern? | NSBB',
+      'intl-vermoegen': 'Internationale Vermögensstrukturierung | NSBB',
+      'leistungen-privat': 'Steuerberatung für Privatpersonen | NSBB',
+      'digital': 'Digitale Kanzlei | NSBB Steuerberatung',
+      'tgs': 'TGS International Netzwerk | NSBB',
+      'aktuelles': 'Aktuelles & Mandanteninformationen | NSBB Steuerberatung',
+      'ueber-uns': 'Über uns & Team | NSBB Steuerberatung',
+      'steuerberater-berlin': 'Steuerberater Berlin – digital & persönlich | NSBB',
+      'steuerberater-koeln': 'Steuerberater Köln – digital & persönlich | NSBB',
+      'karriere': 'Karriere bei NSBB | Steuerberater gesucht',
+      'karriere-steuerberater': 'Stellenangebot Steuerberater (m/w/d) | NSBB',
+      'karriere-steuerfachwirt': 'Stellenangebot Steuerfachwirt (m/w/d) | NSBB',
+      'karriere-steuerfachangestellte': 'Stellenangebot Steuerfachangestellte (m/w/d) | NSBB',
+      'karriere-bilanzbuchhalter': 'Stellenangebot Bilanzbuchhalter (m/w/d) | NSBB',
+      'karriere-initiativbewerbung': 'Initiativbewerbung | NSBB Steuerberatung',
+      'kanzleinachfolge': 'Kanzleinachfolge | NSBB Steuerberatung',
+      'kontakt': 'Kontakt aufnehmen | NSBB Steuerberatung Berlin & Köln',
+      'faq': 'Häufige Fragen | NSBB Steuerberatung',
+      'impressum': 'Impressum | NSBB Steuerberatung',
+      'datenschutz': 'Datenschutz | NSBB Steuerberatung',
+    },
+    EN: {
+      'home': 'NSBB – Tax Advisors Berlin & Cologne | Modern. Digital. Personal.',
+      'leistungen': 'Services | NSBB Tax Advisors',
+      'leistungen-unternehmen': 'Tax Advisory for Businesses | NSBB',
+      'leistungen-unternehmen-leistungen': 'Three Areas of Business Advisory | NSBB',
+      'leistungen-unternehmen-laufend': 'Ongoing Tax Advisory & Annual Accounts | NSBB',
+      'leistungen-unternehmen-gestaltung': 'Tax Structuring Advice | NSBB',
+      'leistungen-unternehmen-bwl': 'Business Management Advisory | NSBB',
+      'leistungen-unternehmen-branchen': 'Industry Solutions for Businesses | NSBB',
+      'branche-ecommerce': 'Tax Advisory for E-Commerce | NSBB',
+      'branche-bau': 'Tax Advisory for Construction & Trades | NSBB',
+      'branche-immobilien': 'Tax Advisory for Real Estate | NSBB',
+      'branche-international': 'Tax Advisory for International Businesses | NSBB',
+      'branche-startup': 'Tax Advisory for Start-ups & Founders | NSBB',
+      'branche-aerzte': 'Tax Advisory for Doctors & Health Professions | NSBB',
+      'leistungen-international': 'International Tax Law | NSBB',
+      'intl-wegzug': 'Exit Taxation: Moving Abroad | NSBB',
+      'intl-wohnsitz': 'Residence & Tax Liability Abroad | NSBB',
+      'intl-dba': 'Double Taxation Agreements (DTA) | NSBB',
+      'intl-einkuenfte': 'Taxing Foreign Income Correctly | NSBB',
+      'intl-immobilien': 'Property Abroad: Taxation | NSBB',
+      'intl-erbschaft': 'Inheritance with Foreign Ties | NSBB',
+      'intl-schenkung': 'Gifts with Foreign Ties | NSBB',
+      'intl-rueckkehr': 'Returning to Germany: Taxation | NSBB',
+      'intl-grenzgaenger': 'Cross-Border Workers: Where Do I Pay Tax? | NSBB',
+      'intl-vermoegen': 'International Wealth Structuring | NSBB',
+      'leistungen-privat': 'Tax Advisory for Private Individuals | NSBB',
+      'digital': 'Digital Firm | NSBB Tax Advisors',
+      'tgs': 'TGS International Network | NSBB',
+      'aktuelles': 'Insights & News | NSBB Tax Advisors',
+      'ueber-uns': 'About Us & Team | NSBB Tax Advisors',
+      'steuerberater-berlin': 'Tax Advisor in Berlin – digital & personal | NSBB',
+      'steuerberater-koeln': 'Tax Advisor in Cologne – digital & personal | NSBB',
+      'karriere': 'Careers at NSBB | Tax Advisors Wanted',
+      'karriere-steuerberater': 'Vacancy: Tax Advisor (m/f/d) | NSBB',
+      'karriere-steuerfachwirt': 'Vacancy: Tax Specialist (m/f/d) | NSBB',
+      'karriere-steuerfachangestellte': 'Vacancy: Tax Clerk (m/f/d) | NSBB',
+      'karriere-bilanzbuchhalter': 'Vacancy: Financial Accountant (m/f/d) | NSBB',
+      'karriere-initiativbewerbung': 'Speculative Application | NSBB Tax Advisors',
+      'kanzleinachfolge': 'Practice Succession | NSBB Tax Advisors',
+      'kontakt': 'Contact Us | NSBB Tax Advisors Berlin & Cologne',
+      'faq': 'Frequently Asked Questions | NSBB Tax Advisors',
+      'impressum': 'Legal Notice | NSBB Tax Advisors',
+      'datenschutz': 'Privacy Policy | NSBB Tax Advisors',
+    }
+  };
+  useEffect(() => {
+    const tabelle = pageTitles[lang] || pageTitles.DE;
+    document.title = tabelle[page]
+      || (lang === 'EN' ? 'NSBB – Tax Advisors Berlin & Cologne' : 'NSBB – Steuerberatung Berlin & Köln');
+
+    // canonical je Seite mitfuehren. Zeigte er weiter auf die Startseite,
+    // wuerde Google alle Unterseiten als Dubletten davon werten – der
+    // Gewinn der echten Adressen waere dahin.
+    //
+    // Bedingung: NUR im Live-Betrieb. Die Pruefung geht ueber den Basis-Pfad,
+    // nicht ueber den Hostnamen – die Testfassung liegt unter nsbb.de/2026/
+    // und traegt denselben Hostnamen. Eine Hostnamen-Pruefung wuerde dort
+    // canonicals auf die echten Adressen setzen und Google anweisen, die
+    // Testfassung der Live-Seite zuzurechnen.
+    if (BASIS === '/' && window.location.hostname === 'nsbb.de') {
+      let link = document.querySelector('link[rel="canonical"]');
+      if (!link) {
+        link = document.createElement('link');
+        link.rel = 'canonical';
+        document.head.appendChild(link);
+      }
+      link.href = 'https://nsbb.de' + (page === 'home' ? '/' : '/' + page);
+    }
+  }, [page, lang]);
 
   const props = { setPage, lang, t, kontaktPreset, setKontaktPreset };
 
@@ -5426,8 +6293,10 @@ function App() {
     'leistungen-privat': e(LeistungenPrivatPage, props),
     digital: e(DigitalPage, props),
     tgs: e(TGSPage, props),
-    insights: e(InsightsPage, props),
+    aktuelles: e(AktuellesPage, props),
     'ueber-uns': e(UeberUnsPage, props),
+    'steuerberater-berlin': e(SteuerberaterBerlinPage, props),
+    'steuerberater-koeln': e(SteuerberaterKoelnPage, props),
     karriere: e(KarrierePage, props),
     'karriere-steuerberater': e(KarriereStbPage, props),
     'karriere-steuerfachwirt': e(KarriereSfwPage, props),
@@ -5439,8 +6308,6 @@ function App() {
     impressum: e(ImpressumPage, props),
     datenschutz: e(DatenschutzPage, props),
     faq: e(FAQPage, props),
-    'steuerberater-berlin': e(SteuerberaterBerlinPage, props),
-    'steuerberater-koeln': e(SteuerberaterKoelnPage, props),
   };
 
   return e('div', null,

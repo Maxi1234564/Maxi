@@ -6,9 +6,13 @@ Allow: /
 # und /_source/ ohnehin einen Fehler aus.
 Disallow: /_source/
 Disallow: /tools/
+Disallow: /dokumente/
+# Redaktionsbereich: zugangsgeschützt und ohne Wert für den Index.
+Disallow: /redaktion/
 Disallow: /README.md
 Disallow: /changelog.md
 Disallow: /CLAUDE.md
 Disallow: /PROMPT-FUER-CLAUDE.md
 
-Sitemap: https://www.nsbb.de/sitemap.xml
+Sitemap: https://nsbb.de/sitemap.xml
+Sitemap: https://nsbb.de/daten/beitraege-sitemap.xml
