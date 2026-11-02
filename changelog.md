@@ -15,6 +15,69 @@ Format: neueste Einträge oben. Aufbau eines Eintrags siehe Vorlage am Ende.
 
 ---
 
+## [2026-11-02] Standortseiten: Barrierefreiheit, Ladeverhalten und Struktur nachgebessert (Freigabe-Prüfung)
+
+**Bearbeiter:** Claude (Claude Code, Opus 5)
+**Grund:** Abschlussprüfung der beiden Standortseiten vor der Freigabe an die
+Agentur. Dabei sind drei echte Mängel aufgefallen – alle behoben.
+
+### Geändert (nur `assets/js/app.js`, `index.html`)
+* **Leistungskarten waren nicht mit der Tastatur bedienbar** (wichtigster Punkt).
+  Die drei Karten („Für Unternehmen", „Internationales Steuerrecht", „Für
+  Privatpersonen") waren anklickbare `div`-Elemente **ohne ein einziges
+  fokussierbares Bedienelement** – mit Tastatur oder Screenreader also gar nicht
+  erreichbar. Der Verweis „Mehr zu …" ist jetzt ein echter `button`
+  (`stopPropagation`, damit der Klick auf die Karte nicht doppelt auslöst). Mit
+  der Maus bleibt die ganze Karte klickbar. Relevant mit Blick auf das BFSG.
+* **FAQ-Antworten standen nicht im HTML.** Zugeklappte Antworten wurden gar nicht
+  gerendert – Suchmaschinen und KI-Systeme sahen nur die Fragen, obwohl die
+  Antworten im `FAQPage`-JSON-LD stehen. Die Antworten liegen jetzt immer im
+  Dokument und werden über das `hidden`-Attribut auf-/zugeklappt. Zusätzlich sind
+  Frage und Antwort über `aria-controls` / `aria-labelledby` verknüpft (eindeutige
+  Kennungen über `React.useId`), die Antwort ist eine `role="region"`.
+  **Nebeneffekt: inhaltlicher Gewinn für SEO/GEO**, weil alle 9 Antworten je
+  Standort nun crawlbar im Quelltext stehen.
+* **Standortfoto wurde verzögert geladen, steht aber im ersten Bildschirm**
+  (beginnt bei ca. 528 px). `loading="lazy"` → `loading="eager"` plus
+  `fetchpriority="high"`, damit es den Seitenaufbau nicht ausbremst. Das
+  Kanzleifoto weiter unten bleibt bewusst `lazy`.
+* **Drei Kartenüberschriften waren nur Absätze:** „Adresse & Kontakt",
+  „So erreichen Sie uns" und „So läuft es konkret ab" sind jetzt `h3` – saubere
+  Gliederung unter der jeweiligen `h2` (13 statt 10 `h3` je Seite). Optik
+  unverändert.
+* **DE/EN-Abgleich:** Im englischen Untertitel der Berliner Ansprechpartner
+  fehlte der Ortsbezug („At our Berlin office …") – ergänzt.
+* `index.html`: `?v=20261102` → `?v=20261102b`.
+
+### Geprüft
+* `node --check assets/js/app.js` – fehlerfrei.
+* Browser (Playwright, 1280 px und 390 px, DE + EN): je Leistungskarte ein
+  fokussierbarer Knopf; Fokus wird dank der globalen Regel `:focus-visible`
+  sichtbar umrandet; Tab auf den Knopf und **Enter** führt korrekt zu
+  „Steuerberatung für Unternehmen"; alle 9 FAQ-Knöpfe mit `aria-controls`, alle 9
+  Antworten im HTML vorhanden und korrekt versteckt; Standortfoto `eager` /
+  `fetchpriority=high`; keine defekten Bilder, keine Konsolenfehler; Optik
+  unverändert.
+
+### Offen / Achtung
+* **Bewusst nicht geändert – zur Kenntnis für die Agentur:**
+  1. Die Abschnitte „Warum NSBB in …?" und „Einblick" sind auf beiden
+     Standortseiten textgleich. Das ist vertretbar (der weit überwiegende Teil
+     beider Seiten – Intro, Leistungstexte, Ansprechpartner, Anfahrt, Region,
+     FAQ – ist standortspezifisch) und inhaltlich zutreffend; künstlich
+     unterschiedlich formulieren würde die Aussage verwässern.
+  2. Das Kanzleifoto wird in 1600 px ausgeliefert, auch an Mobilgeräte. Bei 74 KB
+     vertretbar; ein `srcset` mit kleineren Fassungen wäre der nächste Schritt,
+     falls gewünscht.
+  3. Das Kanzleifoto steht weiterhin **nicht** in den strukturierten Daten, weil
+     dasselbe Foto auf beiden Seiten verwendet wird (siehe Eintrag vom
+     02.11.2026).
+* Die projektweiten offenen Punkte (Kontaktformular verschickt nichts,
+  hreflang-Auswertung, Google Tag Manager vs. Datenschutzerklärung) bleiben
+  unberührt – sie liegen bei der Projektleitung.
+
+---
+
 ## [2026-11-02] Kanzleifoto auf beiden Standortseiten eingebunden („Einblick")
 
 **Bearbeiter:** Claude (Claude Code, Opus 5)

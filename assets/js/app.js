@@ -5915,7 +5915,7 @@ const STANDORT_DATA = {
     svcIntl: { de:'Wir beraten bei Inbound- und Outbound-Sachverhalten, bei der Errichtung von Auslandsgesellschaften und Betriebsstätten sowie bei Verrechnungspreisen – eigenständig und bei Bedarf gemeinsam mit unseren TGS-Partnern weltweit.', en:'We advise on inbound and outbound matters, on setting up foreign subsidiaries and permanent establishments, and on transfer pricing – independently and, where needed, together with our TGS partners worldwide.' },
     svcPrivat: { de:'Wir begleiten Sie bei der Einkommensteuer, bei Erbschaft und Schenkung, bei Immobilien und bei der Vermögensnachfolge – vorausschauend und mit Blick auf die gesamte Vermögenssituation.', en:'We support you with income tax, inheritance and gifts, real estate and succession planning – with foresight and a view of your overall financial situation.' },
     ansprechHead: { de:'Ihre Ansprechpartner in Berlin', en:'Your Contacts in Berlin' },
-    ansprechSub: { de:'Am Standort Berlin ist bei jedem Erstgespräch ein Berufsträger persönlich präsent – kein Callcenter, kein ständiger Wechsel.', en:'A qualified professional is personally present at every initial meeting – no call centre, no constant change of contact.' },
+    ansprechSub: { de:'Am Standort Berlin ist bei jedem Erstgespräch ein Berufsträger persönlich präsent – kein Callcenter, kein ständiger Wechsel.', en:'At our Berlin office a qualified professional is personally present at every initial meeting – no call centre, no constant change of contact.' },
     digitalHead: { de:'Digitale Zusammenarbeit', en:'Working Together Digitally' },
     digitalText: { de:'Die Zusammenarbeit mit NSBB ist vollständig digital möglich. Über DATEV, gesicherte Cloud-Prozesse und digitale Belegübermittlung übermitteln Sie Unterlagen ortsunabhängig; Dokumente unterschreiben Sie per eSign. Feste Ansprechpartner, klare Abläufe und kurze Kommunikationswege sorgen dafür, dass Sie jederzeit den Überblick behalten und Zeit für Ihr Unternehmen gewinnen. Ob Sie in Berlin ansässig sind oder überregional arbeiten, spielt für die Zusammenarbeit keine Rolle.', en:'Working with NSBB can be entirely digital. Using DATEV, secure cloud processes and digital document submission, you send us your records from anywhere; documents are signed via eSign. Dedicated contacts, clear procedures and short communication paths keep you in control at all times and free up time for your business. Whether you are based in Berlin or work across Germany makes no difference to how we collaborate.' },
     anfahrtHead: { de:'So finden Sie uns in Berlin', en:'How to Find Us in Berlin' },
@@ -6065,16 +6065,25 @@ const STANDORT_DATA = {
 
 function StandortAccordion({ items }) {
   const [open, setOpen] = React.useState(null);
+  // Eindeutige Kennungen, damit Frage und Antwort fuer Screenreader verknuepft
+  // werden koennen (aria-controls / aria-labelledby).
+  const uid = React.useId();
   return e('div', null,
-    items.map((it, i) => e('div', { key:i, style:{ borderBottom: i < items.length - 1 ? '1px solid var(--border)' : 'none' } },
-      e('button', { onClick:()=>setOpen(open===i?null:i), 'aria-expanded': open===i, style:{ width:'100%', textAlign:'left', background:'none', border:'none', cursor:'pointer', padding:'20px 0', display:'flex', justifyContent:'space-between', alignItems:'center', gap:'16px' } },
-        e('span', { style:{ fontFamily:"'Cormorant Garamond',serif", fontSize:'1.24rem', color: open===i ? 'var(--accent-dark)' : '#1A1917', lineHeight:1.3, transition:'color .2s' } }, it.q),
-        // Rundes Plus/Minus – deutlicher als das freistehende Zeichen und
-        // signalisiert klarer, dass die Frage aufklappbar ist.
-        e('span', { 'aria-hidden':'true', style:{ width:'28px', height:'28px', borderRadius:'50%', background: open===i ? 'var(--accent)' : 'var(--accent-subtle)', color: open===i ? '#fff' : 'var(--accent)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, fontFamily:"'DM Sans',sans-serif", fontSize:'1.15rem', lineHeight:1, transition:'background .2s, color .2s' } }, open===i ? '–' : '+')
-      ),
-      open===i && e('p', { style:{ padding:'0 0 22px', color:'var(--muted)', lineHeight:1.8, maxWidth:'700px', fontFamily:"'DM Sans',sans-serif", fontSize:'.94rem' } }, it.a)
-    ))
+    items.map((it, i) => {
+      const panelId = uid + '-a' + i;
+      const btnId = uid + '-q' + i;
+      return e('div', { key:i, style:{ borderBottom: i < items.length - 1 ? '1px solid var(--border)' : 'none' } },
+        e('button', { id:btnId, onClick:()=>setOpen(open===i?null:i), 'aria-expanded': open===i, 'aria-controls': panelId, style:{ width:'100%', textAlign:'left', background:'none', border:'none', cursor:'pointer', padding:'20px 0', display:'flex', justifyContent:'space-between', alignItems:'center', gap:'16px' } },
+          e('span', { style:{ fontFamily:"'Cormorant Garamond',serif", fontSize:'1.24rem', color: open===i ? 'var(--accent-dark)' : '#1A1917', lineHeight:1.3, transition:'color .2s' } }, it.q),
+          // Rundes Plus/Minus – deutlicher als das freistehende Zeichen und
+          // signalisiert klarer, dass die Frage aufklappbar ist.
+          e('span', { 'aria-hidden':'true', style:{ width:'28px', height:'28px', borderRadius:'50%', background: open===i ? 'var(--accent)' : 'var(--accent-subtle)', color: open===i ? '#fff' : 'var(--accent)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, fontFamily:"'DM Sans',sans-serif", fontSize:'1.15rem', lineHeight:1, transition:'background .2s, color .2s' } }, open===i ? '–' : '+')
+        ),
+        e('div', { id:panelId, role:'region', 'aria-labelledby':btnId, hidden: open!==i },
+          e('p', { style:{ padding:'0 0 22px', color:'var(--muted)', lineHeight:1.8, maxWidth:'700px', fontFamily:"'DM Sans',sans-serif", fontSize:'.94rem', margin:0 } }, it.a)
+        )
+      );
+    })
   );
 }
 
@@ -6220,7 +6229,7 @@ function StandortPage({ setPage, lang, t, setKontaktPreset, city }) {
 
           e('div', { className:'fade-up', style:{ position:'relative', maxWidth:'430px', width:'100%', margin:'0 auto' } },
             e('div', { style:{ position:'relative', borderRadius:'1.5rem', overflow:'hidden', boxShadow:'0 18px 48px rgba(0,0,0,.14)' } },
-              e('img', { src:d.img, alt:L(d.imgAlt), loading:'lazy', width:360, height:540,
+              e('img', { src:d.img, alt:L(d.imgAlt), loading:'eager', fetchPriority:'high', width:360, height:540,
                 style:{ display:'block', width:'100%', height:'auto', objectFit:'cover' } }),
               e('div', { style:{ position:'absolute', left:0, right:0, bottom:0, background:'rgba(255,255,255,.94)', padding:'14px 18px', display:'flex', alignItems:'center', gap:'11px' } },
                 e('span', { style:{ color:'var(--accent)', display:'flex', flexShrink:0 } }, e(Ico, { name:'mapPin', size:17 })),
@@ -6267,7 +6276,14 @@ function StandortPage({ setPage, lang, t, setKontaktPreset, city }) {
               e('div', { style:{ ...iconBox, width:'46px', height:'46px', borderRadius:'13px', marginBottom:'18px' } }, e(Ico, { name:s.icon, size:20 })),
               e('h3', { style:{ fontFamily:"'Cormorant Garamond',serif", fontSize:'1.42rem', color:'#1A1917', marginBottom:'12px', lineHeight:1.2 } }, L(s.h)),
               e('p', { style:{ ...bodySt, fontSize:'.94rem', lineHeight:1.75, marginBottom:'20px', flex:1 } }, L(s.p)),
-              e('span', { style:{ ...accentLink, fontSize:'.9rem', display:'inline-flex', alignItems:'center', gap:'6px', fontFamily:"'DM Sans',sans-serif" } },
+              // Echtes Bedienelement statt nur anklickbarer Karte: Mit der Maus
+              // bleibt die ganze Karte klickbar, per Tastatur und Screenreader ist
+              // der Knopf erreichbar (sonst waere die Verlinkung dort gar nicht
+              // bedienbar). stopPropagation verhindert den doppelten Seitenwechsel.
+              e('button', {
+                onClick:(ev)=>{ ev.stopPropagation(); go(s.key); },
+                style:{ ...accentLink, fontSize:'.9rem', display:'inline-flex', alignItems:'center', gap:'6px', fontFamily:"'DM Sans',sans-serif", background:'none', border:'none', padding:0, cursor:'pointer', textAlign:'left' }
+              },
                 L(s.more), e(Ico, { name:'arrowRight', size:15 })
               )
             );
@@ -6373,7 +6389,7 @@ function StandortPage({ setPage, lang, t, setKontaktPreset, city }) {
             )
           ),
           e('div', { className:'fade-up', style:{ ...card, padding:'2rem 1.8rem' } },
-            e('p', { style:{ ...eyebrowSt, marginBottom:'16px' } }, isDE?'So läuft es konkret ab':'How it works in practice'),
+            e('h3', { style:{ ...eyebrowSt, marginBottom:'16px' } }, isDE?'So läuft es konkret ab':'How it works in practice'),
             e('ul', { style:{ listStyle:'none', padding:0, margin:0, display:'flex', flexDirection:'column', gap:'15px' } },
               (isDE ? d.digitalPoints.de : d.digitalPoints.en).map(function (dp) {
                 return e('li', { key:dp, style:{ display:'flex', alignItems:'flex-start', gap:'12px', color:'#1A1917', fontSize:'.93rem', lineHeight:1.65, fontFamily:"'DM Sans',sans-serif" } },
@@ -6394,7 +6410,7 @@ function StandortPage({ setPage, lang, t, setKontaktPreset, city }) {
         e('div', { className:'grid grid-cols-1 lg:grid-cols-2', style:{ gap:'24px' } },
 
           e('div', { className:'fade-up', style:{ ...card, padding:'2rem 1.8rem' } },
-            e('p', { style:{ ...eyebrowSt, marginBottom:'16px' } }, isDE?'Adresse & Kontakt':'Address & contact'),
+            e('h3', { style:{ ...eyebrowSt, marginBottom:'16px' } }, isDE?'Adresse & Kontakt':'Address & contact'),
             e('div', { style:{ display:'flex', flexDirection:'column', gap:'16px' } },
               [
                 { icon:'mapPin', v:e('span', null, e('strong', null, d.addr[0]), e('br', null), d.addr[1], e('br', null), d.addr[2]) },
@@ -6414,7 +6430,7 @@ function StandortPage({ setPage, lang, t, setKontaktPreset, city }) {
           ),
 
           e('div', { className:'fade-up', style:{ ...card, padding:'2rem 1.8rem' } },
-            e('p', { style:{ ...eyebrowSt, marginBottom:'16px' } }, isDE?'So erreichen Sie uns':'How to get here'),
+            e('h3', { style:{ ...eyebrowSt, marginBottom:'16px' } }, isDE?'So erreichen Sie uns':'How to get here'),
             e('div', { style:{ display:'flex', flexDirection:'column', gap:'17px' } },
               (isDE ? d.anfahrtWege.de : d.anfahrtWege.en).map(function (w) {
                 return e('div', { key:w.t, style:{ display:'flex', alignItems:'flex-start', gap:'13px' } },
