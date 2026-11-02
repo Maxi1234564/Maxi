@@ -15,6 +15,59 @@ Format: neueste Einträge oben. Aufbau eines Eintrags siehe Vorlage am Ende.
 
 ---
 
+## [2026-11-02] Kanzleifoto auf beiden Standortseiten eingebunden („Einblick")
+
+**Bearbeiter:** Claude (Claude Code, Opus 5)
+**Grund:** Der Kunde hat ein Foto eines Besprechungsraums geliefert mit der
+Vorgabe, es auf beiden Standortseiten an der aus fachlicher Sicht besten Stelle
+einzubinden.
+
+**Platzierung und Begründung:** Neuer Abschnitt **„Einblick – Hier sitzen wir mit
+Ihnen zusammen."** zwischen „Warum NSBB in Berlin/Köln?" und „Ihre
+Ansprechpartner". Zwei Gründe: Die Seitenmitte bestand bis dahin ausschließlich
+aus Kacheln und Karten – ein großformatiges, ruhiges Foto gibt der Seite dort
+Luft. Inhaltlich führt es vom Versprechen („im Erstgespräch ist ein Berufsträger
+persönlich dabei") zu den Menschen, mit denen man zusammensitzt, und steht damit
+unmittelbar vor den Personenkarten.
+
+### Geändert
+* **Bild aufbereitet** (`CLAUDE.md`-Regel 6): Original nach
+  `_source/images/kanzlei-besprechungsraum.jpg` (2000 × 1333, 389 KB), ausgespielte
+  Fassung als WebP nach `assets/images/kanzlei-besprechungsraum.webp`
+  (1600 × 1066, 74 KB, Qualität 82, Metadaten entfernt). Sprechender Dateiname.
+* `assets/js/app.js`, `StandortPage`: neuer Abschnitt mit Eyebrow „Einblick",
+  Überschrift, kurzem Einleitungstext (DE + EN) und dem Foto als `figure` mit
+  `figcaption`. Das Bild trägt `width`/`height` (kein Layout-Sprung), `loading="lazy"`
+  und einen beschreibenden `alt`-Text in beiden Sprachen.
+* `assets/js/app.js`: Hintergrund-Rhythmus der Folgeabschnitte nachgezogen, damit
+  keine zwei gleichfarbigen Bänder aneinanderstoßen – Ansprechpartner
+  weiß → offwhite, Digitale Zusammenarbeit offwhite → weiß, Anfahrt weiß →
+  offwhite, Häufige Fragen offwhite → weiß (der Abschluss-Block steht auf
+  offwhite). Abschnitte neu durchnummeriert (1–9).
+* `index.html`: `?v=20260806d` → `?v=20261102`.
+
+### Geprüft
+* `node --check assets/js/app.js` – fehlerfrei.
+* Browser (Playwright, 1280 px und 390 px, DE + EN): Foto wird auf **beiden**
+  Standortseiten geladen (1600 × 1066, dargestellt 1216 px auf dem Desktop,
+  350 px mobil), Bildunterschrift und `alt`-Text wechseln korrekt mit der
+  Sprache, keine fehlgeschlagenen Bildanfragen, zehn `h2`-Ebenen, Abschnitte
+  schließen lückenlos an, keine Konsolenfehler.
+
+### Offen / Achtung
+* **Dasselbe Foto steht auf beiden Standortseiten.** Deshalb sind
+  Bildunterschrift und `alt`-Text bewusst **ortsneutral** formuliert
+  („Besprechungsraum der NSBB Steuerberatungsgesellschaft mbH"), damit die Seite
+  nicht behauptet, der Raum befinde sich im jeweiligen Standort. Sobald ein Foto
+  des zweiten Standorts vorliegt, kann es je Stadt hinterlegt und die
+  Beschriftung ortsgenau gefasst werden (`STANDORT_DATA`).
+* Das Foto wurde bewusst **nicht** in die strukturierten Daten (`image` des
+  `LocalBusiness`-Knotens) aufgenommen – das würde aussagen, dass der Raum zu
+  genau diesem Standort gehört. Nach Klärung gern ergänzen; es wäre ein
+  zusätzliches Signal für die lokale Auffindbarkeit.
+
+---
+
 ## [2026-08-06] Startseite: Standort-Verlinkung heißt jetzt „Standort Berlin" / „Standort Köln"
 
 **Bearbeiter:** Claude (Claude Code, Opus 5)

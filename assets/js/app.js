@@ -6294,8 +6294,41 @@ function StandortPage({ setPage, lang, t, setKontaktPreset, city }) {
       )
     ),
 
-    // ── 5. Ansprechpartner am Standort ───────────────────────────────────
+    // ── 5. Einblick in die Kanzlei – grosses, ruhiges Foto ────────────────
+    // Bewusst hier platziert: Die Seitenmitte besteht sonst nur aus Kacheln und
+    // Karten. Ein grossformatiges Foto gibt der Seite Luft und fuehrt inhaltlich
+    // vom Versprechen („persoenliches Erstgespraech") zu den Menschen, mit denen
+    // man zusammensitzt – direkt vor dem Abschnitt „Ihre Ansprechpartner".
     e('section', { style:{ backgroundColor:'#ffffff', paddingTop:'76px', paddingBottom:'76px' } },
+      e('div', { className:'max-w-site mx-auto px-5 md:px-8' },
+        e('div', { className:'max-w-2xl fade-up', style:{ marginBottom:'30px' } },
+          e('p', { style:{ ...eyebrowSt, marginBottom:'13px' } }, isDE?'Einblick':'Inside'),
+          e('h2', { className:'font-display', style:{ ...secH2, marginBottom:'14px' } },
+            isDE ? 'Hier sitzen wir mit Ihnen zusammen.' : 'This is where we sit down with you.'
+          ),
+          e('p', { style:bodySt }, isDE
+            ? 'Ob Jahresabschluss, Gestaltungsfrage oder Nachfolge – die wichtigen Gespräche führen wir persönlich. In unseren Besprechungsräumen nehmen wir uns Zeit für Ihr Anliegen: mit einem Berufsträger am Tisch und der Technik für Video- und Hybridtermine, wenn Sie einmal nicht vor Ort sein können.'
+            : 'Whether it is annual accounts, a structuring question or succession – the important conversations happen in person. In our meeting rooms we take time for your matter: with a qualified professional at the table and the technology for video and hybrid meetings when you cannot be on site.')
+        ),
+        e('figure', { className:'fade-up', style:{ margin:0 } },
+          e('img', {
+            src:'assets/images/kanzlei-besprechungsraum.webp',
+            alt: isDE
+              ? 'Besprechungsraum der NSBB Steuerberatungsgesellschaft mbH mit Konferenztisch, Freisprecheinrichtung und bodentiefen Fenstern'
+              : 'Meeting room at NSBB Steuerberatungsgesellschaft mbH with conference table, speakerphone and floor-to-ceiling windows',
+            loading:'lazy', width:1600, height:1066,
+            style:{ display:'block', width:'100%', height:'auto', borderRadius:'1.5rem', boxShadow:'0 18px 48px rgba(0,0,0,.14)' }
+          }),
+          e('figcaption', { style:{ marginTop:'14px', fontSize:'.82rem', color:'var(--muted)', fontFamily:"'DM Sans',sans-serif", display:'flex', alignItems:'center', gap:'8px' } },
+            e('span', { style:{ color:'var(--accent)', display:'flex', flexShrink:0 } }, e(Ico, { name:'building', size:14 })),
+            isDE ? 'Besprechungsraum der NSBB Steuerberatungsgesellschaft mbH' : 'Meeting room at NSBB Steuerberatungsgesellschaft mbH'
+          )
+        )
+      )
+    ),
+
+    // ── 6. Ansprechpartner am Standort ───────────────────────────────────
+    e('section', { style:{ backgroundColor:'var(--offwhite)', paddingTop:'76px', paddingBottom:'76px' } },
       e('div', { className:'max-w-site mx-auto px-5 md:px-8' },
         e('div', { className:'max-w-2xl fade-up', style:{ marginBottom:'32px' } },
           e('h2', { className:'font-display', style:{ ...secH2, marginBottom:'12px' } }, L(d.ansprechHead)),
@@ -6327,8 +6360,8 @@ function StandortPage({ setPage, lang, t, setKontaktPreset, city }) {
       )
     ),
 
-    // ── 6. Digitale Zusammenarbeit: Text + Checkliste ────────────────────
-    e('section', { style:{ backgroundColor:'var(--offwhite)', paddingTop:'76px', paddingBottom:'76px' } },
+    // ── 7. Digitale Zusammenarbeit: Text + Checkliste ────────────────────
+    e('section', { style:{ backgroundColor:'#ffffff', paddingTop:'76px', paddingBottom:'76px' } },
       e('div', { className:'max-w-site mx-auto px-5 md:px-8' },
         e('div', { className:'grid grid-cols-1 lg:grid-cols-2', style:{ gap:'44px', alignItems:'center' } },
           e('div', { className:'fade-up' },
@@ -6354,8 +6387,8 @@ function StandortPage({ setPage, lang, t, setKontaktPreset, city }) {
       )
     ),
 
-    // ── 7. Anfahrt: Adresse + konkrete Wege (OePNV, Parken) ──────────────
-    e('section', { style:{ backgroundColor:'#ffffff', paddingTop:'76px', paddingBottom:'76px' } },
+    // ── 8. Anfahrt: Adresse + konkrete Wege (OePNV, Parken) ──────────────
+    e('section', { style:{ backgroundColor:'var(--offwhite)', paddingTop:'76px', paddingBottom:'76px' } },
       e('div', { className:'max-w-site mx-auto px-5 md:px-8' },
         e('h2', { className:'font-display fade-up', style:{ ...secH2, marginBottom:'26px' } }, L(d.anfahrtHead)),
         e('div', { className:'grid grid-cols-1 lg:grid-cols-2', style:{ gap:'24px' } },
@@ -6413,8 +6446,8 @@ function StandortPage({ setPage, lang, t, setKontaktPreset, city }) {
       )
     ),
 
-    // ── 8. Haeufige Fragen ───────────────────────────────────────────────
-    e('section', { style:{ backgroundColor:'var(--offwhite)', paddingTop:'76px', paddingBottom:'84px' } },
+    // ── 9. Haeufige Fragen ───────────────────────────────────────────────
+    e('section', { style:{ backgroundColor:'#ffffff', paddingTop:'76px', paddingBottom:'84px' } },
       e('div', { className:'max-w-site mx-auto px-5 md:px-8' },
         e('div', { className:'max-w-2xl fade-up', style:{ marginBottom:'26px' } },
           e('h2', { className:'font-display', style:{ ...secH2, marginBottom:'12px' } }, isDE?'Häufige Fragen':'Frequently Asked Questions'),
